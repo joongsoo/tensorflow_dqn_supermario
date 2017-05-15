@@ -67,7 +67,7 @@ class AIControl:
 
             sess.run(copy_ops)
 
-            for episode in range(self.max_episodes):
+            for episode in range(10, self.max_episodes):
                 e = 1. / ((episode / 10) + 1)
                 done = False
                 step_count = 0
@@ -92,8 +92,6 @@ class AIControl:
 
                     next_state, reward, done = self.env.step(action)
 
-                    if reward > 0:
-                        print reward
 
                     if done:
                         reward = -10000
@@ -110,13 +108,14 @@ class AIControl:
 
                 print("Episode: {}  steps: {}".format(episode, step_count))
 
-                mainDQN.save()
-                targetDQN.save()
+                if episode % 10 == 8:
+                    mainDQN.save()
+                    targetDQN.save()
 
                 print step_count
                 print("len buffer ", len(self.replay_buffer))
                 for _ in range(50):
-                    minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer)/50))
+                    minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer)/100))
                     loss, _ = self.replay_train(mainDQN, targetDQN, minibatch)
 
                 print("Loss: ", loss)
