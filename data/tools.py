@@ -47,11 +47,6 @@ class Control(object):
         if self.state.mario.dead:
             self.ml_done = True
 
-        #next_state = array3d(self.screen)
-        score = self.state.get_score()
-        position_x = self.state.last_x_position
-        reward = (score + position_x - 200) / 100.0
-        return ([], reward, self.ml_done)
 
 
     def flip_state(self):
@@ -61,19 +56,44 @@ class Control(object):
         self.state.startup(self.current_time, persist)
         self.state.previous = previous
 
+    def get_step(self):
+        next_state = array3d(self.screen)
+        score = self.state.get_score()
+        position_x = self.state.last_x_position
+        reward = (score + position_x - 200) / 100.0
+        return (next_state, reward, self.ml_done)
 
-    def event_loop(self):
+
+    def event_loop(self, key):
+
+        if key != None and self.keys != key:
+            self.keys = key
+
+        else:
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    self.done = True
+                elif event.type == pg.KEYDOWN:
+                    self.keys = pg.key.get_pressed()
+                    self.toggle_show_fps(event.key)
+                elif event.type == pg.KEYUP:
+                    self.keys = pg.key.get_pressed()
+                self.state.get_event(event)
+        '''
+
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 self.done = True
             elif event.type == pg.KEYDOWN:
-                print event
                 self.keys = pg.key.get_pressed()
+                print event
                 self.toggle_show_fps(event.key)
             elif event.type == pg.KEYUP:
-                print event
                 self.keys = pg.key.get_pressed()
             self.state.get_event(event)
+        '''
+
+
 
 
 

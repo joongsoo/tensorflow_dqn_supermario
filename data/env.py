@@ -5,7 +5,6 @@ import pygame as pg
 import random
 import scipy.misc
 
-
 class Env:
     def __init__(self):
         self.actions = {
@@ -91,11 +90,22 @@ class Env:
             6: 100
         }
 
+        self.controller = None
+
         self.action_n = len(self.actions.keys())
-        #self.state_n = 600 * 800 * 3
-        self.state_n = 120 * 160 * 3
+        self.state_n = 600 * 800 * 3
+        #self.state_n = 120 * 160 * 3
 
         self.run_it = tools.Control(setup.ORIGINAL_CAPTION)
+        self.state_dict = {
+            c.MAIN_MENU: main_menu.Menu(),
+            c.LOAD_SCREEN: load_screen.LoadScreen(),
+            c.TIME_OUT: load_screen.TimeOut(),
+            c.GAME_OVER: load_screen.GameOver(),
+            c.LEVEL1: level1.Level1()
+        }
+        self.run_it.ml_done = False
+        self.run_it.setup_states(self.state_dict, c.LEVEL1)
 
     def get_random_actions(self):
         return random.sample(self.actions.keys(), 1)
@@ -108,18 +118,38 @@ class Env:
             c.GAME_OVER: load_screen.GameOver(),
             c.LEVEL1: level1.Level1()
         }
+        self.run_it.ml_done = False
         self.run_it.setup_states(self.state_dict, c.LEVEL1)
 
-
+    def start(self):
+        while True:
+            self.run_it.event_loop(None)
+            self.run_it.update()
+            pg.display.update()
+            self.run_it.clock.tick(self.run_it.fps)
+            fps = self.run_it.clock.get_fps()
+            with_fps = "{} - {:.2f} FPS".format(self.run_it.caption, fps)
+            pg.display.set_caption(with_fps)
 
     def step(self, action):
-        #if action != None:
-        #    self.run_it.event_loop(self.actions[action])
-        self.run_it.event_loop()
-        next_state, reward, done = self.run_it.update()
+
+        #self.run_it.event_loop()
+        #self.run_it.update()
+        #self.run_it.event_loop()
+        self.run_it.event_loop(self.actions[action])
+        self.run_it.update()
+        pg.display.update()
+        next_state, reward, done = self.run_it.get_step()
+        self.run_it.clock.tick(self.run_it.fps)
+        fps = self.run_it.clock.get_fps()
+        with_fps = "{} - {:.2f} FPS".format(self.run_it.caption, fps)
+        pg.display.set_caption(with_fps)
+
+        #pg.display.update()
 
         #next_state = scipy.misc.imresize(next_state, (120, 160))
-        pg.display.update()
+
+        #print "main"
 
         return (next_state, reward, done)
 
