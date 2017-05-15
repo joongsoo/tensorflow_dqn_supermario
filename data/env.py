@@ -93,8 +93,8 @@ class Env:
         self.controller = None
 
         self.action_n = len(self.actions.keys())
-        self.state_n = 600 * 800 * 3
-        #self.state_n = 120 * 160 * 3
+        #self.state_n = 600 * 800 * 3
+        self.state_n = 100 * 100 * 3
 
         self.run_it = tools.Control(setup.ORIGINAL_CAPTION)
         self.state_dict = {
@@ -120,6 +120,10 @@ class Env:
         }
         self.run_it.ml_done = False
         self.run_it.setup_states(self.state_dict, c.LEVEL1)
+
+        state, _, _ = self.run_it.get_step()
+        state = scipy.misc.imresize(state, (100, 100))
+        return state
 
     def start(self):
         while True:
@@ -147,7 +151,7 @@ class Env:
 
         #pg.display.update()
 
-        #next_state = scipy.misc.imresize(next_state, (120, 160))
+        next_state = scipy.misc.imresize(next_state, (100, 100))
 
         #print "main"
 

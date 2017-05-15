@@ -22,6 +22,7 @@ class AIControl:
         self.max_episodes = 1500
         self.replay_buffer = deque()
         self.val = 0
+        self.save_path = "./save/save_model"
 
     def replay_train(self, mainDQN, targetDQN, train_batch):
         x_stack = np.empty(0).reshape(0, self.input_size)
@@ -34,6 +35,8 @@ class AIControl:
             else:
                 Q[0, action] = reward + self.dis * np.max(targetDQN.predict(next_state))
 
+
+            state = np.reshape(state, [30000])
             y_stack = np.vstack([y_stack, Q])
             x_stack = np.vstack([x_stack, state])
 
@@ -56,6 +59,9 @@ class AIControl:
             mainDQN = dqn.DQN(sess, self.input_size, self.output_size, name="main")
             targetDQN = dqn.DQN(sess, self.input_size, self.output_size, name="target")
             tf.global_variables_initializer().run()
+
+            mainDQN.restore()
+            targetDQN.restore()
 
             copy_ops = self.get_copy_var_ops(dest_scope_name="target", src_scope_name="main")
 
@@ -80,16 +86,19 @@ class AIControl:
                         next_state, reward, done = self.env.step(None)
                     '''
                     if np.random.rand(1) < e:
-                        action = self.env.get_random_actions()
+                        action = self.env.get_random_actions()[0]
                     else:
                         action = np.argmax(mainDQN.predict(state))
 
-                    next_state, reward, done = self.env.step(action[0])
+                    next_state, reward, done = self.env.step(action)
+
+                    if reward > 0:
+                        print reward
 
                     if done:
                         reward = -10000
 
-                        self.replay_buffer.append((state, action, reward, next_state, done))
+                    self.replay_buffer.append((state, action, reward, next_state, done))
                     if len(self.replay_buffer) > self.REPLAY_MEMORY:
                         self.replay_buffer.popleft()
 
@@ -100,14 +109,14 @@ class AIControl:
                     #    break
 
                 print("Episode: {}  steps: {}".format(episode, step_count))
-                if step_count > 10000:
-                    pass
+
+                mainDQN.save()
+                targetDQN.save()
 
                 print step_count
                 print("len buffer ", len(self.replay_buffer))
                 for _ in range(50):
-                    minibatch = random.sample(self.replay_buffer, 30)
-                    print("sibaal?", minibatch)
+                    minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer)/50))
                     loss, _ = self.replay_train(mainDQN, targetDQN, minibatch)
 
                 print("Loss: ", loss)

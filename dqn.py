@@ -11,6 +11,8 @@ class DQN:
         self.net_name = name
 
         self._build_network()
+        self.saver = tf.train.Saver()
+        self.save_path = "./save/save_model_" + name
 
     def _build_network(self, h_size=16, l_rate=0.01):
         with tf.variable_scope(self.net_name):
@@ -38,6 +40,12 @@ class DQN:
 
         self._loss = tf.reduce_mean(tf.square(self._Y - self._Qpred))
         self._train = tf.train.AdamOptimizer(learning_rate=l_rate).minimize(self._loss)
+
+    def save(self):
+        self.saver.save(self.session, self.save_path)
+
+    def restore(self):
+        self.saver.restore(self.session, self.save_path)
 
     def predict(self, state):
         x = np.reshape(state, [1, self.input_size])

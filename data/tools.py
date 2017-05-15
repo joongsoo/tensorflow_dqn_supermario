@@ -29,6 +29,7 @@ class Control(object):
         self.state_name = None
         self.state = None
         self.ml_done = False
+        self.max_posision_x = 200
 
     def setup_states(self, state_dict, start_state):
         self.state_dict = state_dict
@@ -60,7 +61,13 @@ class Control(object):
         next_state = array3d(self.screen)
         score = self.state.get_score()
         position_x = self.state.last_x_position
-        reward = (score + position_x - 200) / 100.0
+        if position_x > self.max_posision_x:
+            reward = position_x - self.max_posision_x
+            self.max_posision_x = position_x
+        else:
+            reward = 0
+        #reward = (score + position_x - 200) / 100.0
+        reward = reward + score
         return (next_state, reward, self.ml_done)
 
 
