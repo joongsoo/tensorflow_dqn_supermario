@@ -9,6 +9,7 @@ class DQN:
         self.input_size = input_size
         self.output_size = output_size
         self.net_name = name
+        self.keep_prob = 0.7
 
         self._build_network()
         self.saver = tf.train.Saver()
@@ -18,10 +19,13 @@ class DQN:
         with tf.variable_scope(self.net_name):
             self._X = tf.placeholder(tf.float32, [None, self.input_size], name="input_x")
             net = self._X
+            keep_prob = self.keep_prob
 
             net = tf.layers.dense(net, h_size, activation=tf.nn.relu)
+            net = tf.nn.dropout(net, keep_prob=keep_prob)
             net = tf.layers.dense(net, h_size, activation=tf.nn.relu)
-            net = tf.layers.dense(net, self.output_size)
+            net = tf.nn.dropout(net, keep_prob=keep_prob)
+            net = tf.layers.dense(net, self.output_size, activation=tf.nn.relu)
             self._Qpred = net
             '''
             self._X = tf.placeholder(tf.float32, [None, self.input_size], name="input_x")
@@ -49,7 +53,12 @@ class DQN:
 
     def predict(self, state):
         x = np.reshape(state, [1, self.input_size])
-        return self.session.run(self._Qpred, feed_dict={self._X: x})
+        predict = self.session.run(self._Qpred, feed_dict={self._X: x})
+        predict = np.reshape(predict, [self.output_size])
+        for idx in range(len(predict)):
+            if predict[idx] > 0:
+                predict[idx] = 1
+        return predict
 
     def update(self, x_stack, y_stack):
         return self.session.run([self._loss, self._train], feed_dict={

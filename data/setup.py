@@ -8,8 +8,10 @@ This module initializes the display and creates dictionaries of resources.
 import platform
 
 p_name = platform.system()
+print p_name
 
-if p_name == "darwin":
+# dev env
+if p_name == "Darwin":
     import os
     import pygame as pg
     from . import tools
@@ -27,6 +29,7 @@ if p_name == "darwin":
     MUSIC = tools.load_all_music(os.path.join("resources", "music"))
     GFX = tools.load_all_gfx(os.path.join("resources", "graphics"))
     SFX = tools.load_all_sfx(os.path.join("resources", "sound"))
+# aws
 else:
     import os
     # import pygame as pg
@@ -48,7 +51,7 @@ else:
     FONTS = tools.load_all_fonts(os.path.join("resources", "fonts"))
     MUSIC = tools.load_all_music(os.path.join("resources", "music"))
     GFX = tools.load_all_gfx(os.path.join("resources", "graphics"))
-    #SFX = tools.load_all_sfx(os.path.join("resources", "sound"))
+    SFX = tools.load_all_sfx(os.path.join("resources", "sound"))
 
 
 

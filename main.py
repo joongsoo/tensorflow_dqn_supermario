@@ -6,8 +6,13 @@ import dqn
 from collections import deque
 from data.env import Env
 import multiprocessing
-from multiprocessing import Manager
-import time
+import sys
+if 'threading' in sys.modules:
+    del sys.modules['threading']
+from gevent import monkey; monkey.patch_all()
+from gevent.pool import Pool
+
+from tensorflow.python.framework.errors_impl import NotFoundError
 
 
 class AIControl:
@@ -54,20 +59,28 @@ class AIControl:
 
         return op_holder
 
+    def save_state(self, main, target):
+        main.save()
+        target.save()
+
     def control_start(self):
+        pool = Pool(6)
         with tf.Session() as sess:
             mainDQN = dqn.DQN(sess, self.input_size, self.output_size, name="main")
             targetDQN = dqn.DQN(sess, self.input_size, self.output_size, name="target")
+
             tf.global_variables_initializer().run()
 
-            mainDQN.restore()
-            targetDQN.restore()
+            try:
+                mainDQN.restore()
+                targetDQN.restore()
+            except NotFoundError:
+                pass
 
-            copy_ops = self.get_copy_var_ops(dest_scope_name="target", src_scope_name="main")
-
+            copy_ops = self.get_copy_var_ops(dest_scope_name=targetDQN.net_name, src_scope_name=mainDQN.net_name)
             sess.run(copy_ops)
 
-            for episode in range(40, self.max_episodes):
+            for episode in range(50, self.max_episodes):
                 e = 1. / ((episode / 10) + 1)
                 done = False
                 step_count = 0
@@ -75,21 +88,11 @@ class AIControl:
                 max_x = 0
 
                 while not done:
-                    '''
-                    if step_count % 100 == 0:
-                        if np.random.rand(1) < e:
-                            action = self.env.get_random_actions()
-                        else:
-                            action = np.argmax(mainDQN.predict(state))
-
-                        next_state, reward, done = self.env.step(action[0])
-                    else:
-                        next_state, reward, done = self.env.step(None)
-                    '''
                     if np.random.rand(1) < e:
-                        action = self.env.get_random_actions()[0]
+                        action = self.env.get_random_actions()
                     else:
-                        action = np.argmax(mainDQN.predict(state))
+                        action = mainDQN.predict(state)
+                        print("action", action)
 
                     next_state, reward, done, max_x = self.env.step(action)
 
@@ -110,14 +113,12 @@ class AIControl:
                 print("Episode: {}  steps: {}  max_x: {}".format(episode, step_count, max_x))
 
                 if episode % 2 == 0:
-                    mainDQN.save()
-                    targetDQN.save()
+                    self.save_state(mainDQN, targetDQN)
 
                 print step_count
                 print("len buffer ", len(self.replay_buffer))
-                for _ in range(50):
-                    minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer)/100))
-                    loss, _ = self.replay_train(mainDQN, targetDQN, minibatch)
+                minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer) / 100))
+                loss = self.replay_train(mainDQN, targetDQN, minibatch)
 
                 print("Loss: ", loss)
                 sess.run(copy_ops)
