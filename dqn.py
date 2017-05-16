@@ -55,10 +55,13 @@ class DQN:
         x = np.reshape(state, [1, self.input_size])
         predict = self.session.run(self._Qpred, feed_dict={self._X: x})
         predict = np.reshape(predict, [self.output_size])
+        res = []
         for idx in range(len(predict)):
             if predict[idx] > 0:
-                predict[idx] = 1
-        return predict
+                res.append(int(1))
+            else:
+                res.append(int(0))
+        return [[res]]
 
     def update(self, x_stack, y_stack):
         return self.session.run([self._loss, self._train], feed_dict={
