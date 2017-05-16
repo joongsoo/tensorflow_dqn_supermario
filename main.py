@@ -18,7 +18,7 @@ class AIControl:
         self.output_size = self.env.action_n
 
         self.dis = 0.9
-        self.REPLAY_MEMORY = 50000
+        self.REPLAY_MEMORY = 5000
         self.max_episodes = 1500
         self.replay_buffer = deque()
         self.val = 0
@@ -67,11 +67,12 @@ class AIControl:
 
             sess.run(copy_ops)
 
-            for episode in range(10, self.max_episodes):
+            for episode in range(30, self.max_episodes):
                 e = 1. / ((episode / 10) + 1)
                 done = False
                 step_count = 0
                 state = self.env.reset()
+                max_x = 0
 
                 while not done:
                     '''
@@ -90,7 +91,7 @@ class AIControl:
                     else:
                         action = np.argmax(mainDQN.predict(state))
 
-                    next_state, reward, done = self.env.step(action)
+                    next_state, reward, done, max_x = self.env.step(action)
 
 
                     if done:
@@ -106,9 +107,9 @@ class AIControl:
                     # if step_count > 10000:
                     #    break
 
-                print("Episode: {}  steps: {}".format(episode, step_count))
+                print("Episode: {}  steps: {}  max_x: {}".format(episode, step_count, max_x))
 
-                if episode % 10 == 8:
+                if episode % 2 == 0:
                     mainDQN.save()
                     targetDQN.save()
 

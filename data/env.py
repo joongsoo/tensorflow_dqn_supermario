@@ -121,7 +121,7 @@ class Env:
         self.run_it.ml_done = False
         self.run_it.setup_states(self.state_dict, c.LEVEL1)
 
-        state, _, _ = self.run_it.get_step()
+        state, _, _, _ = self.run_it.get_step()
         state = scipy.misc.imresize(state, (100, 100))
         return state
 
@@ -143,7 +143,7 @@ class Env:
         self.run_it.event_loop(self.actions[action])
         self.run_it.update()
         pg.display.update()
-        next_state, reward, done = self.run_it.get_step()
+        next_state, reward, done, max_x = self.run_it.get_step()
         self.run_it.clock.tick(self.run_it.fps)
         fps = self.run_it.clock.get_fps()
         with_fps = "{} - {:.2f} FPS".format(self.run_it.caption, fps)
@@ -155,7 +155,7 @@ class Env:
 
         #print "main"
 
-        return (next_state, reward, done)
+        return (next_state, reward, done, max_x)
 
 
 '''
