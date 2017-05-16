@@ -18,7 +18,7 @@ class AIControl:
         self.output_size = self.env.action_n
 
         self.dis = 0.9
-        self.REPLAY_MEMORY = 5000
+        self.REPLAY_MEMORY = 9000
         self.max_episodes = 1500
         self.replay_buffer = deque()
         self.val = 0
@@ -67,7 +67,7 @@ class AIControl:
 
             sess.run(copy_ops)
 
-            for episode in range(30, self.max_episodes):
+            for episode in range(40, self.max_episodes):
                 e = 1. / ((episode / 10) + 1)
                 done = False
                 step_count = 0
