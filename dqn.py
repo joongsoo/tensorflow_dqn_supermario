@@ -50,10 +50,11 @@ class DQN:
             net = tf.layers.dense(net, h_size, activation=tf.nn.relu)
             net = tf.nn.dropout(net, keep_prob=keep_prob)
 
-            net = tf.layers.dense(net, self.output_size)
+            net = tf.layers.dense(net, self.output_size*2)
+            #net = tf.reshape(net, [self.output_size, 2])
             self._Qpred = net
 
-        self._Y = tf.placeholder(shape=[None, self.output_size], dtype=tf.float32)
+        self._Y = tf.placeholder(shape=[None, self.output_size*2], dtype=tf.float32)
 
         self._loss = tf.reduce_mean(tf.square(self._Y - self._Qpred))
         #self._loss = -tf.reduce_mean(self._Y * tf.log(self._Qpred) + (1 - self._Y) * tf.log(1 - self._Qpred))
@@ -68,6 +69,7 @@ class DQN:
     def predict(self, state):
         x = np.reshape(state, [1, self.input_size])
         predict = self.session.run(self._Qpred, feed_dict={self._X: x})
+        predict = np.reshape(predict, [self.output_size, 2])
         return predict
 
     def update(self, x_stack, y_stack):
