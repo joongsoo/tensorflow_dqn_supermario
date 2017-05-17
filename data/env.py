@@ -82,8 +82,10 @@ class Env:
         self.controller = None
 
         self.action_n = len(self.actions.keys())
-        #self.state_n = 600 * 800 * 3
-        self.state_n = 100 * 100 * 3
+        self.resize_x = 100
+        self.resize_y = 100
+        self.color_chanel = 3
+        self.state_n = self.resize_x * self.resize_y * self.color_chanel
 
         self.run_it = tools.Control(setup.ORIGINAL_CAPTION)
         self.state_dict = {
@@ -112,7 +114,7 @@ class Env:
         self.run_it.max_posision_x = 200
 
         state, _, _, _ = self.run_it.get_step()
-        state = scipy.misc.imresize(state, (100, 100))
+        state = scipy.misc.imresize(state, (self.resize_x, self.resize_y))
         return state
 
     def start(self):
@@ -154,7 +156,7 @@ class Env:
 
         #pg.display.update()
 
-        next_state = scipy.misc.imresize(next_state, (100, 100))
+        next_state = scipy.misc.imresize(next_state, (self.resize_x, self.resize_y))
 
         #print "main"
 

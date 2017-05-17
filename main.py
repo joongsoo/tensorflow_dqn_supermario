@@ -115,7 +115,7 @@ class AIControl:
                         action = []
                         for dqn in mainDQN:
                             pre = np.argmax(dqn.predict(state))
-                            print pre
+
                             action.append(pre)
 
                         print("action", action)
@@ -149,18 +149,9 @@ class AIControl:
                 sess.run(copy_ops)
 
 def main():
-    queues = {
-        'step': multiprocessing.JoinableQueue(),
-        'action': multiprocessing.Queue()
-    }
-    tasks = multiprocessing.JoinableQueue()
-    results = multiprocessing.Queue()
     env = Env()
     controller = AIControl(env)
-    #pr = multiprocessing.Process(target=controller.control_start)
-    #pr.start()
     controller.control_start()
-    #env.start()
 
 
 if __name__ == "__main__":

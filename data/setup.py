@@ -40,6 +40,7 @@ else:
 
     os.environ['SDL_VIDEO_CENTERED'] = '1'
     os.environ["SDL_VIDEODRIVER"] = "dummy"
+    os.environ["SDL_SOUNDDRIVER"] = "dummy"
     import pygame as pg
 
     pg.init()
