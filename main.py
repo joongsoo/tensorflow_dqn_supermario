@@ -5,13 +5,6 @@ import random
 
 from collections import deque
 from data.env import Env
-import multiprocessing
-import sys
-if 'threading' in sys.modules:
-    del sys.modules['threading']
-from gevent import monkey; monkey.patch_all()
-from gevent.pool import Pool
-
 from tensorflow.python.framework.errors_impl import NotFoundError
 
 
