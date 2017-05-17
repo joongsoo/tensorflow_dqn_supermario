@@ -14,12 +14,36 @@ class DQN:
         self._build_network()
         self.saver = tf.train.Saver()
         self.save_path = "./save/save_model_" + name
+        tf.logging.info(name + " - initialized")
 
-    def _build_network(self, h_size=16, l_rate=0.001):
+    def _build_network(self, h_size=150, l_rate=0.001):
         with tf.variable_scope(self.net_name):
-            self._X = tf.placeholder(tf.float32, [None, self.input_size], name="input_x")
-            net = self._X
+            #self._X = tf.placeholder(tf.float32, [None, self.input_size], name="input_x")
+            #net = self._X
             keep_prob = self.keep_prob
+
+
+            # input place holders
+            self._X = tf.placeholder(tf.float32, [None, self.input_size], name="input_x")
+            self.X_img = tf.reshape(self._X, [-1, 100, 100, 3])
+
+            # Conv
+            W1 = tf.Variable(tf.random_normal([2, 2, 3, 20], stddev=0.01))
+            net = tf.nn.conv2d(self.X_img, W1, strides=[1, 2, 2, 1], padding='SAME')
+            net = tf.nn.relu(net)
+            net = tf.nn.max_pool(net, ksize=[1, 2, 2, 1],
+                                strides=[1, 2, 2, 1], padding='SAME')
+            net = tf.nn.dropout(net, keep_prob=keep_prob)
+
+            # Conv
+            W2 = tf.Variable(tf.random_normal([2, 2, 20, 40], stddev=0.01))
+            net = tf.nn.conv2d(net, W2, strides=[1, 2, 2, 1], padding='SAME')
+            net = tf.nn.relu(net)
+            net = tf.nn.max_pool(net, ksize=[1, 2, 2, 1],
+                                 strides=[1, 2, 2, 1], padding='SAME')
+            net = tf.nn.dropout(net, keep_prob=keep_prob)
+
+            net = tf.reshape(net, [-1, 7*7*40])
 
             net = tf.layers.dense(net, h_size, activation=tf.nn.relu)
             net = tf.nn.dropout(net, keep_prob=keep_prob)
@@ -28,18 +52,6 @@ class DQN:
 
             net = tf.layers.dense(net, self.output_size)
             self._Qpred = net
-            '''
-            self._X = tf.placeholder(tf.float32, [None, self.input_size], name="input_x")
-
-            W1 = tf.get_variable("W1", shape=[self.input_size, h_size],
-                                 initializer=tf.contrib.layers.xavier_initializer())
-            layer1 = tf.nn.relu(tf.matmul(self._X, W1))
-
-            W2 = tf.get_variable("W2", shape=[h_size, self.output_size],
-                                 initializer=tf.contrib.layers.xavier_initializer())
-
-            self._Qpred = tf.matmul(layer1, W2)
-            '''
 
         self._Y = tf.placeholder(shape=[None, self.output_size], dtype=tf.float32)
 
