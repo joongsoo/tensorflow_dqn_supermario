@@ -2,7 +2,7 @@
 import tensorflow as tf
 import numpy as np
 import random
-import dqn
+
 from collections import deque
 from data.env import Env
 import multiprocessing
@@ -20,9 +20,10 @@ class AIControl:
         self.env = env
 
         self.input_size = self.env.state_n
-        self.output_size = self.env.action_n
+        self.output_size = 2
 
-        self.dis = 0.9
+        #self.dis = 0.9
+        self.dis = 1.5
         self.REPLAY_MEMORY = 9000
         self.max_episodes = 1500
         self.replay_buffer = deque()
@@ -30,56 +31,74 @@ class AIControl:
         self.save_path = "./save/save_model"
 
     def replay_train(self, mainDQN, targetDQN, train_batch):
-        x_stack = np.empty(0).reshape(0, self.input_size)
-        y_stack = np.empty(0).reshape(0, self.output_size)
-        for state, action, reward, next_state, done in train_batch:
-            Q = mainDQN.predict(state)
-            print action
-            if done:
-                Q[0, action] = reward
-            else:
-                # Q[0, action] 하면 action은 배열이라 값 저장이 안됌
-                #
-                Q[0, action] = reward + self.dis * np.max(targetDQN.predict(next_state))
+        results = []
+        for idx in range(len(zip(mainDQN, targetDQN))):
+            x_stack = np.empty(0).reshape(0, self.input_size)
+            y_stack = np.empty(0).reshape(0, self.output_size)
+            for state, action, reward, next_state, done in train_batch:
+                Q = mainDQN[idx].predict(state)
+                # Q = [[]] 2차원
+                # Q의 값은 0과 1 사이여야한다
+                # linear regration
+                if done:
+                    Q[0, action] = reward
+                else:
+                    # dis를 늘리면 지금 한 행동으로 인해 미래에 얻는 보상이 현재 얻을 보상보다 값지다
+                    Q[0, action] = reward + self.dis * np.max(targetDQN[idx].predict(next_state))
+
+                state = np.reshape(state, [self.input_size])
+                y_stack = np.vstack([y_stack, Q])
+                x_stack = np.vstack([x_stack, state])
+            results.append(mainDQN[idx].update(x_stack, y_stack))
+
+        return results
 
 
-            state = np.reshape(state, [30000])
-            y_stack = np.vstack([y_stack, Q])
-            x_stack = np.vstack([x_stack, state])
+    def get_copy_var_ops(self, dest_dqn_arr, src_dqn_arr):
+        op_holders = []
+        for dest, src in zip(dest_dqn_arr, src_dqn_arr):
+            op_holder = []
 
-        return mainDQN.update(x_stack, y_stack)
+            src_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope=src.net_name)
+            dest_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope=dest.net_name)
 
+            for src_var, dest_var in zip(src_vars, dest_vars):
+                op_holder.append(dest_var.assign(src_var.value()))
+            op_holders.append(op_holder)
 
-    def get_copy_var_ops(self, dest_scope_name="target", src_scope_name="main"):
-        op_holder = []
-
-        src_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope=src_scope_name)
-        dest_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope=dest_scope_name)
-
-        for src_var, dest_var in zip(src_vars, dest_vars):
-            op_holder.append(dest_var.assign(src_var.value()))
-
-        return op_holder
-
-    def save_state(self, main, target):
-        main.save()
-        target.save()
+        return op_holders
 
     def control_start(self):
-        pool = Pool(6)
+        import dqn
         with tf.Session() as sess:
-            mainDQN = dqn.DQN(sess, self.input_size, self.output_size, name="main")
-            targetDQN = dqn.DQN(sess, self.input_size, self.output_size, name="target")
+            mainDQN = [
+                dqn.DQN(sess, self.input_size, self.output_size, name="main0"),
+                dqn.DQN(sess, self.input_size, self.output_size, name="main1"),
+                dqn.DQN(sess, self.input_size, self.output_size, name="main2"),
+                dqn.DQN(sess, self.input_size, self.output_size, name="main3"),
+                dqn.DQN(sess, self.input_size, self.output_size, name="main4"),
+                dqn.DQN(sess, self.input_size, self.output_size, name="main5")
+            ]
+
+            targetDQN = [
+                dqn.DQN(sess, self.input_size, self.output_size, name="target1"),
+                dqn.DQN(sess, self.input_size, self.output_size, name="target2"),
+                dqn.DQN(sess, self.input_size, self.output_size, name="target3"),
+                dqn.DQN(sess, self.input_size, self.output_size, name="target4"),
+                dqn.DQN(sess, self.input_size, self.output_size, name="target5"),
+                dqn.DQN(sess, self.input_size, self.output_size, name="target6")
+            ]
 
             tf.global_variables_initializer().run()
 
             try:
-                mainDQN.restore()
-                targetDQN.restore()
+                for main, target in zip(mainDQN, targetDQN):
+                    main.restore()
+                    target.restore()
             except NotFoundError:
                 pass
 
-            copy_ops = self.get_copy_var_ops(dest_scope_name=targetDQN.net_name, src_scope_name=mainDQN.net_name)
+            copy_ops = self.get_copy_var_ops(targetDQN, mainDQN)
             sess.run(copy_ops)
 
             for episode in range(1000, self.max_episodes):
@@ -91,44 +110,40 @@ class AIControl:
 
                 while not done:
                     if np.random.rand(1) < e:
-                        predict = self.env.get_random_actions()
+                        action = self.env.get_random_actions()
                     else:
-                        predict = mainDQN.predict(state)
+                        action = []
+                        for dqn in mainDQN:
+                            pre = np.argmax(dqn.predict(state))
+                            print pre
+                            action.append(pre)
 
-                    print("predict", predict)
-
-                    predict = np.reshape(predict, [self.output_size])
-                    action = []
-                    for idx in range(len(predict)):
-                        if predict[idx] > 0:
-                            action.append(int(1))
-                        else:
-                            action.append(int(0))
+                        print("action", action)
 
                     next_state, reward, done, max_x = self.env.step(action)
-
 
                     if done:
                         reward = -10000
 
-                    self.replay_buffer.append((state, predict, reward, next_state, done))
+                    self.replay_buffer.append((state, action, reward, next_state, done))
                     if len(self.replay_buffer) > self.REPLAY_MEMORY:
                         self.replay_buffer.popleft()
 
                     state = next_state
                     step_count += 1
 
-                    # if step_count > 10000:
-                    #    break
 
                 print("Episode: {}  steps: {}  max_x: {}".format(episode, step_count, max_x))
 
-                self.save_state(mainDQN, targetDQN)
+                if step_count % 10 == 0:
+                    for main, target in zip(mainDQN, targetDQN):
+                        main.save()
+                        target.save()
 
                 print step_count
                 print("len buffer ", len(self.replay_buffer))
-                minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer) / 100))
-                loss = self.replay_train(mainDQN, targetDQN, minibatch)
+                #minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer) / 100))
+                loss = self.replay_train(mainDQN, targetDQN, self.replay_buffer)
 
                 print("Loss: ", loss)
                 sess.run(copy_ops)
