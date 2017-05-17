@@ -18,7 +18,7 @@ class AIControl:
         #self.dis = 0.9
         self.dis = 1.5
         self.REPLAY_MEMORY = 9000
-        self.max_episodes = 1500
+        self.max_episodes = 15000
         self.replay_buffer = deque()
         self.val = 0
         self.save_path = "./save/save_model"
@@ -94,7 +94,7 @@ class AIControl:
             copy_ops = self.get_copy_var_ops(targetDQN, mainDQN)
             sess.run(copy_ops)
 
-            for episode in range(1000, self.max_episodes):
+            for episode in range(self.max_episodes):
                 e = 1. / ((episode / 10) + 1)
                 done = False
                 step_count = 0
