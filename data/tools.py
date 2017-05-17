@@ -68,7 +68,9 @@ class Control(object):
             reward = 0
         #reward = (score + position_x - 200) / 100.0
         reward = reward + score
-        return (next_state, reward, self.ml_done, self.max_posision_x)
+        if self.keys[276] == 1:
+            reward -= 1
+        return (next_state, reward, self.ml_done, self.state.clear, self.max_posision_x)
 
 
     def event_loop(self, key):

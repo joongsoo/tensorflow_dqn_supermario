@@ -22,37 +22,28 @@ class AIControl:
     def control_start(self):
         import dqn
         with tf.Session() as sess:
-            mainDQN = [
-                dqn.DQN(sess, self.input_size, self.output_size, name="main0"),
-                dqn.DQN(sess, self.input_size, self.output_size, name="main1"),
-                dqn.DQN(sess, self.input_size, self.output_size, name="main2"),
-                dqn.DQN(sess, self.input_size, self.output_size, name="main3"),
-                dqn.DQN(sess, self.input_size, self.output_size, name="main4"),
-                dqn.DQN(sess, self.input_size, self.output_size, name="main5")
-            ]
+            mainDQN = dqn.DQN(sess, self.input_size, self.output_size, name="main")
 
 
             tf.global_variables_initializer().run()
 
             try:
-                for main in mainDQN:
-                    main.restore()
+                mainDQN.restore()
             except NotFoundError:
                 pass
 
 
-            for episode in range(1000, self.max_episodes):
+            for episode in range(self.max_episodes):
                 done = False
                 step_count = 0
                 state = self.env.reset()
                 max_x = 0
 
                 while not done:
+                    predict = mainDQN.predict(state)
                     action = []
-                    for dqn in mainDQN:
-                        pre = np.argmax(dqn.predict(state))
-
-                        action.append(pre)
+                    for p in predict:
+                        action.append(np.argmax(p))
 
                     next_state, reward, done, max_x = self.env.step(action)
 

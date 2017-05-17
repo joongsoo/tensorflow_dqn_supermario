@@ -43,6 +43,7 @@ class Level1(tools._State):
         self.flag_timer = 0
         self.flag_score = None
         self.flag_score_total = 0
+        self.clear = False
 
         self.moving_score_list = []
         self.overhead_info_display = info.OverheadInfo(self.game_info, c.LEVEL)
@@ -1366,7 +1367,8 @@ class Level1(tools._State):
             self.persist[c.LIVES] -= 1
 
         if self.persist[c.LIVES] == 0:
-            self.next = c.GAME_OVER
+            self.next = c.LEVEL1
+            self.clear = True
             self.game_info[c.CAMERA_START_X] = 0
         elif self.mario.dead == False:
             self.next = c.MAIN_MENU

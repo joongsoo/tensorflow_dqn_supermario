@@ -72,14 +72,15 @@ class AIControl:
             copy_ops = self.get_copy_var_ops()
             sess.run(copy_ops)
 
-            for episode in range(self.max_episodes):
+            for episode in range(80, self.max_episodes):
                 e = 1. / ((episode / 10) + 1)
                 done = False
+                clear = False
                 step_count = 0
                 state = self.env.reset()
                 max_x = 0
 
-                while not done:
+                while not done and not clear:
                     if np.random.rand(1) < e:
                         action = self.env.get_random_actions()
                     else:
@@ -88,7 +89,11 @@ class AIControl:
                         for p in predict:
                             action.append(np.argmax(p))
 
-                    next_state, reward, done, max_x = self.env.step(action)
+                    next_state, reward, done, clear, max_x = self.env.step(action)
+
+
+                    if clear:
+                        reward += 10000
 
                     if done:
                         reward = -10000

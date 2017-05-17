@@ -74,9 +74,5 @@ actions = {
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
         }
 
-print actions[0].index(1)
-print actions[1].index(1)
-print actions[2].index(1)
-print actions[3].index(1)
-print actions[4].index(1)
-print actions[5].index(1)
+a = 3.44055783e-23
+print 0< a
