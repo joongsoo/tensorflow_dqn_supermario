@@ -28,13 +28,13 @@ class AIControl:
         y_stack = np.empty(0).reshape(0, self.output_size*2)
 
 
-        for state, predict, action, reward, next_state, done in train_batch:
+        for state, action, reward, next_state, done in train_batch:
             Q = mainDQN.predict(state)
 
             if not done:
                 reward = reward + self.dis * np.max(targetDQN.predict(next_state))
 
-            for idx in range(len(zip(predict, action))):
+            for idx in range(len(action)):
                 Q[idx, action[idx]] = reward
 
             state = np.reshape(state, [self.input_size])
@@ -72,7 +72,7 @@ class AIControl:
             copy_ops = self.get_copy_var_ops()
             sess.run(copy_ops)
 
-            for episode in range(1000, self.max_episodes):
+            for episode in range(self.max_episodes):
                 e = 1. / ((episode / 10) + 1)
                 done = False
                 step_count = 0
@@ -93,7 +93,7 @@ class AIControl:
                     if done:
                         reward = -10000
 
-                    self.replay_buffer.append((state, predict, action, reward, next_state, done))
+                    self.replay_buffer.append((state, action, reward, next_state, done))
                     if len(self.replay_buffer) > self.REPLAY_MEMORY:
                         self.replay_buffer.popleft()
 
@@ -103,7 +103,7 @@ class AIControl:
 
                 print("Episode: {}  steps: {}  max_x: {}".format(episode, step_count, max_x))
 
-                if step_count % 10 == 0:
+                if episode % 10 == 9:
                     mainDQN.save()
                     targetDQN.save()
 
