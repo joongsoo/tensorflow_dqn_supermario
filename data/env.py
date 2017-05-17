@@ -97,7 +97,7 @@ class Env:
         self.run_it.setup_states(self.state_dict, c.LEVEL1)
 
     def get_random_actions(self):
-        return np.random.randint(2, size=len(self.actions.keys()))
+        return [np.random.randint(2, size=len(self.actions.keys()))]
 
     def reset(self):
         self.state_dict = {

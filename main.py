@@ -38,6 +38,8 @@ class AIControl:
             if done:
                 Q[0, action] = reward
             else:
+                # Q[0, action] 하면 action은 배열이라 값 저장이 안됌
+                #
                 Q[0, action] = reward + self.dis * np.max(targetDQN.predict(next_state))
 
 
@@ -80,7 +82,7 @@ class AIControl:
             copy_ops = self.get_copy_var_ops(dest_scope_name=targetDQN.net_name, src_scope_name=mainDQN.net_name)
             sess.run(copy_ops)
 
-            for episode in range(self.max_episodes):
+            for episode in range(1000, self.max_episodes):
                 e = 1. / ((episode / 10) + 1)
                 done = False
                 step_count = 0
@@ -89,10 +91,19 @@ class AIControl:
 
                 while not done:
                     if np.random.rand(1) < e:
-                        action = self.env.get_random_actions()
+                        predict = self.env.get_random_actions()
                     else:
-                        action = mainDQN.predict(state)[0][0]
-                        print("action", action)
+                        predict = mainDQN.predict(state)
+
+                    print("predict", predict)
+
+                    predict = np.reshape(predict, [self.output_size])
+                    action = []
+                    for idx in range(len(predict)):
+                        if predict[idx] > 0:
+                            action.append(int(1))
+                        else:
+                            action.append(int(0))
 
                     next_state, reward, done, max_x = self.env.step(action)
 
@@ -100,7 +111,7 @@ class AIControl:
                     if done:
                         reward = -10000
 
-                    self.replay_buffer.append((state, action, reward, next_state, done))
+                    self.replay_buffer.append((state, predict, reward, next_state, done))
                     if len(self.replay_buffer) > self.REPLAY_MEMORY:
                         self.replay_buffer.popleft()
 

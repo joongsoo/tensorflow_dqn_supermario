@@ -25,7 +25,7 @@ class DQN:
             net = tf.nn.dropout(net, keep_prob=keep_prob)
             net = tf.layers.dense(net, h_size, activation=tf.nn.relu)
             net = tf.nn.dropout(net, keep_prob=keep_prob)
-            net = tf.layers.dense(net, self.output_size, activation=tf.nn.relu)
+            net = tf.layers.dense(net, self.output_size, activation=tf.nn.sigmoid)
             self._Qpred = net
             '''
             self._X = tf.placeholder(tf.float32, [None, self.input_size], name="input_x")
@@ -42,7 +42,8 @@ class DQN:
 
         self._Y = tf.placeholder(shape=[None, self.output_size], dtype=tf.float32)
 
-        self._loss = tf.reduce_mean(tf.square(self._Y - self._Qpred))
+        #self._loss = tf.reduce_mean(tf.square(self._Y - self._Qpred))
+        self._loss = -tf.reduce_mean(self._Y * tf.log(self._Qpred) + (1 - self._Y) * tf.log(1 - self._Qpred))
         self._train = tf.train.AdamOptimizer(learning_rate=l_rate).minimize(self._loss)
 
     def save(self):
@@ -54,14 +55,7 @@ class DQN:
     def predict(self, state):
         x = np.reshape(state, [1, self.input_size])
         predict = self.session.run(self._Qpred, feed_dict={self._X: x})
-        predict = np.reshape(predict, [self.output_size])
-        res = []
-        for idx in range(len(predict)):
-            if predict[idx] > 0:
-                res.append(int(1))
-            else:
-                res.append(int(0))
-        return [[res]]
+        return predict
 
     def update(self, x_stack, y_stack):
         return self.session.run([self._loss, self._train], feed_dict={
