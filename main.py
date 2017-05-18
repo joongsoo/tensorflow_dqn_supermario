@@ -65,7 +65,6 @@ class AIControl:
 
             try:
                 mainDQN.restore()
-                targetDQN.restore()
             except NotFoundError:
                 pass
 
@@ -110,7 +109,6 @@ class AIControl:
 
                 if episode % 50 == 0:
                     mainDQN.save(global_step=episode)
-                    targetDQN.save(global_step=episode)
 
                 #minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer) / 100))
                 loss = self.replay_train(mainDQN, targetDQN, self.replay_buffer)
