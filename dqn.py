@@ -60,8 +60,8 @@ class DQN:
         #self._loss = -tf.reduce_mean(self._Y * tf.log(self._Qpred) + (1 - self._Y) * tf.log(1 - self._Qpred))
         self._train = tf.train.AdamOptimizer(learning_rate=l_rate).minimize(self._loss)
 
-    def save(self):
-        self.saver.save(self.session, self.save_path)
+    def save(self, global_step=0):
+        self.saver.save(self.session, self.save_path, global_step=global_step)
 
     def restore(self):
         self.saver.restore(self.session, self.save_path)
