@@ -45,7 +45,7 @@ class AIControl:
                     for p in predict:
                         action.append(np.argmax(p))
 
-                    next_state, reward, done, max_x = self.env.step(action)
+                        next_state, reward, done, clear, max_x = self.env.step(action)
 
                     state = next_state
 
