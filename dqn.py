@@ -16,7 +16,7 @@ class DQN:
         self.save_path = "./save/save_model_" + name + "ckpt"
         tf.logging.info(name + " - initialized")
 
-    def _build_network(self, h_size=150, l_rate=0.001):
+    def _build_network(self, h_size=2000, l_rate=0.0001):
         with tf.variable_scope(self.net_name):
             #self._X = tf.placeholder(tf.float32, [None, self.input_size], name="input_x")
             #net = self._X

@@ -112,13 +112,14 @@ class AIControl:
                     mainDQN.save()
                     targetDQN.save()
 
-                #minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer) / 100))
-                loss = self.replay_train(mainDQN, targetDQN, self.replay_buffer)
+                if max_x > 300:
+                    #minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer) / 100))
+                    loss = self.replay_train(mainDQN, targetDQN, self.replay_buffer)
+                    print("Loss: ", loss)
+                    sess.run(copy_ops)
 
                 self.replay_buffer = deque()
 
-                print("Loss: ", loss)
-                sess.run(copy_ops)
 
 def main():
     env = Env()
