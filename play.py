@@ -12,17 +12,15 @@ class AIControl:
         self.input_size = self.env.state_n
         self.output_size = self.env.action_n
 
-        self.dis = 0.9
-        self.REPLAY_MEMORY = 9000
         self.max_episodes = 1500
-        self.replay_buffer = deque()
         self.val = 0
         self.save_path = "./save/save_model"
 
     def control_start(self):
         import dqn
         with tf.Session() as sess:
-            mainDQN = dqn.DQN(sess, self.input_size, self.output_size, name="main")
+            mainDQN = dqn.DQN(sess, self.input_size, self.output_size,
+                              name="main", keep_prob=1.0)
 
 
             tf.global_variables_initializer().run()
@@ -45,7 +43,7 @@ class AIControl:
                     for p in predict:
                         action.append(np.argmax(p))
 
-                        next_state, reward, done, clear, max_x = self.env.step(action)
+                    next_state, reward, done, clear, max_x = self.env.step(action)
 
                     state = next_state
 

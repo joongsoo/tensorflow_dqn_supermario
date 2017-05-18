@@ -30,7 +30,7 @@ class Control(object):
         self.state = None
         self.ml_done = False
         self.max_posision_x = 200
-        self.correct_x = 20
+        self.correct_x = 5
 
     def setup_states(self, state_dict, start_state):
         self.state_dict = state_dict
@@ -64,10 +64,10 @@ class Control(object):
         position_x = self.state.last_x_position
         if position_x > self.max_posision_x:
             if position_x - self.max_posision_x > self.correct_x:
-                reward = -10
+                reward = -30
             else:
                 reward = position_x - self.max_posision_x
-                self.max_posision_x = position_x
+            self.max_posision_x = position_x
         else:
             reward = 0
         #reward = (score + position_x - 200) / 100.0
@@ -75,6 +75,7 @@ class Control(object):
         if self.keys[276] == 1:
             reward -= 1
         return (next_state, reward, self.ml_done, self.state.clear, self.max_posision_x)
+
 
 
     def event_loop(self, key):

@@ -72,7 +72,7 @@ class AIControl:
             copy_ops = self.get_copy_var_ops()
             sess.run(copy_ops)
 
-            for episode in range(80, self.max_episodes):
+            for episode in range(self.max_episodes):
                 e = 1. / ((episode / 10) + 1)
                 done = False
                 clear = False
@@ -109,8 +109,8 @@ class AIControl:
                 print("Episode: {}  steps: {}  max_x: {}".format(episode, step_count, max_x))
 
                 if episode % 50 == 0:
-                    mainDQN.save(global_step=episode)
-                    targetDQN.save(global_step=episode)
+                    mainDQN.save()
+                    targetDQN.save()
 
                 #minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer) / 100))
                 loss = self.replay_train(mainDQN, targetDQN, self.replay_buffer)

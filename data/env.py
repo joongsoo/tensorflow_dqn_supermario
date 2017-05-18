@@ -84,7 +84,7 @@ class Env:
         self.action_n = len(self.actions.keys())
         self.resize_x = 100
         self.resize_y = 100
-        self.color_chanel = 3
+        self.color_chanel = 1
         self.state_n = self.resize_x * self.resize_y * self.color_chanel
 
         self.run_it = tools.Control(setup.ORIGINAL_CAPTION)
@@ -101,6 +101,9 @@ class Env:
     def get_random_actions(self):
         return np.random.randint(2, size=len(self.actions.keys()))
 
+    def rgb2gray(self, image):
+        return np.dot(image[..., :3], [0.299, 0.587, 0.114])
+
     def reset(self):
         self.state_dict = {
             c.MAIN_MENU: main_menu.Menu(),
@@ -114,7 +117,9 @@ class Env:
         self.run_it.max_posision_x = 200
 
         state, _, _,_, _ = self.run_it.get_step()
-        state = scipy.misc.imresize(state, (self.resize_x, self.resize_y))
+        state = scipy.misc.imresize(self.rgb2gray(state), (self.resize_x, self.resize_y))
+        #state = scipy.misc.imresize(self.rgb2gray(next_state) / 255., (self.resize_x, self.resize_y))
+
         return state
 
     def start(self):
@@ -154,20 +159,12 @@ class Env:
         with_fps = "{} - {:.2f} FPS".format(self.run_it.caption, fps)
         pg.display.set_caption(with_fps)
 
-        #pg.display.update()
 
-        next_state = scipy.misc.imresize(next_state, (self.resize_x, self.resize_y))
+        next_state = scipy.misc.imresize(self.rgb2gray(next_state) / 255., (self.resize_x, self.resize_y))
 
         #print "main"
 
         return (next_state, reward, gameover, clear, max_x)
-
-    def step_play(self, action):
-        self.run_it.event_loop(self.actions[action])
-        self.run_it.update()
-        pg.display.update()
-
-        return self.run_it.max_posision_x
 
 
 '''

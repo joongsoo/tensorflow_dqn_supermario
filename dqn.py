@@ -4,16 +4,16 @@ import numpy as np
 
 
 class DQN:
-    def __init__(self, session, input_size, output_size, name="main"):
+    def __init__(self, session, input_size, output_size, name="main", keep_prob=0.7):
         self.session = session
         self.input_size = input_size
         self.output_size = output_size
         self.net_name = name
-        self.keep_prob = 0.7
+        self.keep_prob = keep_prob
 
         self._build_network()
         self.saver = tf.train.Saver()
-        self.save_path = "./save/save_model_" + name
+        self.save_path = "./save/save_model_" + name + "ckpt"
         tf.logging.info(name + " - initialized")
 
     def _build_network(self, h_size=150, l_rate=0.001):
@@ -25,10 +25,10 @@ class DQN:
 
             # input place holders
             self._X = tf.placeholder(tf.float32, [None, self.input_size], name="input_x")
-            self.X_img = tf.reshape(self._X, [-1, 100, 100, 3])
+            self.X_img = tf.reshape(self._X, [-1, 100, 100, 1])
 
             # Conv
-            W1 = tf.Variable(tf.random_normal([2, 2, 3, 20], stddev=0.01))
+            W1 = tf.Variable(tf.random_normal([2, 2, 1, 20], stddev=0.01))
             net = tf.nn.conv2d(self.X_img, W1, strides=[1, 2, 2, 1], padding='SAME')
             net = tf.nn.relu(net)
             net = tf.nn.max_pool(net, ksize=[1, 2, 2, 1],
@@ -61,9 +61,9 @@ class DQN:
         self._train = tf.train.AdamOptimizer(learning_rate=l_rate).minimize(self._loss)
 
     def save(self, global_step=0):
-        self.saver.save(self.session, self.save_path, global_step=global_step)
+        self.saver.save(self.session, self.save_path)
 
-    def restore(self):
+    def restore(self, global_step=0):
         self.saver.restore(self.session, self.save_path)
 
     def predict(self, state):
