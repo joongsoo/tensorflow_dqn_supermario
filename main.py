@@ -108,9 +108,9 @@ class AIControl:
 
                 print("Episode: {}  steps: {}  max_x: {}".format(episode, step_count, max_x))
 
-                if episode % 10 == 9:
-                    mainDQN.save()
-                    targetDQN.save()
+                if episode % 50 == 0:
+                    mainDQN.save(global_step=episode)
+                    targetDQN.save(global_step=episode)
 
                 #minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer) / 100))
                 loss = self.replay_train(mainDQN, targetDQN, self.replay_buffer)
