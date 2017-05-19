@@ -8,7 +8,6 @@ This module initializes the display and creates dictionaries of resources.
 import platform
 
 p_name = platform.system()
-print p_name
 
 # dev env
 if p_name == "Darwin":

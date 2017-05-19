@@ -118,11 +118,12 @@ class AIControl:
 
                     next_state, reward, done, clear, max_x = self.env.step(action)
 
-                    if clear:
-                        reward += 10000
-
                     if done:
                         reward = -10000
+                    if clear:
+                        reward += 10000
+                        done = True
+
 
                     self.replay_buffer.append((state, action, reward, next_state, done))
                     if len(self.replay_buffer) > self.REPLAY_MEMORY:
@@ -134,7 +135,7 @@ class AIControl:
 
                 print("Episode: {}  steps: {}  max_x: {}".format(episode, step_count, max_x))
 
-                if episode % 100 == 0:
+                if episode % 50 == 0:
                     mainDQN.save(episode=episode)
                     targetDQN.save(episode=episode)
 

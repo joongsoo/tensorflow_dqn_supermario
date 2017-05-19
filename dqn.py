@@ -4,14 +4,18 @@ import numpy as np
 
 
 class DQN:
-    def __init__(self, session, input_size, output_size, name="main", keep_prob=0.7):
+    def __init__(self, session, input_size, output_size, name="main", is_training=True):
         self.session = session
         self.input_size = input_size
 
         self.output_size = 10
 
         self.net_name = name
-        self.keep_prob = keep_prob
+
+        if is_training:
+            self.keep_prob = 0.7
+        else:
+            self.keep_prob = 1.0
 
         self._build_network()
         self.saver = tf.train.Saver()
@@ -61,7 +65,8 @@ class DQN:
         self.saver.save(self.session, self.save_path, global_step=episode)
 
     def restore(self, episode=0):
-        self.saver.restore(self.session, self.save_path)
+        load_path = self.save_path + "-" + str(episode)
+        self.saver.restore(self.session, load_path)
 
     def predict(self, state):
         x = np.reshape(state, [1, self.input_size])

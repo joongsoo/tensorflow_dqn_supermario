@@ -3,6 +3,10 @@ __author__ = 'justinarmstrong'
 import os
 import pygame as pg
 from pygame.surfarray import pixels3d
+from . import constants as c
+import platform
+
+p_name = platform.system()
 
 keybinding = {
     'action':pg.K_s,
@@ -59,7 +63,12 @@ class Control(object):
         self.state.previous = previous
 
     def get_step(self):
-        next_state = pixels3d(self.screen)
+        if p_name == "Darwin":
+            next_state = pixels3d(self.screen)
+        else:
+            screen = pg.Surface(c.SCREEN_SIZE, pg.SRCALPHA, 32)
+            pg.draw.rect(screen, (0, 0, 0), (0, 0, c.SCREEN_WIDTH, c.SCREEN_HEIGHT), 0)
+
         score = self.state.get_score()
         position_x = self.state.last_x_position
         if position_x > self.max_posision_x:
