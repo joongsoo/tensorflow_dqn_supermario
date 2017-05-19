@@ -13,10 +13,10 @@ class AIControl:
         self.env = env
 
         self.input_size = self.env.state_n
-        self.output_size = self.env.action_n
+        self.output_size = 10
 
         #self.dis = 0.9
-        self.dis = 1.3
+        self.dis = 0.9
         self.REPLAY_MEMORY = 10000
         self.max_episodes = 15000
         self.replay_buffer = deque()
@@ -25,23 +25,31 @@ class AIControl:
 
     def replay_train(self, mainDQN, targetDQN, train_batch):
         x_stack = np.empty(0).reshape(0, self.input_size)
-        y_stack = np.empty(0).reshape(0, self.output_size*2)
-
+        y_stack = np.empty(0).reshape(0, self.output_size)
 
         for state, action, reward, next_state, done in train_batch:
             Q = mainDQN.predict(state)
 
-            if not done:
-                reward = reward + self.dis * np.max(targetDQN.predict(next_state))
-
-            for idx in range(len(action)):
-                Q[idx, action[idx]] = reward
+            if done:
+                Q[0, action] = reward
+            else:
+                if action[0] == 1:
+                    Q[0, 0] = reward + self.dis * np.max(targetDQN.predict(next_state))
+                if action[1] == 1:
+                    Q[0, 1] = reward + self.dis * np.max(targetDQN.predict(next_state))
+                if action[2] == 1:
+                    Q[0, 3] = reward + self.dis * np.max(targetDQN.predict(next_state))
+                if action[3] == 1:
+                    Q[0, 4] = reward + self.dis * np.max(targetDQN.predict(next_state))
+                if action[4] == 1:
+                    Q[0, 6] = reward + self.dis * np.max(targetDQN.predict(next_state))
+                if action[5] == 1:
+                    Q[0, 8] = reward + self.dis * np.max(targetDQN.predict(next_state))
 
             state = np.reshape(state, [self.input_size])
-            Q = np.reshape(Q, [self.output_size*2])
-
             y_stack = np.vstack([y_stack, Q])
             x_stack = np.vstack([x_stack, state])
+
         return mainDQN.update(x_stack, y_stack)
 
     def get_copy_var_ops(self, dest_scope_name="target", src_scope_name="main"):
@@ -54,6 +62,28 @@ class AIControl:
             op_holder.append(dest_var.assign(src_var.value()))
 
         return op_holder
+
+    def generate_action(self, predict):
+        key_up_down = np.argmax(predict[0][0:3])
+        key_left_right = np.argmax(predict[0][3:6])
+        key_a = np.argmax(predict[0][6:8])
+        key_b = np.argmax(predict[0][8:10])
+
+        action = [0, 0, 0, 0, 0, 0]
+        if key_up_down == 0:
+            action[0] = 1
+        elif key_up_down == 1:
+            action[1] = 1
+        if key_left_right == 0:
+            action[2] = 1
+        elif key_left_right == 1:
+            action[3] = 1
+        if key_a == 0:
+            action[4] = 1
+        if key_b == 0:
+            action[5] = 1
+
+        return action
 
     def control_start(self):
         import dqn
@@ -84,13 +114,9 @@ class AIControl:
                     if np.random.rand(1) < e:
                         action = self.env.get_random_actions()
                     else:
-                        predict = mainDQN.predict(state)
-                        action = []
-                        for p in predict:
-                            action.append(np.argmax(p))
+                        action = self.generate_action(mainDQN.predict(state))
 
                     next_state, reward, done, clear, max_x = self.env.step(action)
-
 
                     if clear:
                         reward += 10000
@@ -112,11 +138,12 @@ class AIControl:
                     mainDQN.save()
                     targetDQN.save()
 
-                if max_x > 300:
-                    #minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer) / 100))
-                    loss = self.replay_train(mainDQN, targetDQN, self.replay_buffer)
-                    print("Loss: ", loss)
-                    sess.run(copy_ops)
+                #if max_x > 300:
+                for idx in range(50):
+                    minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer) / 10))
+                    loss = self.replay_train(mainDQN, targetDQN, minibatch)
+                print("Loss: ", loss)
+                sess.run(copy_ops)
 
                 self.replay_buffer = deque()
 

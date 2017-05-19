@@ -82,8 +82,8 @@ class Env:
         self.controller = None
 
         self.action_n = len(self.actions.keys())
-        self.resize_x = 100
-        self.resize_y = 100
+        self.resize_x = 150
+        self.resize_y = 150
         self.color_chanel = 1
         self.state_n = self.resize_x * self.resize_y * self.color_chanel
 

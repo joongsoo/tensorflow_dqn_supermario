@@ -64,7 +64,7 @@ class Control(object):
         position_x = self.state.last_x_position
         if position_x > self.max_posision_x:
             if position_x - self.max_posision_x > self.correct_x:
-                reward = -30
+                reward = -1
             else:
                 reward = position_x - self.max_posision_x
             self.max_posision_x = position_x
@@ -73,7 +73,7 @@ class Control(object):
         #reward = (score + position_x - 200) / 100.0
         reward = reward + score
         if self.keys[276] == 1:
-            reward -= 1
+            reward -= 10
         return (next_state, reward, self.ml_done, self.state.clear, self.max_posision_x)
 
 
@@ -106,10 +106,6 @@ class Control(object):
                 self.keys = pg.key.get_pressed()
             self.state.get_event(event)
         '''
-
-
-
-
 
 
 
