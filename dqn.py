@@ -15,7 +15,7 @@ class DQN:
 
         self._build_network()
         self.saver = tf.train.Saver()
-        self.save_path = "./save/save_model_" + name + "ckpt"
+        self.save_path = "./save/save_model_" + self.net_name + "ckpt"
         tf.logging.info(name + " - initialized")
 
     def _build_network(self, h_size=2000, l_rate=0.001):
@@ -41,7 +41,6 @@ class DQN:
             net = tf.nn.max_pool(net, ksize=[1, 2, 2, 1],
                                  strides=[1, 2, 2, 1], padding='SAME')
             net = tf.nn.dropout(net, keep_prob=keep_prob)
-            print net
 
             net = tf.reshape(net, [-1, 10 * 10 * 40])
 
@@ -58,10 +57,12 @@ class DQN:
         self._loss = tf.reduce_mean(tf.square(self._Y - self._Qpred))
         self._train = tf.train.AdamOptimizer(learning_rate=l_rate).minimize(self._loss)
 
-    def save(self):
+    def save(self, episode=0):
+        self.save_path = "./save/"+episode+"/save_model_" + self.net_name + ".ckpt"
         self.saver.save(self.session, self.save_path)
 
-    def restore(self):
+    def restore(self, episode=0):
+        self.save_path = "./save/" + episode + "/save_model_" + self.net_name + ".ckpt"
         self.saver.restore(self.session, self.save_path)
 
     def predict(self, state):

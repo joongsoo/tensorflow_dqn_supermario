@@ -90,8 +90,8 @@ class Sound(object):
 
     def play_music(self, key, state):
         """Plays new music"""
-        pg.mixer.music.load(self.music_dict[key])
-        pg.mixer.music.play()
+        #pg.mixer.music.load(self.music_dict[key])
+        #pg.mixer.music.play()
         self.state = state
 
     def stop_music(self):

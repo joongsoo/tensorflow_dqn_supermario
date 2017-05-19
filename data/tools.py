@@ -30,7 +30,7 @@ class Control(object):
         self.state = None
         self.ml_done = False
         self.max_posision_x = 200
-        self.correct_x = 5
+        self.correct_x = 20
 
     def setup_states(self, state_dict, start_state):
         self.state_dict = state_dict
@@ -64,13 +64,13 @@ class Control(object):
         position_x = self.state.last_x_position
         if position_x > self.max_posision_x:
             if position_x - self.max_posision_x > self.correct_x:
-                reward = -1
+                reward = -1000
             else:
                 reward = position_x - self.max_posision_x
             self.max_posision_x = position_x
         else:
             reward = 0
-        #reward = (score + position_x - 200) / 100.0
+
         reward = reward + score
         if self.keys[276] == 1:
             reward -= 10
@@ -79,7 +79,6 @@ class Control(object):
 
 
     def event_loop(self, key):
-
         if key != None and self.keys != key:
             self.keys = key
 
@@ -93,21 +92,6 @@ class Control(object):
                 elif event.type == pg.KEYUP:
                     self.keys = pg.key.get_pressed()
                 self.state.get_event(event)
-        '''
-
-        for event in pg.event.get():
-            if event.type == pg.QUIT:
-                self.done = True
-            elif event.type == pg.KEYDOWN:
-                self.keys = pg.key.get_pressed()
-                print event
-                self.toggle_show_fps(event.key)
-            elif event.type == pg.KEYUP:
-                self.keys = pg.key.get_pressed()
-            self.state.get_event(event)
-        '''
-
-
 
     def toggle_show_fps(self, key):
         if key == pg.K_F5:
