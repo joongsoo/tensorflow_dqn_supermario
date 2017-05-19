@@ -58,11 +58,9 @@ class DQN:
         self._train = tf.train.AdamOptimizer(learning_rate=l_rate).minimize(self._loss)
 
     def save(self, episode=0):
-        self.save_path = "./save/"+episode+"/save_model_" + self.net_name + ".ckpt"
-        self.saver.save(self.session, self.save_path)
+        self.saver.save(self.session, self.save_path, global_step=episode)
 
     def restore(self, episode=0):
-        self.save_path = "./save/" + episode + "/save_model_" + self.net_name + ".ckpt"
         self.saver.restore(self.session, self.save_path)
 
     def predict(self, state):
