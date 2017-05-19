@@ -6,6 +6,7 @@ import random
 from collections import deque
 from data.env import Env
 from tensorflow.python.framework.errors_impl import NotFoundError
+import pygame
 
 
 class AIControl:
@@ -131,6 +132,9 @@ class AIControl:
 
                     state = next_state
                     step_count += 1
+                    if step_count == 50:
+                        pygame.image.save(self.env.run_it.screen, "image.jpg")
+
 
 
                 print("Episode: {}  steps: {}  max_x: {}".format(episode, step_count, max_x))
