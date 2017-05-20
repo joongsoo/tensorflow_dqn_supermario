@@ -88,7 +88,7 @@ class Env:
         self.color_chanel = 1
         self.state_n = self.resize_x * self.resize_y * self.color_chanel
 
-        self.run_it = tools.Control(setup.ORIGINAL_CAPTION)
+        self.run_it = tools.Control(setup.ORIGINAL_CAPTION, self)
         self.state_dict = {
             c.MAIN_MENU: main_menu.Menu(),
             c.LOAD_SCREEN: load_screen.LoadScreen(),
@@ -99,9 +99,9 @@ class Env:
         self.run_it.ml_done = False
         self.run_it.setup_states(self.state_dict, c.LEVEL1)
 
-        self.input_buffer = deque()
-        self.max_input_buffer_size = 10
         self.before_action = [0, 0, 0, 0, 0, 0]
+        self.before_action2 = [0, 0, 0, 0, 0, 0]
+        self.action = [0, 0, 0, 0, 0, 0]
 
     def get_random_actions(self):
         key_up_down = np.argmax(np.random.randint(100, size=3))
@@ -124,7 +124,6 @@ class Env:
             action[5] = 1
 
         return action
-        return np.random.randint(2, size=len(self.actions.keys()))
 
     def rgb2gray(self, image):
         return np.dot(image[..., :3], [0.299, 0.587, 0.114])
@@ -166,12 +165,13 @@ class Env:
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        self.action = action
         for idx in range(len(action)):
             if action[idx] == 1:
                 input_action[self.action_idx[idx]] = 1
@@ -189,7 +189,7 @@ class Env:
         #next_state = scipy.misc.imrotate(next_state, -90.)
 
         #print "main"
-
+        self.before_action2 = action
         return (next_state, reward, gameover, clear, max_x)
 
 

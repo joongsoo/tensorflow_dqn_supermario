@@ -110,9 +110,6 @@ class AIControl:
                 step_count = 0
                 state = self.env.reset()
                 max_x = 0
-                actionss = [[0, 0, 0, 0, 1, 1],
-                [0, 0, 0, 1, 1, 1]]
-                idx2 = 0
                 while not done and not clear:
 
                     while True:
@@ -122,15 +119,6 @@ class AIControl:
                             action = self.generate_action(mainDQN.predict(state))
                         if self.env.key_validate(action):
                             break
-                    '''
-                    if step_count < 30:
-                        action = [0,0,0,0,0,0]
-                    else:
-                        action = actionss[idx2]
-                    idx2 += 1
-                    if idx2 > len(actionss)-1:
-                        idx2 = 0
-                    '''
                     next_state, reward, done, clear, max_x = self.env.step(action)
 
                     if done:
@@ -152,15 +140,15 @@ class AIControl:
                 print("Episode: {}  steps: {}  max_x: {}".format(episode, step_count, max_x))
 
 
-                for idx in range(10):
-                    minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer) / 10))
+                for idx in range(40):
+                    minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer) / 20))
                     loss = self.replay_train(mainDQN, targetDQN, minibatch)
                 print("Loss: ", loss)
                 sess.run(copy_ops)
 
                 self.replay_buffer = deque()
 
-                if episode % 50 == 0:
+                if episode % 100 == 0:
                     mainDQN.save(episode=episode)
                     targetDQN.save(episode=episode)
 

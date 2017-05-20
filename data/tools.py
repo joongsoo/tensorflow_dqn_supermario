@@ -6,6 +6,7 @@ from pygame.surfarray import pixels3d, array3d
 from . import constants as c
 import platform
 import setup
+from collections import deque
 
 
 p_name = platform.system()
@@ -22,7 +23,7 @@ class Control(object):
     """Control class for entire project. Contains the game loop, and contains
     the event_loop which passes events to States as needed. Logic for flipping
     states is also found here."""
-    def __init__(self, caption):
+    def __init__(self, caption, env):
         self.screen = pg.display.get_surface()
         self.done = False
         self.clock = pg.time.Clock()
@@ -51,6 +52,7 @@ class Control(object):
             self.flip_state()
         self.state.update(self.screen, self.keys, self.current_time)
 
+        # position start = 200 / end=8519
         if self.state.mario.dead:
             self.ml_done = True
 
@@ -62,6 +64,7 @@ class Control(object):
         self.state = self.state_dict[self.state_name]
         self.state.startup(self.current_time, persist)
         self.state.previous = previous
+
 
     def get_step(self):
         if p_name == "Darwin":
@@ -75,22 +78,6 @@ class Control(object):
         if position_x > self.max_posision_x:
             if position_x - self.max_posision_x > self.correct_x:
                 print '============ bug ============'
-                for keys in self.input_buffer:
-                    key_input = [0, 0, 0, 0, 0, 0]
-                    if keys[273] == 1:
-                        key_input[0] = 1
-                    if keys[274] == 1:
-                        key_input[1] = 1
-                    if keys[276] == 1:
-                        key_input[2] = 1
-                    if keys[275] == 1:
-                        key_input[3] = 1
-                    if keys[97] == 1:
-                        key_input[4] = 1
-                    if keys[115] == 1:
-                        key_input[5] = 1
-                    print key_input
-                print '============ bug end ============'
                 reward = -1
             else:
                 reward = position_x - self.max_posision_x
@@ -99,6 +86,8 @@ class Control(object):
             reward = 0
 
         reward = reward + score
+        if self.keys[276] == 1:
+            reward -= 1
         return (next_state, reward, self.ml_done, self.state.clear, self.max_posision_x)
 
 
