@@ -75,7 +75,7 @@ class Control(object):
         position_x = self.state.last_x_position
         if position_x > self.max_posision_x:
             if position_x - self.max_posision_x > self.correct_x:
-                reward = -500
+                reward = -100
                 print "using bug!!"
             else:
                 reward = position_x - self.max_posision_x
