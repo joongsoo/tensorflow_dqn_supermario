@@ -153,8 +153,10 @@ class Env:
             with_fps = "{} - {:.2f} FPS".format(self.run_it.caption, fps)
             pg.display.set_caption(with_fps)
 
-    def step(self, action):
+    def key_validate(self, action):
+        return self.run_it.key_validate(action)
 
+    def step(self, action):
         #self.run_it.event_loop()
         #self.run_it.update()
         #self.run_it.event_loop()

@@ -67,6 +67,12 @@ class Control(object):
         self.state.startup(self.current_time, persist)
         self.state.previous = previous
 
+    def key_validate(self, action):
+        before_action = self.input_buffer[len(self.input_buffer) - 1]
+        if before_action[5] == 1 and action[3] == 1 and action[4] == 1:
+            return False
+        return True
+
     def get_step(self):
         if p_name == "Darwin":
             next_state = pixels3d(self.screen)
