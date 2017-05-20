@@ -6,7 +6,6 @@ from pygame.surfarray import pixels3d, array3d
 from . import constants as c
 import platform
 import setup
-from collections import deque
 
 
 p_name = platform.system()
@@ -38,8 +37,6 @@ class Control(object):
         self.ml_done = False
         self.max_posision_x = 200
         self.correct_x = 80
-        self.input_buffer = deque()
-        self.max_input_buffer_size = 10
 
     def setup_states(self, state_dict, start_state):
         self.state_dict = state_dict
@@ -54,7 +51,6 @@ class Control(object):
             self.flip_state()
         self.state.update(self.screen, self.keys, self.current_time)
 
-        # position start = 200 / end=8519
         if self.state.mario.dead:
             self.ml_done = True
 
@@ -66,12 +62,6 @@ class Control(object):
         self.state = self.state_dict[self.state_name]
         self.state.startup(self.current_time, persist)
         self.state.previous = previous
-
-    def key_validate(self, action):
-        before_action = self.input_buffer[len(self.input_buffer) - 1]
-        if before_action[5] == 1 and action[3] == 1 and action[4] == 1:
-            return False
-        return True
 
     def get_step(self):
         if p_name == "Darwin":
@@ -109,8 +99,6 @@ class Control(object):
             reward = 0
 
         reward = reward + score
-        if self.keys[276] == 1:
-            reward -= 1
         return (next_state, reward, self.ml_done, self.state.clear, self.max_posision_x)
 
 
@@ -129,9 +117,6 @@ class Control(object):
                 elif event.type == pg.KEYUP:
                     self.keys = pg.key.get_pressed()
                 self.state.get_event(event)
-        self.input_buffer.append(self.keys)
-        if len(self.input_buffer) > self.max_input_buffer_size:
-            self.input_buffer.popleft()
 
     def toggle_show_fps(self, key):
         if key == pg.K_F5:

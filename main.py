@@ -110,8 +110,11 @@ class AIControl:
                 step_count = 0
                 state = self.env.reset()
                 max_x = 0
-
+                actionss = [[0, 0, 0, 0, 1, 1],
+                [0, 0, 0, 1, 1, 1]]
+                idx2 = 0
                 while not done and not clear:
+
                     while True:
                         if np.random.rand(1) < e:
                             action = self.env.get_random_actions()
@@ -119,7 +122,15 @@ class AIControl:
                             action = self.generate_action(mainDQN.predict(state))
                         if self.env.key_validate(action):
                             break
-
+                    '''
+                    if step_count < 30:
+                        action = [0,0,0,0,0,0]
+                    else:
+                        action = actionss[idx2]
+                    idx2 += 1
+                    if idx2 > len(actionss)-1:
+                        idx2 = 0
+                    '''
                     next_state, reward, done, clear, max_x = self.env.step(action)
 
                     if done:

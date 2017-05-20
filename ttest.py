@@ -77,5 +77,11 @@ actions = {
 
 a = 1e-2
 
-arr = [1,2,3,4,5,6,7,8,9,10]
-print 150*150
+from collections import deque
+
+q = deque()
+for i in range(10):
+    q.append(i)
+
+print q[-1]
+print q

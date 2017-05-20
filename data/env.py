@@ -4,6 +4,7 @@ from . import constants as c
 import pygame as pg
 import numpy as np
 import scipy.misc
+from collections import deque
 
 class Env:
     def __init__(self):
@@ -98,6 +99,10 @@ class Env:
         self.run_it.ml_done = False
         self.run_it.setup_states(self.state_dict, c.LEVEL1)
 
+        self.input_buffer = deque()
+        self.max_input_buffer_size = 10
+        self.before_action = [0, 0, 0, 0, 0, 0]
+
     def get_random_actions(self):
         key_up_down = np.argmax(np.random.randint(100, size=3))
         key_left_right = np.argmax(np.random.randint(100, size=3))
@@ -137,29 +142,26 @@ class Env:
         self.run_it.max_posision_x = 200
 
         state, _, _,_, _ = self.run_it.get_step()
-        state = scipy.misc.imresize(self.rgb2gray(state), (self.resize_x, self.resize_y))
+        state = scipy.misc.imresize(self.rgb2gray(state) / 255., (self.resize_x, self.resize_y))
         #state = scipy.misc.imrotate(state, -90.)
         #state = scipy.misc.imresize(self.rgb2gray(next_state) / 255., (self.resize_x, self.resize_y))
 
         return state
 
-    def start(self):
-        while True:
-            self.run_it.event_loop(None)
-            self.run_it.update()
-            pg.display.update()
-            self.run_it.clock.tick(self.run_it.fps)
-            fps = self.run_it.clock.get_fps()
-            with_fps = "{} - {:.2f} FPS".format(self.run_it.caption, fps)
-            pg.display.set_caption(with_fps)
 
     def key_validate(self, action):
-        return self.run_it.key_validate(action)
+        if (self.before_action[5] == 1 and (self.before_action[2] == 1
+                                        or self.before_action[3] == 1))\
+                and action[5] == 1and action[4] == 1:
+                return False
+        self.before_action = action
+        return True
 
     def step(self, action):
         #self.run_it.event_loop()
         #self.run_it.update()
         #self.run_it.event_loop()
+
         input_action = [
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
