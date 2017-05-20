@@ -8,7 +8,6 @@ from data.env import Env
 from tensorflow.python.framework.errors_impl import NotFoundError
 import pygame
 
-import png
 
 class AIControl:
     def __init__(self, env):
@@ -87,9 +86,6 @@ class AIControl:
 
         return action
 
-    def rgb2gray(self, image):
-        return np.dot(image[..., :3], [0.299, 0.587, 0.114])
-
     def control_start(self):
         import dqn
         with tf.Session() as sess:
@@ -123,10 +119,6 @@ class AIControl:
 
                     next_state, reward, done, clear, max_x = self.env.step(action)
 
-                    if step_count == 30:
-                        png.from_array(next_state, 'L').save("small_smiley.png")
-                        return
-
                     if done:
                         reward = -10000
                     if clear:
@@ -146,7 +138,7 @@ class AIControl:
                 print("Episode: {}  steps: {}  max_x: {}".format(episode, step_count, max_x))
 
 
-                for idx in range(50):
+                for idx in range(10):
                     minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer) / 10))
                     loss = self.replay_train(mainDQN, targetDQN, minibatch)
                 print("Loss: ", loss)

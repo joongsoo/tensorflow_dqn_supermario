@@ -6,6 +6,7 @@ from pygame.surfarray import pixels3d, array3d
 from . import constants as c
 import platform
 import setup
+from collections import deque
 
 
 p_name = platform.system()
@@ -37,6 +38,8 @@ class Control(object):
         self.ml_done = False
         self.max_posision_x = 200
         self.correct_x = 80
+        self.input_buffer = deque()
+        self.max_input_buffer_size = 10
 
     def setup_states(self, state_dict, start_state):
         self.state_dict = state_dict
@@ -75,8 +78,24 @@ class Control(object):
         position_x = self.state.last_x_position
         if position_x > self.max_posision_x:
             if position_x - self.max_posision_x > self.correct_x:
-                reward = -2
-                print "using bug!!"
+                print '============ bug ============'
+                for keys in self.input_buffer:
+                    key_input = [0, 0, 0, 0, 0, 0]
+                    if keys[273] == 1:
+                        key_input[0] = 1
+                    if keys[274] == 1:
+                        key_input[1] = 1
+                    if keys[276] == 1:
+                        key_input[2] = 1
+                    if keys[275] == 1:
+                        key_input[3] = 1
+                    if keys[97] == 1:
+                        key_input[4] = 1
+                    if keys[115] == 1:
+                        key_input[5] = 1
+                    print key_input
+                print '============ bug end ============'
+                reward = -1
             else:
                 reward = position_x - self.max_posision_x
             self.max_posision_x = position_x
@@ -104,6 +123,9 @@ class Control(object):
                 elif event.type == pg.KEYUP:
                     self.keys = pg.key.get_pressed()
                 self.state.get_event(event)
+        self.input_buffer.append(self.keys)
+        if len(self.input_buffer) > self.max_input_buffer_size:
+            self.input_buffer.popleft()
 
     def toggle_show_fps(self, key):
         if key == pg.K_F5:

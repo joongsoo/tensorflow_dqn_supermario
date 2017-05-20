@@ -99,6 +99,26 @@ class Env:
         self.run_it.setup_states(self.state_dict, c.LEVEL1)
 
     def get_random_actions(self):
+        key_up_down = np.argmax(np.random.randint(100, size=3))
+        key_left_right = np.argmax(np.random.randint(100, size=3))
+        key_a = np.random.randint(2, size=1)[0]
+        key_b = np.random.randint(2, size=1)[0]
+
+        action = [0, 0, 0, 0, 0, 0]
+        if key_up_down == 0:
+            action[0] = 1
+        elif key_up_down == 1:
+            action[1] = 1
+        if key_left_right == 0:
+            action[2] = 1
+        elif key_left_right == 1:
+            action[3] = 1
+        if key_a == 0:
+            action[4] = 1
+        if key_b == 0:
+            action[5] = 1
+
+        return action
         return np.random.randint(2, size=len(self.actions.keys()))
 
     def rgb2gray(self, image):
