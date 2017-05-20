@@ -127,6 +127,14 @@ class AIControl:
                         reward += 10000
                         done = True
 
+                    if step_count == 50:
+                        from pygame.surfarray import array3d, pixels3d
+                        import scipy
+                        import png
+                        png.from_array(next_state, 'L').save("small_smiley.png")
+                        # asd = scipy.misc.imresize(self.rgb2gray(monitor) / 255., (200, 200))
+                        # png.from_array(asd, 'L').save("small_smiley2.png")
+                        return
 
                     self.replay_buffer.append((state, action, reward, next_state, done))
                     if len(self.replay_buffer) > self.REPLAY_MEMORY:
