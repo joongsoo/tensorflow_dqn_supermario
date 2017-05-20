@@ -139,9 +139,6 @@ class AIControl:
 
                 print("Episode: {}  steps: {}  max_x: {}".format(episode, step_count, max_x))
 
-                if episode % 50 == 0:
-                    mainDQN.save(episode=episode)
-                    targetDQN.save(episode=episode)
 
                 for idx in range(50):
                     minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer) / 10))
@@ -150,6 +147,11 @@ class AIControl:
                 sess.run(copy_ops)
 
                 self.replay_buffer = deque()
+
+                if episode % 50 == 0:
+                    mainDQN.save(episode=episode)
+                    targetDQN.save(episode=episode)
+
 
 
 def main():
@@ -160,3 +162,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+#lightdm

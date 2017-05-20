@@ -5,6 +5,7 @@ import pygame as pg
 from pygame.surfarray import pixels3d, array3d
 from . import constants as c
 import platform
+import setup
 
 p_name = platform.system()
 
@@ -34,7 +35,7 @@ class Control(object):
         self.state = None
         self.ml_done = False
         self.max_posision_x = 200
-        self.correct_x = 100
+        self.correct_x = 80
         if p_name != "Darwin":
             self.screen = pg.Surface(c.SCREEN_SIZE, pg.SRCALPHA, 32)
 
@@ -65,13 +66,16 @@ class Control(object):
         self.state.previous = previous
 
     def get_step(self):
-        next_state = pixels3d(self.screen)
+        if p_name == "Darwin":
+            next_state = pixels3d(self.screen)
+        else:
+            next_state = array3d(setup.SCREEN)
 
         score = self.state.get_score()
         position_x = self.state.last_x_position
         if position_x > self.max_posision_x:
             if position_x - self.max_posision_x > self.correct_x:
-                reward = -700
+                reward = -500
                 print "using bug!!"
             else:
                 reward = position_x - self.max_posision_x
@@ -81,7 +85,7 @@ class Control(object):
 
         reward = reward + score
         if self.keys[276] == 1:
-            reward -= 10
+            reward -= 1
         return (next_state, reward, self.ml_done, self.state.clear, self.max_posision_x)
 
 

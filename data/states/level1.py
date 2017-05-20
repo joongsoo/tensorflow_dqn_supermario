@@ -15,9 +15,6 @@ from .. components import flagpole
 from .. components import info
 from .. components import score
 from .. components import castle_flag
-import platform
-
-p_name = platform.system()
 
 
 class Level1(tools._State):
