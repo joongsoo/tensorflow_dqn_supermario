@@ -118,6 +118,7 @@ class Env:
 
         state, _, _,_, _ = self.run_it.get_step()
         state = scipy.misc.imresize(self.rgb2gray(state), (self.resize_x, self.resize_y))
+        #state = scipy.misc.imrotate(state, -90.)
         #state = scipy.misc.imresize(self.rgb2gray(next_state) / 255., (self.resize_x, self.resize_y))
 
         return state
@@ -161,6 +162,7 @@ class Env:
 
 
         next_state = scipy.misc.imresize(self.rgb2gray(next_state) / 255., (self.resize_x, self.resize_y))
+        #next_state = scipy.misc.imrotate(next_state, -90.)
 
         #print "main"
 

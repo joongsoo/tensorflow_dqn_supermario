@@ -7,6 +7,7 @@ from . import constants as c
 import platform
 import setup
 
+
 p_name = platform.system()
 
 keybinding = {
@@ -36,8 +37,6 @@ class Control(object):
         self.ml_done = False
         self.max_posision_x = 200
         self.correct_x = 80
-        if p_name != "Darwin":
-            self.screen = pg.Surface(c.SCREEN_SIZE, pg.SRCALPHA, 32)
 
     def setup_states(self, state_dict, start_state):
         self.state_dict = state_dict
@@ -71,11 +70,12 @@ class Control(object):
         else:
             next_state = array3d(setup.SCREEN)
 
+
         score = self.state.get_score()
         position_x = self.state.last_x_position
         if position_x > self.max_posision_x:
             if position_x - self.max_posision_x > self.correct_x:
-                reward = -100
+                reward = -2
                 print "using bug!!"
             else:
                 reward = position_x - self.max_posision_x
