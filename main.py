@@ -132,8 +132,6 @@ class AIControl:
 
                     state = next_state
                     step_count += 1
-                    if step_count == 50:
-                        pygame.image.save(self.env.run_it.screen, "image.jpg")
 
 
 
