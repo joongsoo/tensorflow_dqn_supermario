@@ -111,7 +111,7 @@ class AIControl:
                 state = self.env.reset()
                 max_x = 0
                 while not done and not clear:
-
+                    '''
                     while True:
                         if np.random.rand(1) < e:
                             action = self.env.get_random_actions()
@@ -119,6 +119,11 @@ class AIControl:
                             action = self.generate_action(mainDQN.predict(state))
                         if self.env.key_validate(action):
                             break
+                    '''
+                    if np.random.rand(1) < e:
+                        action = self.env.get_random_actions()
+                    else:
+                        action = self.generate_action(mainDQN.predict(state))
                     next_state, reward, done, clear, max_x = self.env.step(action)
 
                     if done:
@@ -137,14 +142,15 @@ class AIControl:
 
 
 
-                print("Episode: {}  steps: {}  max_x: {}".format(episode, step_count, max_x))
+                print("Episode: {}  steps: {}  max_x: {}  reward: {}".format(episode, step_count, max_x, reward))
 
 
-                for idx in range(40):
-                    minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer) / 20))
-                    loss = self.replay_train(mainDQN, targetDQN, minibatch)
-                print("Loss: ", loss)
-                sess.run(copy_ops)
+                if len(self.replay_buffer) > 60:
+                    for idx in range(50):
+                        minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer) / 20))
+                        loss = self.replay_train(mainDQN, targetDQN, minibatch)
+                    print("Loss: ", loss)
+                    sess.run(copy_ops)
 
                 self.replay_buffer = deque()
 

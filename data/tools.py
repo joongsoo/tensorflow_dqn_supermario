@@ -38,6 +38,7 @@ class Control(object):
         self.ml_done = False
         self.max_posision_x = 200
         self.correct_x = 80
+        self.before_action = [0,0,0,0,0,0]
 
     def setup_states(self, state_dict, start_state):
         self.state_dict = state_dict
@@ -66,11 +67,18 @@ class Control(object):
         self.state.previous = previous
 
 
-    def get_step(self):
+    def get_step(self, action):
         if p_name == "Darwin":
             next_state = pixels3d(self.screen)
         else:
             next_state = array3d(setup.SCREEN)
+
+        reward = 0
+
+        if (self.before_action[5] == 1 and (self.before_action[2] == 1
+                                        or self.before_action[3] == 1))\
+                and action[5] == 1and action[4] == 1:
+                reward -= 10
 
 
         score = self.state.get_score()
@@ -78,9 +86,9 @@ class Control(object):
         if position_x > self.max_posision_x:
             if position_x - self.max_posision_x > self.correct_x:
                 print '============ bug ============'
-                reward = -1
+                reward -= 1
             else:
-                reward = position_x - self.max_posision_x
+                reward += position_x - self.max_posision_x
             self.max_posision_x = position_x
         else:
             reward = 0
