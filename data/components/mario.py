@@ -550,7 +550,7 @@ class Mario(pg.sprite.Sprite):
 
         if keys[tools.keybinding['action']]:
             self.max_x_vel = c.MAX_RUN_SPEED
-            self.x_accel = c.RUN_ACCEL
+            #self.x_accel = c.RUN_ACCEL
             if self.fire and self.allow_fireball:
                 self.shoot_fireball(fire_group)
         else:

@@ -99,9 +99,6 @@ class Env:
         self.run_it.ml_done = False
         self.run_it.setup_states(self.state_dict, c.LEVEL1)
 
-        self.before_action = [0, 0, 0, 0, 0, 0]
-        self.before_action2 = [0, 0, 0, 0, 0, 0]
-        self.action = [0, 0, 0, 0, 0, 0]
 
     def get_random_actions(self):
         key_up_down = np.argmax(np.random.randint(100, size=3))
@@ -140,27 +137,14 @@ class Env:
         self.run_it.setup_states(self.state_dict, c.LEVEL1)
         self.run_it.max_posision_x = 200
 
-        state, _, _,_, _ = self.run_it.get_step([0,0,0,0,0,0])
+        state, _, _,_, _ = self.run_it.get_step()
         state = scipy.misc.imresize(self.rgb2gray(state) / 255., (self.resize_x, self.resize_y))
-        #state = scipy.misc.imrotate(state, -90.)
-        #state = scipy.misc.imresize(self.rgb2gray(next_state) / 255., (self.resize_x, self.resize_y))
 
         return state
 
 
-    def key_validate(self, action):
-        if (self.before_action[5] == 1 and (self.before_action[2] == 1
-                                        or self.before_action[3] == 1))\
-                and action[5] == 1and action[4] == 1:
-                return False
-        self.before_action = action
-        return True
 
     def step(self, action):
-        #self.run_it.event_loop()
-        #self.run_it.update()
-        #self.run_it.event_loop()
-
         input_action = [
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -178,18 +162,16 @@ class Env:
         self.run_it.event_loop(tuple(input_action))
         self.run_it.update()
         pg.display.update()
-        next_state, reward, gameover, clear, max_x = self.run_it.get_step(action)
-        self.run_it.clock.tick(self.run_it.fps)
-        fps = self.run_it.clock.get_fps()
-        with_fps = "{} - {:.2f} FPS".format(self.run_it.caption, fps)
-        pg.display.set_caption(with_fps)
+        next_state, reward, gameover, clear, max_x = self.run_it.get_step()
+        #self.run_it.clock.tick(self.run_it.fps)
+        #fps = self.run_it.clock.get_fps()
+        #with_fps = "{} - {:.2f} FPS".format(self.run_it.caption, fps)
+        #pg.display.set_caption(with_fps)
 
 
         next_state = scipy.misc.imresize(self.rgb2gray(next_state) / 255., (self.resize_x, self.resize_y))
         #next_state = scipy.misc.imrotate(next_state, -90.)
 
-        #print "main"
-        self.before_action2 = action
         return (next_state, reward, gameover, clear, max_x)
 
 

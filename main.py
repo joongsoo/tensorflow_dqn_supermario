@@ -120,15 +120,6 @@ class AIControl:
                 max_x = 0
                 reward_sum = 0
                 while not done and not clear:
-                    '''
-                    while True:
-                        if np.random.rand(1) < e:
-                            action = self.env.get_random_actions()
-                        else:
-                            action = self.generate_action(mainDQN.predict(state))
-                        if self.env.key_validate(action):
-                            break
-                    '''
                     if np.random.rand(1) < e:
                         action = self.env.get_random_actions()
                     else:
