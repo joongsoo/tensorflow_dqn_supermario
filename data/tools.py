@@ -94,8 +94,8 @@ class Control(object):
             reward = 0
 
         reward = reward + score
-        if self.keys[276] == 1:
-            reward -= 1
+        #if self.keys[276] == 1:
+        #    reward -= 1
         return (next_state, reward, self.ml_done, self.state.clear, self.max_posision_x)
 
 
