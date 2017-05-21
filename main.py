@@ -118,6 +118,7 @@ class AIControl:
                 step_count = 0
                 state = self.env.reset()
                 max_x = 0
+                reward_sum = 0
                 while not done and not clear:
                     '''
                     while True:
@@ -147,10 +148,11 @@ class AIControl:
 
                     state = next_state
                     step_count += 1
+                    reward_sum += reward
 
 
 
-                print("Episode: {}  steps: {}  max_x: {}  reward: {}".format(episode, step_count, max_x, reward))
+                print("Episode: {}  steps: {}  max_x: {}  reward: {}".format(episode, step_count, max_x, reward_sum))
 
 
                 if len(self.replay_buffer) > 60:
