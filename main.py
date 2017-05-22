@@ -39,14 +39,22 @@ class AIControl:
                     Q[0, 0] = reward + self.dis * np.max(predict[0][0:3])
                 elif action[1] == 1:
                     Q[0, 1] = reward + self.dis * np.max(predict[0][0:3])
+                else:
+                    Q[0, 2] = reward + self.dis * np.max(predict[0][0:3])
                 if action[2] == 1:
                     Q[0, 3] = reward + self.dis * np.max(predict[0][3:6])
                 elif action[3] == 1:
                     Q[0, 4] = reward + self.dis * np.max(predict[0][3:6])
+                else:
+                    Q[0, 5] = reward + self.dis * np.max(predict[0][3:6])
                 if action[4] == 1:
                     Q[0, 6] = reward + self.dis * np.max(predict[0][6:8])
+                else:
+                    Q[0, 7] = reward + self.dis * np.max(predict[0][6:8])
                 if action[5] == 1:
                     Q[0, 8] = reward + self.dis * np.max(predict[0][8:10])
+                else:
+                    Q[0, 9] = reward + self.dis * np.max(predict[0][8:10])
 
             state = np.reshape(state, [self.input_size])
             y_stack = np.vstack([y_stack, Q])
