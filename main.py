@@ -136,7 +136,7 @@ class AIControl:
                     print("Loss: ", loss)
                     sess.run(copy_ops)
 
-                self.replay_buffer = deque()
+                #self.replay_buffer = deque()
 
                 if episode % 100 == 0:
                     mainDQN.save(episode=episode)
