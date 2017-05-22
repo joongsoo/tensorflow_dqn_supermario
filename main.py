@@ -7,6 +7,8 @@ from collections import deque
 from data.env import Env
 from tensorflow.python.framework.errors_impl import NotFoundError
 import pygame
+import gym
+
 
 
 class AIControl:
@@ -30,22 +32,22 @@ class AIControl:
 
         for state, action, reward, next_state, done in train_batch:
             Q = mainDQN.predict(state)
-
+            predict = targetDQN.predict(next_state)
             if done:
                 Q[0, action] = reward
             else:
                 if action[0] == 1:
-                    Q[0, 0] = reward + self.dis * np.max(targetDQN.predict(next_state))
+                    Q[0, 0] = reward + self.dis * np.max(predict[0][0:3])
                 elif action[1] == 1:
-                    Q[0, 1] = reward + self.dis * np.max(targetDQN.predict(next_state))
+                    Q[0, 1] = reward + self.dis * np.max(predict[0][0:3])
                 if action[2] == 1:
-                    Q[0, 3] = reward + self.dis * np.max(targetDQN.predict(next_state))
+                    Q[0, 3] = reward + self.dis * np.max(predict[0][3:6])
                 elif action[3] == 1:
-                    Q[0, 4] = reward + self.dis * np.max(targetDQN.predict(next_state))
+                    Q[0, 4] = reward + self.dis * np.max(predict[0][3:6])
                 if action[4] == 1:
-                    Q[0, 6] = reward + self.dis * np.max(targetDQN.predict(next_state))
+                    Q[0, 6] = reward + self.dis * np.max(predict[0][6:8])
                 if action[5] == 1:
-                    Q[0, 8] = reward + self.dis * np.max(targetDQN.predict(next_state))
+                    Q[0, 8] = reward + self.dis * np.max(predict[0][8:10])
 
             state = np.reshape(state, [self.input_size])
             y_stack = np.vstack([y_stack, Q])
@@ -140,10 +142,6 @@ class AIControl:
 
                     reward_sum += reward
 
-                    if (step_count == 0 and action[3] != 1) or (step_count == 1 and action[3] != 1):
-                        train = False
-                        episode -= 1
-                        break
 
                 print("Episode: {}  steps: {}  max_x: {}  reward: {}".format(episode, step_count, max_x, reward_sum))
 
