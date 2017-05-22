@@ -19,7 +19,7 @@ class AIControl:
 
         #self.dis = 0.9
         self.dis = 0.9
-        self.REPLAY_MEMORY = 10000
+        self.REPLAY_MEMORY = 15000
         self.max_episodes = 3000
         self.replay_buffer = deque()
         self.val = 0
