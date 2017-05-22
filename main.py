@@ -132,6 +132,9 @@ class AIControl:
                     if len(self.replay_buffer) > self.REPLAY_MEMORY:
                         self.replay_buffer.popleft()
 
+                    if step_count / 5 > max_x:
+                        done = True
+
                     state = next_state
                     step_count += 1
 
