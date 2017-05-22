@@ -76,15 +76,14 @@ class Control(object):
         score = self.state.get_score()
         position_x = self.state.last_x_position
         if position_x > self.max_posision_x:
-            if position_x - self.max_posision_x > self.correct_x:
-                print '============ bug ============'
-            else:
-                reward += position_x - self.max_posision_x
+            reward += position_x - self.max_posision_x
             self.max_posision_x = position_x
         else:
             reward = 0
 
         reward = reward + score
+        if self.keys[276] == 1:
+            reward -= 0.5
         return (next_state, reward, self.ml_done, self.state.clear, self.max_posision_x)
 
 

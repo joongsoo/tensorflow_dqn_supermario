@@ -19,7 +19,7 @@ class AIControl:
         #self.dis = 0.9
         self.dis = 0.9
         self.REPLAY_MEMORY = 10000
-        self.max_episodes = 15000
+        self.max_episodes = 3000
         self.replay_buffer = deque()
         self.val = 0
         self.save_path = "./save/save_model"
@@ -38,22 +38,14 @@ class AIControl:
                     Q[0, 0] = reward + self.dis * np.max(targetDQN.predict(next_state))
                 elif action[1] == 1:
                     Q[0, 1] = reward + self.dis * np.max(targetDQN.predict(next_state))
-                else:
-                    Q[0, 2] = reward + self.dis * np.max(targetDQN.predict(next_state))
                 if action[2] == 1:
                     Q[0, 3] = reward + self.dis * np.max(targetDQN.predict(next_state))
                 elif action[3] == 1:
                     Q[0, 4] = reward + self.dis * np.max(targetDQN.predict(next_state))
-                else:
-                    Q[0, 5] = reward + self.dis * np.max(targetDQN.predict(next_state))
                 if action[4] == 1:
                     Q[0, 6] = reward + self.dis * np.max(targetDQN.predict(next_state))
-                else:
-                    Q[0, 7] = reward + self.dis * np.max(targetDQN.predict(next_state))
                 if action[5] == 1:
                     Q[0, 8] = reward + self.dis * np.max(targetDQN.predict(next_state))
-                else:
-                    Q[0, 9] = reward + self.dis * np.max(targetDQN.predict(next_state))
 
             state = np.reshape(state, [self.input_size])
             y_stack = np.vstack([y_stack, Q])
@@ -119,6 +111,7 @@ class AIControl:
                 state = self.env.reset()
                 max_x = 0
                 reward_sum = 0
+                train = True
                 while not done and not clear:
                     if np.random.rand(1) < e:
                         action = self.env.get_random_actions()
@@ -132,6 +125,10 @@ class AIControl:
                         reward += 10000
                         done = True
 
+                    if step_count == 200 and max_x < 210:
+                        reward = -10000
+                        done = True
+
 
                     self.replay_buffer.append((state, action, reward, next_state, done))
                     if len(self.replay_buffer) > self.REPLAY_MEMORY:
@@ -139,14 +136,17 @@ class AIControl:
 
                     state = next_state
                     step_count += 1
+
                     reward_sum += reward
 
-
+                    if (step_count == 0 and action[3] != 1) or (step_count == 1 and action[3] != 1):
+                        train = False
+                        break
 
                 print("Episode: {}  steps: {}  max_x: {}  reward: {}".format(episode, step_count, max_x, reward_sum))
 
 
-                if len(self.replay_buffer) > 60:
+                if len(self.replay_buffer) > 60 and train:
                     for idx in range(50):
                         minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer) / 20))
                         loss = self.replay_train(mainDQN, targetDQN, minibatch)
