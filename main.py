@@ -128,10 +128,6 @@ class AIControl:
                         reward += 10000
                         done = True
 
-                    if step_count/5 > max_x:
-                        reward = -10000
-                        done = True
-
 
                     self.replay_buffer.append((state, action, reward, next_state, done))
                     if len(self.replay_buffer) > self.REPLAY_MEMORY:
@@ -141,6 +137,11 @@ class AIControl:
                     step_count += 1
 
                     reward_sum += reward
+
+                    if (step_count == 0 and action[3] != 1) or (step_count == 1 and action[3] != 1):
+                        train = False
+                        episode -= 1
+                        break
 
 
                 print("Episode: {}  steps: {}  max_x: {}  reward: {}".format(episode, step_count, max_x, reward_sum))
