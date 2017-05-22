@@ -8,7 +8,7 @@ class DQN:
         self.session = session
         self.input_size = input_size
 
-        self.output_size = 10
+        self.output_size = output_size
 
         self.net_name = name
 
@@ -19,7 +19,7 @@ class DQN:
 
         self._build_network()
         self.saver = tf.train.Saver()
-        self.save_path = "./save/save_model_" + self.net_name + "ckpt"
+        self.save_path = "./save/save_model_" + self.net_name + ".ckpt"
         tf.logging.info(name + " - initialized")
 
     def _build_network(self, l_rate=0.0001):

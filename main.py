@@ -15,7 +15,7 @@ class AIControl:
         self.env = env
 
         self.input_size = self.env.state_n
-        self.output_size = 10
+        self.output_size = 12
 
         #self.dis = 0.9
         self.dis = 0.9
@@ -31,30 +31,11 @@ class AIControl:
 
         for state, action, reward, next_state, done in train_batch:
             Q = mainDQN.predict(state)
-            predict = targetDQN.predict(next_state)
             if done:
-                Q[0, action] = reward
+                Q[0, np.argmax(action)] = reward
             else:
-                if action[0] == 1:
-                    Q[0, 0] = reward + self.dis * np.max(predict[0][0:3])
-                elif action[1] == 1:
-                    Q[0, 1] = reward + self.dis * np.max(predict[0][0:3])
-                else:
-                    Q[0, 2] = reward + self.dis * np.max(predict[0][0:3])
-                if action[2] == 1:
-                    Q[0, 3] = reward + self.dis * np.max(predict[0][3:6])
-                elif action[3] == 1:
-                    Q[0, 4] = reward + self.dis * np.max(predict[0][3:6])
-                else:
-                    Q[0, 5] = reward + self.dis * np.max(predict[0][3:6])
-                if action[4] == 1:
-                    Q[0, 6] = reward + self.dis * np.max(predict[0][6:8])
-                else:
-                    Q[0, 7] = reward + self.dis * np.max(predict[0][6:8])
-                if action[5] == 1:
-                    Q[0, 8] = reward + self.dis * np.max(predict[0][8:10])
-                else:
-                    Q[0, 9] = reward + self.dis * np.max(predict[0][8:10])
+                Q[0, np.argmax(action)] = reward + self.dis * np.max(targetDQN.predict(next_state))
+
 
             state = np.reshape(state, [self.input_size])
             y_stack = np.vstack([y_stack, Q])
@@ -121,45 +102,37 @@ class AIControl:
                 state = self.env.reset()
                 max_x = 0
                 reward_sum = 0
-                train = True
+
                 while not done and not clear:
                     if np.random.rand(1) < e:
                         action = self.env.get_random_actions()
                     else:
-                        action = self.generate_action(mainDQN.predict(state))
+                        action = np.argmax(mainDQN.predict(state))
                     next_state, reward, done, clear, max_x = self.env.step(action)
 
                     if done:
-                        reward = -10000
+                        reward = -1000
                     if clear:
                         reward += 10000
                         done = True
 
-
                     self.replay_buffer.append((state, action, reward, next_state, done))
                     if len(self.replay_buffer) > self.REPLAY_MEMORY:
                         self.replay_buffer.popleft()
-
-                    if step_count / 5 > max_x:
-                        done = True
 
                     state = next_state
                     step_count += 1
 
                     reward_sum += reward
 
-                    if (step_count == 0 and action[3] != 1) or (step_count == 1 and action[3] != 1):
-                        train = False
-                        episode -= 1
-                        break
-
 
                 print("Episode: {}  steps: {}  max_x: {}  reward: {}".format(episode, step_count, max_x, reward_sum))
 
 
-                if len(self.replay_buffer) > 60 and train:
+                if len(self.replay_buffer) > 50:
                     for idx in range(50):
-                        minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer) / 20))
+                        #minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer) / 30))
+                        minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer) / 30))
                         loss = self.replay_train(mainDQN, targetDQN, minibatch)
                     print("Loss: ", loss)
                     sess.run(copy_ops)

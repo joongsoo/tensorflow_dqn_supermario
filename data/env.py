@@ -4,7 +4,7 @@ from . import constants as c
 import pygame as pg
 import numpy as np
 import scipy.misc
-from collections import deque
+import random
 
 class Env:
     def __init__(self):
@@ -15,6 +15,23 @@ class Env:
             3: 275,
             4: 97,
             5: 115
+        }
+
+        self.mapping = {
+            0: [0, 0, 0, 0, 0, 0],  # NOOP
+            1: [1, 0, 0, 0, 0, 0],  # Up
+            2: [0, 1, 0, 0, 0, 0],  # Down
+            3: [0, 0, 1, 0, 0, 0],  # Left
+            4: [0, 0, 1, 0, 1, 0],  # Left + A
+            5: [0, 0, 1, 0, 0, 1],  # Left + B
+            6: [0, 0, 1, 0, 1, 1],  # Left + A + B
+            7: [0, 0, 0, 1, 0, 0],  # Right
+            8: [0, 0, 0, 1, 1, 0],  # Right + A
+            9: [0, 0, 0, 1, 0, 1],  # Right + B
+            10: [0, 0, 0, 1, 1, 1],  # Right + A + B
+            11: [0, 0, 0, 0, 1, 0],  # A
+            12: [0, 0, 0, 0, 0, 1],  # B
+            13: [0, 0, 0, 0, 1, 1],  # A + B
         }
 
         self.controller = None
@@ -38,26 +55,7 @@ class Env:
 
 
     def get_random_actions(self):
-        key_up_down = np.argmax(np.random.randint(100, size=3))
-        key_left_right = np.argmax(np.random.randint(100, size=3))
-        key_a = np.random.randint(2, size=1)[0]
-        key_b = np.random.randint(2, size=1)[0]
-
-        action = [0, 0, 0, 0, 0, 0]
-        if key_up_down == 0:
-            action[0] = 1
-        elif key_up_down == 1:
-            action[1] = 1
-        if key_left_right == 0:
-            action[2] = 1
-        elif key_left_right == 1:
-            action[3] = 1
-        if key_a == 0:
-            action[4] = 1
-        if key_b == 0:
-            action[5] = 1
-
-        return action
+        return random.randint(0, 11)
 
     def rgb2gray(self, image):
         return np.dot(image[..., :3], [0.299, 0.587, 0.114])
@@ -93,7 +91,7 @@ class Env:
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        self.action = action
+        action = self.mapping[action]
         for idx in range(len(action)):
             if action[idx] == 1:
                 input_action[self.action_idx[idx]] = 1
