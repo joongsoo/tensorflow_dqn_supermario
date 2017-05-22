@@ -87,7 +87,7 @@ class Control(object):
         elif self.keys[275] == 1:
             reward += 1
 
-        if position_x < 50:
+        if position_x == 40:
             self.ml_done = True
 
         return (next_state, reward, self.ml_done, self.state.clear, self.max_posision_x)
