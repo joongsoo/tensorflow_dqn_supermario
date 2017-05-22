@@ -7,7 +7,6 @@ from collections import deque
 from data.env import Env
 from tensorflow.python.framework.errors_impl import NotFoundError
 import pygame
-import gym
 
 
 
