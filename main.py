@@ -103,7 +103,8 @@ class AIControl:
             copy_ops = self.get_copy_var_ops()
             sess.run(copy_ops)
 
-            for episode in range(self.max_episodes):
+            episode = 0
+            while episode < self.max_episodes:
                 e = 1. / ((episode / 10) + 1)
                 done = False
                 clear = False
@@ -159,6 +160,7 @@ class AIControl:
                 if episode % 100 == 0:
                     mainDQN.save(episode=episode)
                     targetDQN.save(episode=episode)
+                episode += 1
 
 
 
