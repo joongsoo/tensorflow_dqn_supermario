@@ -83,7 +83,9 @@ class Control(object):
 
         reward = reward + score
         if self.keys[276] == 1:
-            reward -= 0.5
+            reward -= 0.2
+        elif self.keys[275] == 1:
+            reward += 0.2
         return (next_state, reward, self.ml_done, self.state.clear, self.max_posision_x)
 
 

@@ -93,13 +93,13 @@ class AIControl:
             targetDQN = dqn.DQN(sess, self.input_size, self.output_size, name="target")
 
             tf.global_variables_initializer().run()
-
+            '''
             try:
                 mainDQN.restore()
                 targetDQN.restore()
             except NotFoundError:
                 pass
-
+            '''
             copy_ops = self.get_copy_var_ops()
             sess.run(copy_ops)
 
@@ -141,6 +141,7 @@ class AIControl:
 
                     if (step_count == 0 and action[3] != 1) or (step_count == 1 and action[3] != 1):
                         train = False
+                        episode -= 1
                         break
 
                 print("Episode: {}  steps: {}  max_x: {}  reward: {}".format(episode, step_count, max_x, reward_sum))
