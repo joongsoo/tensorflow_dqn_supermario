@@ -125,7 +125,7 @@ class AIControl:
                         reward += 10000
                         done = True
 
-                    if step_count == 200 and max_x < 210:
+                    if step_count/5 > max_x:
                         reward = -10000
                         done = True
 
