@@ -111,7 +111,7 @@ class AIControl:
                     next_state, reward, done, clear, max_x = self.env.step(action)
 
                     if done:
-                        reward = -1000
+                        reward = -10000
                     if clear:
                         reward += 10000
                         done = True
