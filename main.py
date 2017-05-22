@@ -131,7 +131,7 @@ class AIControl:
                 if len(self.replay_buffer) > 50:
                     for idx in range(50):
                         #minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer) / 30))
-                        minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer) / 30))
+                        minibatch = random.sample(self.replay_buffer, 30)
                         loss = self.replay_train(mainDQN, targetDQN, minibatch)
                     print("Loss: ", loss)
                     sess.run(copy_ops)
