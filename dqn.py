@@ -22,7 +22,7 @@ class DQN:
         self.save_path = "./save/save_model_" + self.net_name + ".ckpt"
         tf.logging.info(name + " - initialized")
 
-    def _build_network(self, l_rate=0.0001):
+    def _build_network(self, l_rate=0.01):
         with tf.variable_scope(self.net_name):
             keep_prob = self.keep_prob
 
@@ -60,7 +60,6 @@ class DQN:
             net = tf.nn.relu(net)
             net = tf.nn.dropout(net, keep_prob=keep_prob)
 
-            print net
             net = tf.reshape(net, [-1, 2 * 2 * 160])
 
             net = tf.layers.dense(net, 2000, activation=tf.nn.relu)
