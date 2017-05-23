@@ -22,7 +22,7 @@ class DQN:
         self.save_path = "./save/save_model_" + self.net_name + ".ckpt"
         tf.logging.info(name + " - initialized")
 
-    def _build_network(self, l_rate=0.05):
+    def _build_network(self, l_rate=0.01):
         with tf.variable_scope(self.net_name):
             keep_prob = self.keep_prob
 
@@ -31,27 +31,27 @@ class DQN:
             self.X_img = tf.reshape(self._X, [-1, 150, 150, 3])
 
             # Conv
-            W1 = tf.Variable(tf.random_normal([10, 10, 3, 20], stddev=0.01))
-            net = tf.nn.conv2d(self.X_img, W1, strides=[1, 1, 1, 1], padding='SAME')
+            W1 = tf.Variable(tf.random_normal([10, 10, 3, 10], stddev=0.01))
+            net = tf.nn.conv2d(self.X_img, W1, strides=[1, 5, 5, 1], padding='SAME')
             net = tf.nn.relu(net)
             net = tf.nn.max_pool(net, ksize=[1, 2, 2, 1],
                                  strides=[1, 1, 1, 1], padding='SAME')
             net = tf.nn.dropout(net, keep_prob=keep_prob)
 
             # Conv
-            W2 = tf.Variable(tf.random_normal([4, 4, 20, 40], stddev=0.01))
-            net = tf.nn.conv2d(net, W2, strides=[1, 1, 1, 1], padding='SAME')
+            W2 = tf.Variable(tf.random_normal([4, 4, 10, 20], stddev=0.01))
+            net = tf.nn.conv2d(net, W2, strides=[1, 2, 2, 1], padding='SAME')
             net = tf.nn.relu(net)
             net = tf.nn.max_pool(net, ksize=[1, 2, 2, 1],
                                  strides=[1, 2, 2, 1], padding='SAME')
             net = tf.nn.dropout(net, keep_prob=keep_prob)
 
             # Conv
-            W3 = tf.Variable(tf.random_normal([2, 2, 40, 80], stddev=0.01))
-            net = tf.nn.conv2d(net, W3, strides=[1, 1, 1, 1], padding='SAME')
+            W3 = tf.Variable(tf.random_normal([2, 2, 20, 40], stddev=0.01))
+            net = tf.nn.conv2d(net, W3, strides=[1, 2, 2, 1], padding='SAME')
             net = tf.nn.relu(net)
-
-            net = tf.reshape(net, [-1, 75 * 75 * 80])
+            print net
+            net = tf.reshape(net, [-1, 4 * 4 * 40])
 
             net = tf.layers.dense(net, 2000, activation=tf.nn.relu)
             net = tf.nn.dropout(net, keep_prob=keep_prob)

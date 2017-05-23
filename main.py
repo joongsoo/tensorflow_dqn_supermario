@@ -84,8 +84,9 @@ class AIControl:
             tf.global_variables_initializer().run()
 
             try:
-                mainDQN.restore()
-                targetDQN.restore()
+                #mainDQN.restore()
+                #targetDQN.restore()
+                pass
             except NotFoundError:
                 print "??"
                 pass
@@ -93,7 +94,7 @@ class AIControl:
             copy_ops = self.get_copy_var_ops()
             sess.run(copy_ops)
 
-            episode = 100
+            episode = 0
 
             while episode < self.max_episodes:
                 e = 1. / ((episode / 10) + 1)
@@ -118,10 +119,9 @@ class AIControl:
                         reward += 10000
                         done = True
 
-                    if step_count > 100 and max_x < 210:
+                    if step_count > 100 and max_x < 205:
                         episode -= 1
                         train = False
-                        print "pass"
                         break
 
                     self.replay_buffer.append((state, action, reward, next_state, done))
