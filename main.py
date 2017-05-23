@@ -128,7 +128,7 @@ class AIControl:
 
                     reward_sum += reward
 
-                    if step_count > 20 and max_x < 202:
+                    if step_count > 40 and max_x < 202:
                         episode -= 1
                         train = False
                         break
