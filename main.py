@@ -84,8 +84,9 @@ class AIControl:
             tf.global_variables_initializer().run()
 
             try:
-                mainDQN.restore(1400)
-                targetDQN.restore(1400)
+                pass
+                #mainDQN.restore(1400)
+                #targetDQN.restore(1400)
             except NotFoundError:
                 print "??"
                 pass
