@@ -9,7 +9,7 @@ class AIControl:
         self.env = env
 
         self.input_size = self.env.state_n
-        self.output_size = self.env.action_n
+        self.output_size = 12
 
         self.max_episodes = 1500
         self.val = 0
@@ -44,7 +44,7 @@ class AIControl:
                               name="main", is_training=False)
             tf.global_variables_initializer().run()
 
-            mainDQN.restore()
+            mainDQN.restore(1300)
 
             for episode in range(self.max_episodes):
                 done = False
@@ -52,8 +52,7 @@ class AIControl:
                 state = self.env.reset()
 
                 while not done and not clear:
-                    action = self.generate_action(mainDQN.predict(state))
-                    print action
+                    action = np.argmax(mainDQN.predict(state))
                     next_state, reward, done, clear, max_x = self.env.step(action)
                     state = next_state
 

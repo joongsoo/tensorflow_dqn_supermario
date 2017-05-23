@@ -50,14 +50,24 @@ class DQN:
             W3 = tf.Variable(tf.random_normal([2, 2, 40, 80], stddev=0.01))
             net = tf.nn.conv2d(net, W3, strides=[1, 2, 2, 1], padding='SAME')
             net = tf.nn.relu(net)
+            net = tf.nn.max_pool(net, ksize=[1, 2, 2, 1],
+                                 strides=[1, 2, 2, 1], padding='SAME')
+            net = tf.nn.dropout(net, keep_prob=keep_prob)
 
-            net = tf.reshape(net, [-1, 5 * 5 * 80])
+            # Conv
+            W3 = tf.Variable(tf.random_normal([2, 2, 80, 160], stddev=0.01))
+            net = tf.nn.conv2d(net, W3, strides=[1, 2, 2, 1], padding='SAME')
+            net = tf.nn.relu(net)
+            net = tf.nn.max_pool(net, ksize=[1, 2, 2, 1],
+                                 strides=[1, 2, 2, 1], padding='SAME')
+            net = tf.nn.dropout(net, keep_prob=keep_prob)
+
+
+            net = tf.reshape(net, [-1, 5 * 5 * 160])
 
             net = tf.layers.dense(net, 2000, activation=tf.nn.relu)
             net = tf.nn.dropout(net, keep_prob=keep_prob)
             net = tf.layers.dense(net, 4000, activation=tf.nn.relu)
-            net = tf.nn.dropout(net, keep_prob=keep_prob)
-            net = tf.layers.dense(net, 100, activation=tf.nn.relu)
 
             net = tf.layers.dense(net, self.output_size)
             self._Qpred = net

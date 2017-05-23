@@ -82,17 +82,17 @@ class AIControl:
             targetDQN = dqn.DQN(sess, self.input_size, self.output_size, name="target")
 
             tf.global_variables_initializer().run()
-            '''
+
             try:
-                mainDQN.restore()
-                targetDQN.restore()
+                mainDQN.restore(1400)
+                targetDQN.restore(1400)
             except NotFoundError:
                 pass
-            '''
+
             copy_ops = self.get_copy_var_ops()
             sess.run(copy_ops)
 
-            episode = 0
+            episode = 200
             while episode < self.max_episodes:
                 e = 1. / ((episode / 10) + 1)
                 done = False
