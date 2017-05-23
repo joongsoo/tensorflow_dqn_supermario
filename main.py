@@ -131,6 +131,7 @@ class AIControl:
                     if step_count > 40 and max_x < 202:
                         episode -= 1
                         train = False
+                        print "pass"
                         break
 
                 if len(self.replay_buffer) > 50 and train:
