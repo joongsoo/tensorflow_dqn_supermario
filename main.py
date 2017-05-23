@@ -95,7 +95,6 @@ class AIControl:
             sess.run(copy_ops)
 
             episode = 0
-            train = True
 
             while episode < self.max_episodes:
                 e = 1. / ((episode / 10) + 1)
@@ -105,6 +104,7 @@ class AIControl:
                 state = self.env.reset()
                 max_x = 0
                 reward_sum = 0
+                train = True
 
                 while not done and not clear:
                     if np.random.rand(1) < e:
