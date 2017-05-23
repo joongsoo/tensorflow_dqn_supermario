@@ -84,9 +84,8 @@ class AIControl:
             tf.global_variables_initializer().run()
 
             try:
-                pass
-                #mainDQN.restore(1400)
-                #targetDQN.restore(1400)
+                mainDQN.restore()
+                targetDQN.restore()
             except NotFoundError:
                 print "??"
                 pass
@@ -94,7 +93,7 @@ class AIControl:
             copy_ops = self.get_copy_var_ops()
             sess.run(copy_ops)
 
-            episode = 0
+            episode = 100
 
             while episode < self.max_episodes:
                 e = 1. / ((episode / 10) + 1)
@@ -119,6 +118,12 @@ class AIControl:
                         reward += 10000
                         done = True
 
+                    if step_count > 100 and max_x < 210:
+                        episode -= 1
+                        train = False
+                        print "pass"
+                        break
+
                     self.replay_buffer.append((state, action, reward, next_state, done))
                     if len(self.replay_buffer) > self.REPLAY_MEMORY:
                         self.replay_buffer.popleft()
@@ -128,13 +133,9 @@ class AIControl:
 
                     reward_sum += reward
 
-                    if step_count > 100 and max_x < 210:
-                        episode -= 1
-                        train = False
-                        print "pass"
-                        break
 
                 if len(self.replay_buffer) > 50 and train:
+
                     print("Episode: {}  steps: {}  max_x: {}  reward: {}".format(episode, step_count, max_x, reward_sum))
 
                     for idx in range(50):
@@ -144,12 +145,11 @@ class AIControl:
                     print("Loss: ", loss)
                     sess.run(copy_ops)
 
-                #self.replay_buffer = deque()
+                self.replay_buffer = deque()
 
                 if episode % 100 == 0:
                     mainDQN.save(episode=episode)
                     targetDQN.save(episode=episode)
-                    pass
                 episode += 1
 
 
