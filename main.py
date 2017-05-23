@@ -126,6 +126,7 @@ class AIControl:
                     reward_sum += reward
 
                     if step_count > 10 and max_x < 202:
+                        episode -= 1
                         break
 
                 if len(self.replay_buffer) > 50:
