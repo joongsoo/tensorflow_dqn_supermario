@@ -82,10 +82,10 @@ class Control(object):
             reward = 0
 
         reward = reward + score
-        #if self.keys[276] == 1:
-        #    reward -= 0.2
-        #elif self.keys[275] == 1:
-        #    reward += 1
+        if self.keys[276] == 1:
+            reward -= 0.2
+        elif self.keys[275] == 1:
+            reward += 0.5
 
         if position_x < 70 and position_x != 0:
             self.ml_done = True
