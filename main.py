@@ -94,6 +94,8 @@ class AIControl:
             sess.run(copy_ops)
 
             episode = 0
+            train = True
+
             while episode < self.max_episodes:
                 e = 1. / ((episode / 10) + 1)
                 done = False
@@ -127,9 +129,10 @@ class AIControl:
 
                     if step_count > 10 and max_x < 202:
                         episode -= 1
+                        train = False
                         break
 
-                if len(self.replay_buffer) > 50:
+                if len(self.replay_buffer) > 50 and train:
                     print("Episode: {}  steps: {}  max_x: {}  reward: {}".format(episode, step_count, max_x, reward_sum))
 
                     for idx in range(50):
