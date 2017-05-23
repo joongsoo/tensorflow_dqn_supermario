@@ -125,7 +125,7 @@ class AIControl:
 
                     reward_sum += reward
 
-                    if step_count == 10 and max_x < 201:
+                    if step_count > 10 and max_x < 202:
                         break
 
                 if len(self.replay_buffer) > 50:
