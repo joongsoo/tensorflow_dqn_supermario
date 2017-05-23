@@ -87,6 +87,7 @@ class AIControl:
                 mainDQN.restore(1400)
                 targetDQN.restore(1400)
             except NotFoundError:
+                print "??"
                 pass
 
             copy_ops = self.get_copy_var_ops()
@@ -110,7 +111,7 @@ class AIControl:
                     next_state, reward, done, clear, max_x = self.env.step(action)
 
                     if done:
-                        reward = -10000
+                        reward = -650
                     if clear:
                         reward += 10000
                         done = True
@@ -139,8 +140,9 @@ class AIControl:
                 #self.replay_buffer = deque()
 
                 if episode % 100 == 0:
-                    mainDQN.save(episode=episode)
-                    targetDQN.save(episode=episode)
+                    #mainDQN.save(episode=episode)
+                    #targetDQN.save(episode=episode)
+                    pass
                 episode += 1
 
 

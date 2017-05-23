@@ -73,7 +73,7 @@ class Control(object):
             next_state = array3d(setup.SCREEN)
 
         reward = 0
-        score = self.state.get_score()
+        score = self.state.get_score() / 2
         position_x = self.state.last_x_position
         if position_x > self.max_posision_x:
             reward += position_x - self.max_posision_x
@@ -82,10 +82,10 @@ class Control(object):
             reward = 0
 
         reward = reward + score
-        if self.keys[276] == 1:
-            reward -= 0.2
-        elif self.keys[275] == 1:
-            reward += 1
+        #if self.keys[276] == 1:
+        #    reward -= 0.2
+        #elif self.keys[275] == 1:
+        #    reward += 1
 
         if position_x < 70 and position_x != 0:
             self.ml_done = True
