@@ -60,7 +60,8 @@ class DQN:
             net = tf.nn.relu(net)
             net = tf.nn.dropout(net, keep_prob=keep_prob)
 
-            net = tf.reshape(net, [-1, 5 * 5 * 160])
+            print net
+            net = tf.reshape(net, [-1, 2 * 2 * 160])
 
             net = tf.layers.dense(net, 2000, activation=tf.nn.relu)
             net = tf.nn.dropout(net, keep_prob=keep_prob)
