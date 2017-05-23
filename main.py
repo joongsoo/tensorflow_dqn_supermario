@@ -113,7 +113,7 @@ class AIControl:
                     next_state, reward, done, clear, max_x = self.env.step(action)
 
                     if done:
-                        reward = -650
+                        reward = -900
                     if clear:
                         reward += 10000
                         done = True
@@ -127,7 +127,7 @@ class AIControl:
 
                     reward_sum += reward
 
-                    if step_count > 10 and max_x < 202:
+                    if step_count > 20 and max_x < 202:
                         episode -= 1
                         train = False
                         break
