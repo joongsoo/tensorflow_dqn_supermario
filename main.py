@@ -93,7 +93,7 @@ class AIControl:
             copy_ops = self.get_copy_var_ops()
             sess.run(copy_ops)
 
-            episode = 200
+            episode = 0
             while episode < self.max_episodes:
                 e = 1. / ((episode / 10) + 1)
                 done = False
@@ -125,11 +125,12 @@ class AIControl:
 
                     reward_sum += reward
 
-
-                print("Episode: {}  steps: {}  max_x: {}  reward: {}".format(episode, step_count, max_x, reward_sum))
-
+                    if step_count == 10 and max_x < 201:
+                        break
 
                 if len(self.replay_buffer) > 50:
+                    print("Episode: {}  steps: {}  max_x: {}  reward: {}".format(episode, step_count, max_x, reward_sum))
+
                     for idx in range(50):
                         #minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer) / 30))
                         minibatch = random.sample(self.replay_buffer, 30)
@@ -140,8 +141,8 @@ class AIControl:
                 #self.replay_buffer = deque()
 
                 if episode % 100 == 0:
-                    #mainDQN.save(episode=episode)
-                    #targetDQN.save(episode=episode)
+                    mainDQN.save(episode=episode)
+                    targetDQN.save(episode=episode)
                     pass
                 episode += 1
 
