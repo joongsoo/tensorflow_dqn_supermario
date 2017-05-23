@@ -50,7 +50,6 @@ class DQN:
             W3 = tf.Variable(tf.random_normal([2, 2, 20, 40], stddev=0.01))
             net = tf.nn.conv2d(net, W3, strides=[1, 2, 2, 1], padding='SAME')
             net = tf.nn.relu(net)
-            print net
             net = tf.reshape(net, [-1, 4 * 4 * 40])
 
             net = tf.layers.dense(net, 2000, activation=tf.nn.relu)

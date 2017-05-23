@@ -114,7 +114,7 @@ class AIControl:
                     next_state, reward, done, clear, max_x = self.env.step(action)
 
                     if done:
-                        reward = -1500
+                        reward = -500
                     if clear:
                         reward += 10000
                         done = True
@@ -145,7 +145,7 @@ class AIControl:
                     print("Loss: ", loss)
                     sess.run(copy_ops)
 
-                self.replay_buffer = deque()
+                #self.replay_buffer = deque()
 
                 if episode % 100 == 0:
                     mainDQN.save(episode=episode)
