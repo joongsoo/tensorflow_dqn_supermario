@@ -111,19 +111,20 @@ class AIControl:
                         action = self.env.get_random_actions()
                     else:
                         action = np.argmax(mainDQN.predict(state))
-                    next_state, reward, done, clear, max_x = self.env.step(action)
+                    next_state, reward, done, clear, max_x, timeout = self.env.step(action)
 
-                    if done:
+                    if done and not timeout:
                         reward = -500
                     if clear:
                         reward += 10000
                         done = True
 
+                    '''
                     if step_count > 100 and max_x < 205:
                         episode -= 1
                         train = False
                         break
-
+                    '''
                     self.replay_buffer.append((state, action, reward, next_state, done))
                     if len(self.replay_buffer) > self.REPLAY_MEMORY:
                         self.replay_buffer.popleft()

@@ -29,6 +29,7 @@ class Level1(tools._State):
                    c.CAMERA_START_X: 0,
                    c.MARIO_DEAD: False}
         self.startup(400.0, persist)
+        self.timeout = False
 
     def startup(self, current_time, persist):
         """Called when the State object is created"""
@@ -1387,6 +1388,7 @@ class Level1(tools._State):
         if self.overhead_info_display.time <= 0 \
                 and not self.mario.dead \
                 and not self.mario.in_castle:
+            self.timeout = True
             self.state = c.FROZEN
             self.mario.start_death_jump(self.game_info)
 

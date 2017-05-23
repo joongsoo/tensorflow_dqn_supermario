@@ -93,7 +93,8 @@ class Control(object):
         if position_x < 70 and position_x != 0:
             self.ml_done = True
 
-        return (next_state, reward, self.ml_done, self.state.clear, self.max_posision_x)
+        return (next_state, reward, self.ml_done, self.state.clear,
+                self.max_posision_x, self.state.timeout)
 
 
 

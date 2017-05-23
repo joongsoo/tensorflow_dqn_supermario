@@ -72,7 +72,7 @@ class Env:
         self.run_it.setup_states(self.state_dict, c.LEVEL1)
         self.run_it.max_posision_x = 200
 
-        state, _, _,_, _ = self.run_it.get_step()
+        state, _, _, _, _, _ = self.run_it.get_step()
         #state = scipy.misc.imresize(self.rgb2gray(state) / 255., (self.resize_x, self.resize_y))
         state = scipy.misc.imresize(state, (self.resize_x, self.resize_y))
 
@@ -98,7 +98,7 @@ class Env:
         self.run_it.event_loop(tuple(input_action))
         self.run_it.update()
         pg.display.update()
-        next_state, reward, gameover, clear, max_x = self.run_it.get_step()
+        next_state, reward, gameover, clear, max_x, timeout = self.run_it.get_step()
         #self.run_it.clock.tick(self.run_it.fps)
         #fps = self.run_it.clock.get_fps()
         #with_fps = "{} - {:.2f} FPS".format(self.run_it.caption, fps)
@@ -109,7 +109,7 @@ class Env:
         #next_state = scipy.misc.imresize(self.rgb2gray(next_state) / 255., (self.resize_x, self.resize_y))
         #next_state = scipy.misc.imrotate(next_state, -90.)
 
-        return (next_state, reward, gameover, clear, max_x)
+        return (next_state, reward, gameover, clear, max_x, timeout)
 
 
 '''
