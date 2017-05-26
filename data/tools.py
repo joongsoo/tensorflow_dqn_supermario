@@ -28,7 +28,8 @@ class Control(object):
         self.done = False
         self.clock = pg.time.Clock()
         self.caption = caption
-        self.fps = 60
+        #self.fps = 60
+        self.fps = 240
         self.show_fps = False
         self.current_time = 0.0
         self.keys = pg.key.get_pressed()
@@ -73,21 +74,24 @@ class Control(object):
             next_state = array3d(setup.SCREEN)
 
         reward = 0
-        score = self.state.get_score() / 2
+        score = self.state.get_score()
         position_x = self.state.last_x_position
         if position_x > self.max_posision_x:
-            reward += position_x - self.max_posision_x
+            reward += (position_x - self.max_posision_x) * 5
             self.max_posision_x = position_x
         else:
             reward = 0
 
         reward = reward + score
 
+        # time penalty
+        reward -= 1
+
         '''
         if self.keys[276] == 1:
             reward -= 0.2
         elif self.keys[275] == 1:
-            reward += 0.5
+            reward += 1
         '''
 
         if position_x < 70 and position_x != 0:

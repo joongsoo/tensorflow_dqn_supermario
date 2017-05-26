@@ -6,7 +6,7 @@ import random
 from collections import deque
 from data.env import Env
 from tensorflow.python.framework.errors_impl import NotFoundError
-import pygame
+import png
 
 
 
@@ -19,11 +19,20 @@ class AIControl:
 
         #self.dis = 0.9
         self.dis = 0.9
-        self.REPLAY_MEMORY = 15000
-        self.max_episodes = 3000
-        self.replay_buffer = deque()
         self.val = 0
         self.save_path = "./save/save_model"
+
+        self.max_episodes = 1500
+        self.replay_buffer = deque()
+        self.START_BUFFER_SIZE = 400
+        self.MAX_BUFFER_SIZE = 5000
+        self.BUFFER_RATE = 1000
+        self.W = (self.MAX_BUFFER_SIZE - self.START_BUFFER_SIZE) / float(self.max_episodes)
+
+    def get_memory_size(self, episode):
+        if episode > self.BUFFER_RATE:
+            episode = self.BUFFER_RATE
+        return self.W * episode + (self.START_BUFFER_SIZE - (self.START_BUFFER_SIZE - self.BUFFER_RATE))
 
     def replay_train(self, mainDQN, targetDQN, train_batch):
         x_stack = np.empty(0).reshape(0, self.input_size)
@@ -34,6 +43,7 @@ class AIControl:
             if done:
                 Q[0, np.argmax(action)] = reward
             else:
+                # 보상 + 미래에 받을 수 있는 보상의 최대값
                 Q[0, np.argmax(action)] = reward + self.dis * np.max(targetDQN.predict(next_state))
 
             state = np.reshape(state, [self.input_size])
@@ -104,17 +114,21 @@ class AIControl:
                 state = self.env.reset()
                 max_x = 0
                 reward_sum = 0
-                train = True
+                REPLAY_MEMORY = self.get_memory_size(episode)
+                before_action = [0,0,0,0,0,0]
 
                 while not done and not clear:
-                    if np.random.rand(1) < e:
-                        action = self.env.get_random_actions()
+                    if step_count % 2 == 0:
+                        if np.random.rand(1) < e:
+                            action = self.env.get_random_actions()
+                        else:
+                            action = np.argmax(mainDQN.predict(state))
                     else:
-                        action = np.argmax(mainDQN.predict(state))
+                        action = before_action
                     next_state, reward, done, clear, max_x, timeout = self.env.step(action)
 
                     if done and not timeout:
-                        reward = -500
+                        reward = -300
                     if clear:
                         reward += 10000
                         done = True
@@ -126,27 +140,26 @@ class AIControl:
                         break
                     '''
                     self.replay_buffer.append((state, action, reward, next_state, done))
-                    if len(self.replay_buffer) > self.REPLAY_MEMORY:
+                    if len(self.replay_buffer) > REPLAY_MEMORY:
                         self.replay_buffer.popleft()
 
                     state = next_state
                     step_count += 1
 
                     reward_sum += reward
+                    before_action = action
 
 
-                if len(self.replay_buffer) > 50 and train:
+                print("Episode: {}  steps: {}  max_x: {}  reward: {}".format(episode, step_count, max_x, reward_sum))
+                for idx in range(10):
+                    minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer) * 0.1))
+                    #minibatch = random.sample(self.replay_buffer, 30)
+                    loss = self.replay_train(mainDQN, targetDQN, minibatch)
+                print("Loss: ", loss)
+                sess.run(copy_ops)
 
-                    print("Episode: {}  steps: {}  max_x: {}  reward: {}".format(episode, step_count, max_x, reward_sum))
+                #self.replay_buffer = deque()
 
-                    for idx in range(50):
-                        minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer) * 0.03))
-                        #minibatch = random.sample(self.replay_buffer, 30)
-                        loss = self.replay_train(mainDQN, targetDQN, minibatch)
-                    print("Loss: ", loss)
-                    sess.run(copy_ops)
-
-                self.replay_buffer = deque()
 
                 if episode % 100 == 0:
                     mainDQN.save(episode=episode)
