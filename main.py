@@ -22,20 +22,18 @@ class AIControl:
         self.val = 0
         self.save_path = "./save/save_model"
 
-        self.max_episodes = 1500
+        self.max_episodes = 2000
         self.replay_buffer = deque()
         self.START_BUFFER_SIZE = 400
-        self.MAX_BUFFER_SIZE = 5000
-        self.BUFFER_RATE = 1000
+        self.MAX_BUFFER_SIZE = 20000
+        self.BUFFER_RATE = 2000
         self.W = (self.MAX_BUFFER_SIZE - self.START_BUFFER_SIZE) / float(self.max_episodes)
 
     def get_memory_size(self, episode):
-        return 20000
-        '''
         if episode > self.BUFFER_RATE:
             episode = self.BUFFER_RATE
         return self.W * episode + (self.START_BUFFER_SIZE - (self.START_BUFFER_SIZE - self.BUFFER_RATE))
-        '''
+
 
     def replay_train(self, mainDQN, targetDQN, train_batch):
         x_stack = np.empty(0).reshape(0, self.input_size)
