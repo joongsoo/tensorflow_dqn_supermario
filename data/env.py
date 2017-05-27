@@ -37,9 +37,9 @@ class Env:
         self.controller = None
 
         self.action_n = len(self.action_idx.keys())
-        self.resize_x = 150
-        self.resize_y = 150
-        self.color_chanel = 3
+        self.resize_x = 120
+        self.resize_y = 120
+        self.color_chanel = 1
         self.state_n = self.resize_x * self.resize_y * self.color_chanel
 
         self.run_it = tools.Control(setup.ORIGINAL_CAPTION, self)
@@ -73,8 +73,8 @@ class Env:
         self.run_it.max_posision_x = 200
 
         state, _, _, _, _, _ = self.run_it.get_step()
-        #state = scipy.misc.imresize(self.rgb2gray(state) / 255., (self.resize_x, self.resize_y))
-        state = scipy.misc.imresize(state, (self.resize_x, self.resize_y))
+        state = scipy.misc.imresize(self.rgb2gray(state) / 255., (self.resize_x, self.resize_y))
+        #state = scipy.misc.imresize(state, (self.resize_x, self.resize_y))
 
         return state
 
@@ -105,8 +105,8 @@ class Env:
         #pg.display.set_caption(with_fps)
 
 
-        next_state = scipy.misc.imresize(next_state, (self.resize_x, self.resize_y))
-        #next_state = scipy.misc.imresize(self.rgb2gray(next_state) / 255., (self.resize_x, self.resize_y))
+        #next_state = scipy.misc.imresize(next_state, (self.resize_x, self.resize_y))
+        next_state = scipy.misc.imresize(self.rgb2gray(next_state) / 255., (self.resize_x, self.resize_y))
         #next_state = scipy.misc.imrotate(next_state, -90.)
 
         return (next_state, reward, gameover, clear, max_x, timeout)

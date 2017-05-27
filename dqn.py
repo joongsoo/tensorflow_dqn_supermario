@@ -28,18 +28,18 @@ class DQN:
 
             # input place holders
             self._X = tf.placeholder(tf.float32, [None, self.input_size], name="input_x")
-            self.X_img = tf.reshape(self._X, [-1, 150, 150, 3])
+            self.X_img = tf.reshape(self._X, [-1, 120, 120, 1])
 
             # Conv
-            W1 = tf.Variable(tf.random_normal([10, 10, 3, 10], stddev=0.01))
-            net = tf.nn.conv2d(self.X_img, W1, strides=[1, 5, 5, 1], padding='SAME')
+            W1 = tf.Variable(tf.random_normal([5, 5, 1, 16], stddev=0.01))
+            net = tf.nn.conv2d(self.X_img, W1, strides=[1, 2, 2, 1], padding='SAME')
             net = tf.nn.relu(net)
             net = tf.nn.max_pool(net, ksize=[1, 2, 2, 1],
                                  strides=[1, 1, 1, 1], padding='SAME')
             net = tf.nn.dropout(net, keep_prob=keep_prob)
 
             # Conv
-            W2 = tf.Variable(tf.random_normal([4, 4, 10, 20], stddev=0.01))
+            W2 = tf.Variable(tf.random_normal([3, 3, 16, 32], stddev=0.01))
             net = tf.nn.conv2d(net, W2, strides=[1, 2, 2, 1], padding='SAME')
             net = tf.nn.relu(net)
             net = tf.nn.max_pool(net, ksize=[1, 2, 2, 1],
@@ -47,17 +47,15 @@ class DQN:
             net = tf.nn.dropout(net, keep_prob=keep_prob)
 
             # Conv
-            W3 = tf.Variable(tf.random_normal([2, 2, 20, 40], stddev=0.01))
+            W3 = tf.Variable(tf.random_normal([2, 2, 32, 64], stddev=0.01))
             net = tf.nn.conv2d(net, W3, strides=[1, 2, 2, 1], padding='SAME')
             net = tf.nn.relu(net)
-            net = tf.reshape(net, [-1, 4 * 4 * 40])
+            print net
+            net = tf.reshape(net, [-1, 8 * 8 * 64])
 
             net = tf.layers.dense(net, 2000, activation=tf.nn.relu)
             net = tf.nn.dropout(net, keep_prob=keep_prob)
             net = tf.layers.dense(net, 4000, activation=tf.nn.relu)
-            net = tf.nn.dropout(net, keep_prob=keep_prob)
-            net = tf.layers.dense(net, 100, activation=tf.nn.relu)
-
             net = tf.layers.dense(net, self.output_size)
             self._Qpred = net
 
