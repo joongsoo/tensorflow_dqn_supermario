@@ -29,7 +29,7 @@ class Control(object):
         self.clock = pg.time.Clock()
         self.caption = caption
         #self.fps = 60
-        self.fps = 240
+        self.fps = 10000
         self.show_fps = False
         self.current_time = 0.0
         self.keys = pg.key.get_pressed()
@@ -85,7 +85,7 @@ class Control(object):
         reward = reward + score
 
         # time penalty
-        reward -= 1
+        #reward -= 1
 
         '''
         if self.keys[276] == 1:

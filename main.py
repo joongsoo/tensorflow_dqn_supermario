@@ -30,9 +30,12 @@ class AIControl:
         self.W = (self.MAX_BUFFER_SIZE - self.START_BUFFER_SIZE) / float(self.max_episodes)
 
     def get_memory_size(self, episode):
+        return 20000
+        '''
         if episode > self.BUFFER_RATE:
             episode = self.BUFFER_RATE
         return self.W * episode + (self.START_BUFFER_SIZE - (self.START_BUFFER_SIZE - self.BUFFER_RATE))
+        '''
 
     def replay_train(self, mainDQN, targetDQN, train_batch):
         x_stack = np.empty(0).reshape(0, self.input_size)
@@ -105,7 +108,7 @@ class AIControl:
             sess.run(copy_ops)
 
             episode = 0
-
+            REPLAY_MEMORY = self.get_memory_size(episode)
             while episode < self.max_episodes:
                 e = 1. / ((episode / 10) + 1)
                 done = False
@@ -114,7 +117,7 @@ class AIControl:
                 state = self.env.reset()
                 max_x = 0
                 reward_sum = 0
-                REPLAY_MEMORY = self.get_memory_size(episode)
+                #REPLAY_MEMORY = self.get_memory_size(episode)
                 before_action = [0,0,0,0,0,0]
 
                 while not done and not clear:
