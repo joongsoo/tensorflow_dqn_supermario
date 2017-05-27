@@ -106,7 +106,7 @@ class AIControl:
             sess.run(copy_ops)
 
             episode = 0
-            REPLAY_MEMORY = self.get_memory_size(episode)
+            #REPLAY_MEMORY = self.get_memory_size(episode)
             while episode < self.max_episodes:
                 e = 1. / ((episode / 10) + 1)
                 done = False
@@ -115,7 +115,7 @@ class AIControl:
                 state = self.env.reset()
                 max_x = 0
                 reward_sum = 0
-                #REPLAY_MEMORY = self.get_memory_size(episode)
+                REPLAY_MEMORY = self.get_memory_size(episode)
                 before_action = [0,0,0,0,0,0]
 
                 while not done and not clear:
