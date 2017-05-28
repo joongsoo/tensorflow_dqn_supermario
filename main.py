@@ -156,13 +156,15 @@ class AIControl:
 
 
                 print("Episode: {}  steps: {}  max_x: {}  reward: {}".format(episode, step_count, max_x, reward_sum))
-                if step_count > 50:
+                if step_count > 20:
                     for idx in range(10):
                         minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer) * 0.1))
                         #minibatch = random.sample(self.replay_buffer, 30)
                         loss = self.replay_train(mainDQN, targetDQN, minibatch)
                     print("Loss: ", loss)
                     sess.run(copy_ops)
+                else:
+                    episode -= 1
 
                 self.replay_buffer = deque()
 
