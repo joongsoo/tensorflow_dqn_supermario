@@ -28,7 +28,7 @@ class DQN:
 
             # input place holders
             self._X = tf.placeholder(tf.float32, [None, self.input_size], name="input_x")
-            self.X_img = tf.reshape(self._X, [-1, 120, 120, 1])
+            self.X_img = tf.reshape(self._X, [-1, 100, 100, 1])
 
             # Conv
             W1 = tf.Variable(tf.random_normal([5, 5, 1, 16], stddev=0.01))
@@ -48,10 +48,10 @@ class DQN:
 
             # Conv
             W3 = tf.Variable(tf.random_normal([2, 2, 32, 64], stddev=0.01))
-            net = tf.nn.conv2d(net, W3, strides=[1, 2, 2, 1], padding='SAME')
+            net = tf.nn.conv2d(net, W3, strides=[1, 1, 1, 1], padding='SAME')
             net = tf.nn.relu(net)
             print net
-            net = tf.reshape(net, [-1, 8 * 8 * 64])
+            net = tf.reshape(net, [-1, 13 * 13 * 64])
 
             net = tf.layers.dense(net, 2000, activation=tf.nn.relu)
             net = tf.nn.dropout(net, keep_prob=keep_prob)

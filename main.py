@@ -41,11 +41,12 @@ class AIControl:
 
         for state, action, reward, next_state, done in train_batch:
             Q = mainDQN.predict(state)
+            predict = targetDQN.predict(next_state)
             if done:
                 Q[0, np.argmax(action)] = reward
             else:
                 # 보상 + 미래에 받을 수 있는 보상의 최대값
-                Q[0, np.argmax(action)] = reward + self.dis * np.max(targetDQN.predict(next_state))
+                Q[0, np.argmax(action)] = reward + self.dis * np.max(predict)
 
             state = np.reshape(state, [self.input_size])
             y_stack = np.vstack([y_stack, Q])
@@ -149,11 +150,12 @@ class AIControl:
 
                     reward_sum += reward
                     before_action = action
+                    png.from_array(next_state, 'L').save('capture/'+str(step_count) + '.png')
 
 
                 print("Episode: {}  steps: {}  max_x: {}  reward: {}".format(episode, step_count, max_x, reward_sum))
-                for idx in range(10):
-                    minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer) * 0.1))
+                for idx in range(30):
+                    minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer) * 0.03))
                     #minibatch = random.sample(self.replay_buffer, 30)
                     loss = self.replay_train(mainDQN, targetDQN, minibatch)
                 print("Loss: ", loss)

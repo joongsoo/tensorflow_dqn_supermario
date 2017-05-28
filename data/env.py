@@ -5,6 +5,7 @@ import pygame as pg
 import numpy as np
 import scipy.misc
 import random
+import tensorflow as tf
 
 class Env:
     def __init__(self):
@@ -37,8 +38,8 @@ class Env:
         self.controller = None
 
         self.action_n = len(self.action_idx.keys())
-        self.resize_x = 120
-        self.resize_y = 120
+        self.resize_x = 100
+        self.resize_y = 100
         self.color_chanel = 1
         self.state_n = self.resize_x * self.resize_y * self.color_chanel
 
@@ -74,6 +75,7 @@ class Env:
 
         state, _, _, _, _, _ = self.run_it.get_step()
         state = scipy.misc.imresize(self.rgb2gray(state) / 255., (self.resize_x, self.resize_y))
+        state = scipy.misc.imrotate(state, -90.)
         #state = scipy.misc.imresize(state, (self.resize_x, self.resize_y))
 
         return state
@@ -107,7 +109,7 @@ class Env:
 
         #next_state = scipy.misc.imresize(next_state, (self.resize_x, self.resize_y))
         next_state = scipy.misc.imresize(self.rgb2gray(next_state) / 255., (self.resize_x, self.resize_y))
-        #next_state = scipy.misc.imrotate(next_state, -90.)
+        next_state = scipy.misc.imrotate(next_state, -90.)
 
         return (next_state, reward, gameover, clear, max_x, timeout)
 
