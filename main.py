@@ -43,11 +43,12 @@ class AIControl:
         for state, action, reward, next_state, done in train_batch:
             Q = mainDQN.predict(state)
             predict = targetDQN.predict(next_state)
+
             if done:
-                Q[0, np.argmax(action)] = reward
+                Q[0, action] = reward
             else:
                 # 보상 + 미래에 받을 수 있는 보상의 최대값
-                Q[0, np.argmax(action)] = reward + self.dis * np.max(predict)
+                Q[0, action] = reward + self.dis * np.max(predict)
 
             state = np.reshape(state, [self.input_size])
             y_stack = np.vstack([y_stack, Q])
