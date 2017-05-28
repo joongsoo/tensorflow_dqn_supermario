@@ -98,7 +98,7 @@ class Control(object):
             reward += position_x - self.before_x
         self.before_x = position_x
 
-        if position_x < 70 and position_x != 0:
+        if position_x < 150 and position_x != 0:
             self.ml_done = True
 
         return (next_state, reward, self.ml_done, self.state.clear,
