@@ -30,6 +30,7 @@ class AIControl:
         self.W = (self.MAX_BUFFER_SIZE - self.START_BUFFER_SIZE) / float(self.max_episodes)
 
     def get_memory_size(self, episode):
+        return 50000
         if episode > self.BUFFER_RATE:
             episode = self.BUFFER_RATE
         return self.W * episode + (self.START_BUFFER_SIZE - (self.START_BUFFER_SIZE - self.BUFFER_RATE))
@@ -161,7 +162,7 @@ class AIControl:
                 print("Loss: ", loss)
                 sess.run(copy_ops)
 
-                #self.replay_buffer = deque()
+                self.replay_buffer = deque()
 
 
                 if episode % 100 == 0:
