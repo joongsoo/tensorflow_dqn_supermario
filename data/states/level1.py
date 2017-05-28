@@ -1400,7 +1400,7 @@ class Level1(tools._State):
         mario_right = self.mario.rect.right
 
         if self.mario.x_vel > 0 and mario_center >= third:
-            mult = 0.5 if mario_right < self.viewport.centerx else 1
+            mult = 0.5 if mario_right < self.viewport.centerx else 1.1
             new = self.viewport.x + mult * self.mario.x_vel
             highest = self.level_rect.w - self.viewport.w
             self.viewport.x = min(highest, new)
