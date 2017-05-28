@@ -130,8 +130,8 @@ class AIControl:
                         action = before_action
                     next_state, reward, done, clear, max_x, timeout = self.env.step(action)
 
-                    if done and not timeout:
-                        reward = -1000
+                    #if done and not timeout:
+                    #    reward = -1000
                     if clear:
                         reward += 10000
                         done = True
