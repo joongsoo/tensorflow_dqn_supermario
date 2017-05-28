@@ -111,7 +111,7 @@ class AIControl:
             episode = 0
             #REPLAY_MEMORY = self.get_memory_size(episode)
             while episode < self.max_episodes:
-                e = 1. / ((episode / 10) + 1)
+                e = 1. / ((episode / 50) + 1)
                 done = False
                 clear = False
                 step_count = 0
