@@ -160,6 +160,8 @@ class AIControl:
                         minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer) * 0.1))
                         #minibatch = random.sample(self.replay_buffer, 30)
                         loss = self.replay_train(mainDQN, targetDQN, minibatch)
+                        print '.',
+                    print ''
                     print("Loss: ", loss)
                     sess.run(copy_ops)
                 else:
