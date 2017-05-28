@@ -97,18 +97,17 @@ class AIControl:
 
             tf.global_variables_initializer().run()
 
-            try:
-                #mainDQN.restore()
-                #targetDQN.restore()
-                pass
-            except NotFoundError:
-                print "??"
-                pass
+
 
             copy_ops = self.get_copy_var_ops()
             sess.run(copy_ops)
 
-            episode = 0
+            episode = 100
+            try:
+                mainDQN.restore(episode)
+                targetDQN.restore(episode)
+            except NotFoundError:
+                print "??"
             #REPLAY_MEMORY = self.get_memory_size(episode)
             while episode < self.max_episodes:
                 e = 1. / ((episode / 50) + 1)
@@ -169,7 +168,7 @@ class AIControl:
                 self.replay_buffer = deque()
 
 
-                if episode % 100 == 0:
+                if episode % 50 == 0:
                     mainDQN.save(episode=episode)
                     targetDQN.save(episode=episode)
                 episode += 1
