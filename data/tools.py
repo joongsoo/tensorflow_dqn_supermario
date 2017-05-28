@@ -39,6 +39,7 @@ class Control(object):
         self.ml_done = False
         self.max_posision_x = 200
         self.correct_x = 80
+        self.before_x = 200
 
     def setup_states(self, state_dict, start_state):
         self.state_dict = state_dict
@@ -77,7 +78,7 @@ class Control(object):
         score = self.state.get_score()
         position_x = self.state.last_x_position
         if position_x > self.max_posision_x:
-            reward += (position_x - self.max_posision_x) * 5
+            reward += (position_x - self.max_posision_x)
             self.max_posision_x = position_x
         else:
             reward = 0
@@ -93,6 +94,9 @@ class Control(object):
         elif self.keys[275] == 1:
             reward += 1
         '''
+        if self.before_x < position_x:
+            reward += position_x - self.before_x
+        self.before_x = position_x
 
         if position_x < 70 and position_x != 0:
             self.ml_done = True
