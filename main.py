@@ -150,7 +150,7 @@ class AIControl:
 
                     reward_sum += reward
                     before_action = action
-                    png.from_array(next_state, 'L').save('capture/'+str(step_count) + '.png')
+                    #png.from_array(next_state, 'L').save('capture/'+str(step_count) + '.png')
 
 
                 print("Episode: {}  steps: {}  max_x: {}  reward: {}".format(episode, step_count, max_x, reward_sum))
