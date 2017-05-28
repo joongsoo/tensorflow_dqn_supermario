@@ -93,10 +93,11 @@ class Control(object):
             reward -= 0.2
         elif self.keys[275] == 1:
             reward += 1
-        '''
+
         if self.before_x < position_x:
             reward += position_x - self.before_x
         self.before_x = position_x
+        '''
 
         if position_x < 110 and position_x != 0:
             self.ml_done = True
