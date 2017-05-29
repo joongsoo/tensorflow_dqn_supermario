@@ -98,7 +98,7 @@ class AIControl:
             tf.global_variables_initializer().run()
 
 
-            episode = 200
+            episode = 300
             try:
                 mainDQN.restore(episode)
                 #targetDQN.restore(episode)
