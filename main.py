@@ -97,21 +97,19 @@ class AIControl:
 
             tf.global_variables_initializer().run()
 
-
-
             copy_ops = self.get_copy_var_ops()
             sess.run(copy_ops)
 
-            episode = 500
+            episode = 0
             try:
                 mainDQN.restore(episode)
                 targetDQN.restore(episode)
             except NotFoundError:
-                print "??"
-            episode = 300
+                print "save file not found"
+
             #REPLAY_MEMORY = self.get_memory_size(episode)
             while episode < self.max_episodes:
-                e = 1. / ((episode / 50) + 1)
+                e = max(0.5, 1. / ((episode / 50) + 1))
                 done = False
                 clear = False
                 step_count = 0

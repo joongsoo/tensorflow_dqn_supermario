@@ -28,10 +28,10 @@ class DQN:
 
             # input place holders
             self._X = tf.placeholder(tf.float32, [None, self.input_size], name="input_x")
-            self.X_img = tf.reshape(self._X, [-1, 100, 100, 1])
+            self.X_img = tf.reshape(self._X, [-1, 100, 100, 3])
 
             # Conv
-            W1 = tf.Variable(tf.random_normal([5, 5, 1, 16], stddev=0.01))
+            W1 = tf.Variable(tf.random_normal([5, 5, 3, 16], stddev=0.01))
             net = tf.nn.conv2d(self.X_img, W1, strides=[1, 2, 2, 1], padding='SAME')
             net = tf.nn.relu(net)
             net = tf.nn.max_pool(net, ksize=[1, 2, 2, 1],
@@ -62,7 +62,9 @@ class DQN:
         self._Y = tf.placeholder(shape=[None, self.output_size], dtype=tf.float32)
 
         self._loss = tf.reduce_mean(tf.square(self._Y - self._Qpred))
-        self._train = tf.train.AdamOptimizer(learning_rate=l_rate).minimize(self._loss)
+        #self._train = tf.train.AdamOptimizer(learning_rate=l_rate).minimize(self._loss)
+        self._train = tf.train.RMSPropOptimizer(
+            l_rate, momentum=0.95, epsilon=0.01).minimize(self._loss)
 
     def save(self, episode=0):
         self.saver.save(self.session, self.save_path, global_step=episode)
