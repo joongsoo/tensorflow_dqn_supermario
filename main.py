@@ -102,7 +102,7 @@ class AIControl:
             copy_ops = self.get_copy_var_ops()
             sess.run(copy_ops)
 
-            episode = 100
+            episode = 350
             try:
                 mainDQN.restore(episode)
                 targetDQN.restore(episode)
