@@ -155,7 +155,7 @@ class AIControl:
                     #png.from_array(next_state, 'L').save('capture/'+str(step_count) + '.png')
 
 
-                if step_count > 20:
+                if step_count > 40:
                     print("Episode: {}  steps: {}  max_x: {}  reward: {}".format(episode, step_count, max_x, reward_sum))
                     for idx in range(50):
                         minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer) * 0.03))
