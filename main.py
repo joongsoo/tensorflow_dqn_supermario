@@ -97,15 +97,17 @@ class AIControl:
 
             tf.global_variables_initializer().run()
 
-            copy_ops = self.get_copy_var_ops()
-            sess.run(copy_ops)
 
-            episode = 0
+            episode = 200
             try:
                 mainDQN.restore(episode)
-                targetDQN.restore(episode)
+                #targetDQN.restore(episode)
             except NotFoundError:
                 print "save file not found"
+
+
+            copy_ops = self.get_copy_var_ops()
+            sess.run(copy_ops)
 
             #REPLAY_MEMORY = self.get_memory_size(episode)
             while episode < self.max_episodes:
@@ -125,12 +127,13 @@ class AIControl:
                             action = self.env.get_random_actions()
                         else:
                             action = np.argmax(mainDQN.predict(state))
+                            print action,
                     else:
                         action = before_action
                     next_state, reward, done, clear, max_x, timeout = self.env.step(action)
 
-                    #if done and not timeout:
-                    #    reward = -10000
+                    if done and not timeout:
+                        reward = -1000
                     if clear:
                         reward += 10000
                         done = True
@@ -152,7 +155,7 @@ class AIControl:
                     before_action = action
                     #png.from_array(next_state, 'RGB').save('capture/'+str(step_count) + '.png')
 
-
+                print ''
                 if step_count > 40:
                     print("Episode: {}  steps: {}  max_x: {}  reward: {}".format(episode, step_count, max_x, reward_sum))
                     for idx in range(50):
