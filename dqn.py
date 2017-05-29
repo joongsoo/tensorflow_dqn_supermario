@@ -51,7 +51,7 @@ class DQN:
             net = tf.nn.conv2d(net, W3, strides=[1, 1, 1, 1], padding='SAME')
             net = tf.nn.relu(net)
             print net
-            net = tf.reshape(net, [-1, 13 * 13 * 64])
+            net = tf.reshape(net, [-1, 10 * 10 * 64])
 
             net = tf.layers.dense(net, 2000, activation=tf.nn.relu)
             net = tf.nn.dropout(net, keep_prob=keep_prob)
