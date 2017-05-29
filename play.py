@@ -22,7 +22,7 @@ class AIControl:
                               name="main", is_training=False)
             tf.global_variables_initializer().run()
 
-            mainDQN.restore()
+            mainDQN.restore(200)
 
             for episode in range(self.max_episodes):
                 done = False
@@ -31,7 +31,7 @@ class AIControl:
 
                 while not done and not clear:
                     action = np.argmax(mainDQN.predict(state))
-                    next_state, reward, done, clear, max_x = self.env.step(action)
+                    next_state, reward, done, clear, max_x, _ = self.env.step(action)
                     state = next_state
 
 def main():

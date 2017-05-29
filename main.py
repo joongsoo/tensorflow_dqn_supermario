@@ -98,7 +98,7 @@ class AIControl:
             tf.global_variables_initializer().run()
 
 
-            episode = 100
+            episode = 0
             try:
                 mainDQN.restore(episode)
                 targetDQN.restore(episode)
@@ -111,7 +111,7 @@ class AIControl:
 
             #REPLAY_MEMORY = self.get_memory_size(episode)
             while episode < self.max_episodes:
-                e = max(0.5, 1. / ((episode / 50) + 1))
+                e = min(0.5, 1. / ((episode / 50) + 1))
                 done = False
                 clear = False
                 step_count = 0
@@ -121,13 +121,15 @@ class AIControl:
                 REPLAY_MEMORY = self.get_memory_size(episode)
                 before_action = [0, 0, 0, 0, 0, 0]
 
+                input_list = [0]
+
                 while not done and not clear:
                     if step_count % 2 == 0:
                         if np.random.rand(1) < e:
                             action = self.env.get_random_actions()
                         else:
                             action = np.argmax(mainDQN.predict(state))
-                            print action,
+                            input_list.append(action)
                     else:
                         action = before_action
                     next_state, reward, done, clear, max_x, timeout = self.env.step(action)
@@ -155,17 +157,20 @@ class AIControl:
                     before_action = action
                     #png.from_array(next_state, 'RGB').save('capture/'+str(step_count) + '.png')
 
-                print ''
                 if step_count > 40:
+                    print ''
                     print("Episode: {}  steps: {}  max_x: {}  reward: {}".format(episode, step_count, max_x, reward_sum))
-                    for idx in range(50):
-                        minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer) * 0.03))
+                    for idx in range(10):
+                        minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer) * 0.1))
                         #minibatch = random.sample(self.replay_buffer, 30)
                         loss = self.replay_train(mainDQN, targetDQN, minibatch)
                         print '.',
                     print ''
                     print("Loss: ", loss)
                     sess.run(copy_ops)
+
+                    with open('input_log/input_' + str(episode), 'w') as fp:
+                        fp.write(str(input_list))
                 else:
                     episode -= 1
 
