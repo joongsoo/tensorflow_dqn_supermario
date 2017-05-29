@@ -28,7 +28,7 @@ class DQN:
 
             # input place holders
             self._X = tf.placeholder(tf.float32, [None, self.input_size], name="input_x")
-            self.X_img = tf.reshape(self._X, [-1, 100, 100, 3])
+            self.X_img = tf.reshape(self._X, [-1, 75, 75, 3])
 
             # Conv
             W1 = tf.Variable(tf.random_normal([5, 5, 3, 16], stddev=0.01))

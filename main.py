@@ -150,7 +150,7 @@ class AIControl:
 
                     reward_sum += reward
                     before_action = action
-                    #png.from_array(next_state, 'L').save('capture/'+str(step_count) + '.png')
+                    png.from_array(next_state, 'RGB').save('capture/'+str(step_count) + '.png')
 
 
                 if step_count > 40:
