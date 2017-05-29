@@ -124,14 +124,14 @@ class AIControl:
                 input_list = [0]
 
                 while not done and not clear:
-                    #if step_count % 2 == 0:
-                    if np.random.rand(1) < e:
-                        action = self.env.get_random_actions()
+                    if step_count % 2 == 0:
+                        if np.random.rand(1) < e:
+                            action = self.env.get_random_actions()
+                        else:
+                            action = np.argmax(mainDQN.predict(state))
+                            input_list.append(action)
                     else:
-                        action = np.argmax(mainDQN.predict(state))
-                        input_list.append(action)
-                    #else:
-                    #    action = before_action
+                        action = before_action
                     next_state, reward, done, clear, max_x, timeout = self.env.step(action)
 
                     if done and not timeout:
