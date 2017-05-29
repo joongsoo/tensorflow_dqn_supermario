@@ -56,6 +56,7 @@ class DQN:
             net = tf.layers.dense(net, 2000, activation=tf.nn.relu)
             net = tf.nn.dropout(net, keep_prob=keep_prob)
             net = tf.layers.dense(net, 4000, activation=tf.nn.relu)
+            net = tf.nn.dropout(net, keep_prob=keep_prob)
             net = tf.layers.dense(net, self.output_size)
             self._Qpred = net
 
