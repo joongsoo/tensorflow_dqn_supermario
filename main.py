@@ -102,7 +102,7 @@ class AIControl:
             copy_ops = self.get_copy_var_ops()
             sess.run(copy_ops)
 
-            episode = 1550
+            episode = 500
             try:
                 mainDQN.restore(episode)
                 targetDQN.restore(episode)
@@ -119,7 +119,7 @@ class AIControl:
                 max_x = 0
                 reward_sum = 0
                 REPLAY_MEMORY = self.get_memory_size(episode)
-                before_action = [0,0,0,0,0,0]
+                before_action = [0, 0, 0, 0, 0, 0]
 
                 while not done and not clear:
                     if step_count % 2 == 0:
@@ -157,8 +157,8 @@ class AIControl:
 
                 if step_count > 20:
                     print("Episode: {}  steps: {}  max_x: {}  reward: {}".format(episode, step_count, max_x, reward_sum))
-                    for idx in range(10):
-                        minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer) * 0.1))
+                    for idx in range(50):
+                        minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer) * 0.03))
                         #minibatch = random.sample(self.replay_buffer, 30)
                         loss = self.replay_train(mainDQN, targetDQN, minibatch)
                         print '.',
