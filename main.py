@@ -98,10 +98,10 @@ class AIControl:
             tf.global_variables_initializer().run()
 
 
-            episode = 300
+            episode = 0
             try:
                 mainDQN.restore(episode)
-                #targetDQN.restore(episode)
+                targetDQN.restore(episode)
             except NotFoundError:
                 print "save file not found"
 
