@@ -102,12 +102,13 @@ class AIControl:
             copy_ops = self.get_copy_var_ops()
             sess.run(copy_ops)
 
-            episode = 350
+            episode = 1550
             try:
                 mainDQN.restore(episode)
                 targetDQN.restore(episode)
             except NotFoundError:
                 print "??"
+            episode = 300
             #REPLAY_MEMORY = self.get_memory_size(episode)
             while episode < self.max_episodes:
                 e = 1. / ((episode / 50) + 1)
