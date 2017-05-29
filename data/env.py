@@ -100,6 +100,7 @@ class Env:
         self.run_it.update()
         pg.display.update()
         next_state, reward, gameover, clear, max_x, timeout = self.run_it.get_step()
+
         #self.run_it.clock.tick(self.run_it.fps)
         #fps = self.run_it.clock.get_fps()
         #with_fps = "{} - {:.2f} FPS".format(self.run_it.caption, fps)
