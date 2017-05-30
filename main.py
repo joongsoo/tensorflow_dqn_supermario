@@ -109,19 +109,24 @@ class AIControl:
             copy_ops = self.get_copy_var_ops()
             sess.run(copy_ops)
 
+            start_position = 200
+
             #REPLAY_MEMORY = self.get_memory_size(episode)
             while episode < self.max_episodes:
                 e = 1. / ((episode / 50) + 1)#min(0.5, 1. / ((episode / 50) + 1))
                 done = False
                 clear = False
                 step_count = 0
-                state = self.env.reset()
+                state = self.env.reset(start_position=start_position)
                 max_x = 0
                 reward_sum = 0
                 REPLAY_MEMORY = self.get_memory_size(episode)
                 before_action = [0, 0, 0, 0, 0, 0]
 
                 input_list = [0]
+
+                hold_frame = 0
+                before_max_x = 200
 
                 while not done and not clear:
                     if step_count % 2 == 0:
@@ -135,17 +140,12 @@ class AIControl:
                     next_state, reward, done, clear, max_x, timeout = self.env.step(action)
 
                     if done and not timeout:
-                        reward = -1000
+                        reward = -10000
                     if clear:
                         reward += 10000
                         done = True
 
-                    '''
-                    if step_count > 100 and max_x < 205:
-                        episode -= 1
-                        train = False
-                        break
-                    '''
+
                     self.replay_buffer.append((state, action, reward, next_state, done))
                     if len(self.replay_buffer) > REPLAY_MEMORY:
                         self.replay_buffer.popleft()
@@ -155,6 +155,17 @@ class AIControl:
 
                     reward_sum += reward
                     before_action = action
+
+                    # 앞으로 나아가지 못하는 상황이 1000프레임 이상이면 종료하고 학습한다.
+                    if max_x < before_max_x:
+                        hold_frame += 1
+                        if hold_frame > 1000:
+                            timeout = True
+                            break
+                    else:
+                        hold_frame = 0
+                        before_max_x = max_x
+
                     #png.from_array(next_state, 'RGB').save('capture/'+str(step_count) + '.png')
 
                 if step_count > 40:
@@ -181,6 +192,10 @@ class AIControl:
                     mainDQN.save(episode=episode)
                     targetDQN.save(episode=episode)
                 episode += 1
+
+                # 죽은 경우 죽은 지점의 200픽셀 이전에서 살아나서 다시 시도한다
+                if done and not timeout:
+                    start_position = max_x - 200
 
 
 
