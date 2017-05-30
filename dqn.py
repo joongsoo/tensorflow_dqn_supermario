@@ -39,7 +39,7 @@ class DQN:
             net = tf.nn.dropout(net, keep_prob=keep_prob)
 
             # Conv
-            W2 = tf.Variable(tf.random_normal([2, 2, 16, 32], stddev=0.01))
+            W2 = tf.Variable(tf.random_normal([3, 3, 16, 32], stddev=0.01))
             net = tf.nn.conv2d(net, W2, strides=[1, 2, 2, 1], padding='SAME')
             net = tf.nn.relu(net)
             net = tf.nn.max_pool(net, ksize=[1, 2, 2, 1],
