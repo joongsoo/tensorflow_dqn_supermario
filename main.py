@@ -78,7 +78,10 @@ class AIControl:
             if done:
                 Q[0, action] = reward
             else:
-                Q[0, action] = reward + self.dis * np.max(predict)
+                Q[0, action] = reward + self.dis * predict[0, np.argmax(mainDQN.predict(next_state))]
+                #reward + dis * \
+                #         targetDQN.predict(next_state)[
+                #             0, np.argmax(mainDQN.predict(next_state))]
 
             state = np.reshape(state, [self.input_size])
             y_stack = np.vstack([y_stack, Q])
