@@ -24,7 +24,7 @@ class AIControl:
         self.val = 0
         self.save_path = "./save/save_model"
 
-        self.max_episodes = 2000
+        self.max_episodes = 20001
 
         self.replay_buffer = deque()
         self.episode_buffer = deque()
