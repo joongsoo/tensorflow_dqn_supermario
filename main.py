@@ -58,8 +58,8 @@ class AIControl:
                 with open('input_log/input_' + str(episode), 'w') as fp:
                     fp.write(str(input_list))
 
-                # 50 에피소드마다 저장한다
-                if episode % 50 == 0:
+                # 100 에피소드마다 저장한다
+                if episode % 100 == 0:
                     self.mainDQN.save(episode=episode)
                     self.targetDQN.save(episode=episode)
             else:
@@ -107,7 +107,7 @@ class AIControl:
             self.targetDQN = dqn.DQN(sess, self.input_size, self.output_size, name="target")
             tf.global_variables_initializer().run()
 
-            episode = 50
+            episode = 100
             try:
                 self.mainDQN.restore(episode)
                 self.targetDQN.restore(episode)

@@ -68,7 +68,7 @@ class DQN:
             l_rate, momentum=0.95, epsilon=0.01).minimize(self._loss)
 
     def save(self, episode=0):
-        self.saver.save(self.session, self.save_path, global_step=episode)
+        self.saver.save(self.session, self.save_path+ "-" + str(episode))
 
     def restore(self, episode=0):
         load_path = self.save_path + "-" + str(episode)
