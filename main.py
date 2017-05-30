@@ -169,6 +169,8 @@ class AIControl:
 
                     #png.from_array(next_state, 'RGB').save('capture/'+str(step_count) + '.png')
 
+
+                # 샘플링 하기에 작은 사이즈는 트레이닝 시키지 않는다
                 if step_count > 40:
                     print ''
                     print("Episode: {}  steps: {}  max_x: {}  reward: {}".format(episode, step_count, max_x, reward_sum))
@@ -189,6 +191,7 @@ class AIControl:
                 self.replay_buffer = deque()
 
 
+                # 50 에피소드마다 저장한다
                 if episode % 50 == 0:
                     mainDQN.save(episode=episode)
                     targetDQN.save(episode=episode)
@@ -197,6 +200,8 @@ class AIControl:
                 # 죽은 경우 죽은 지점의 200픽셀 이전에서 살아나서 다시 시도한다
                 if done and not timeout:
                     start_position = now_x - 400
+                else:
+                    start_position = 0
 
 
 
