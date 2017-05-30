@@ -194,6 +194,7 @@ class AIControl:
                     start_position = now_x - 800
                 else:
                     start_position = 0
+            training_thread.join()
 
 
 
