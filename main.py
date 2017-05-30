@@ -141,7 +141,7 @@ class AIControl:
                     next_state, reward, done, clear, max_x, timeout, now_x = self.env.step(action)
 
                     if done and not timeout:
-                        reward = -1000
+                        reward = -500
                     if clear:
                         reward += 10000
                         done = True
@@ -174,8 +174,8 @@ class AIControl:
                 if step_count > 40:
                     print ''
                     print("Episode: {}  steps: {}  max_x: {}  reward: {}".format(episode, step_count, max_x, reward_sum))
-                    for idx in range(10):
-                        minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer) * 0.1))
+                    for idx in range(20):
+                        minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer) * 0.5))
                         #minibatch = random.sample(self.replay_buffer, 30)
                         loss = self.replay_train(mainDQN, targetDQN, minibatch)
                         print '.',
