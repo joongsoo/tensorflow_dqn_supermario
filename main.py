@@ -64,7 +64,6 @@ class AIControl:
                     self.targetDQN.save(episode=episode)
             else:
                 time.sleep(1)
-            pass
 
 
 
@@ -79,7 +78,6 @@ class AIControl:
             if done:
                 Q[0, action] = reward
             else:
-                # 보상 + 미래에 받을 수 있는 보상의 최대값
                 Q[0, action] = reward + self.dis * np.max(predict)
 
             state = np.reshape(state, [self.input_size])
@@ -98,28 +96,6 @@ class AIControl:
             op_holder.append(dest_var.assign(src_var.value()))
 
         return op_holder
-
-    def generate_action(self, predict):
-        key_up_down = np.argmax(predict[0][0:3])
-        key_left_right = np.argmax(predict[0][3:6])
-        key_a = np.argmax(predict[0][6:8])
-        key_b = np.argmax(predict[0][8:10])
-
-        action = [0, 0, 0, 0, 0, 0]
-        if key_up_down == 0:
-            action[0] = 1
-        elif key_up_down == 1:
-            action[1] = 1
-        if key_left_right == 0:
-            action[2] = 1
-        elif key_left_right == 1:
-            action[3] = 1
-        if key_a == 0:
-            action[4] = 1
-        if key_b == 0:
-            action[5] = 1
-
-        return action
 
     def control_start(self):
         import dqn
@@ -198,27 +174,11 @@ class AIControl:
                         hold_frame = 0
                         before_max_x = max_x
 
-                    #png.from_array(next_state, 'RGB').save('capture/'+str(step_count) + '.png')
 
 
                 # 샘플링 하기에 작은 사이즈는 트레이닝 시키지 않는다
                 if step_count > 40:
                     self.episode_buffer.append((self.replay_buffer, episode, step_count, max_x, reward_sum, input_list))
-                    '''
-                    print ''
-                    print("Episode: {}  steps: {}  max_x: {}  reward: {}".format(episode, step_count, max_x, reward_sum))
-                    for idx in range(20):
-                        minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer) * 0.05))
-                        #minibatch = random.sample(self.replay_buffer, 30)
-                        loss = self.replay_train(mainDQN, targetDQN, minibatch)
-                        print '.',
-                    print ''
-                    print("Loss: ", loss)
-                    sess.run(copy_ops)
-
-                    with open('input_log/input_' + str(episode), 'w') as fp:
-                        fp.write(str(input_list))
-                    '''
                 else:
                     episode -= 1
 
