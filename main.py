@@ -228,7 +228,7 @@ class AIControl:
 
                 # 죽은 경우 죽은 지점의 200픽셀 이전에서 살아나서 다시 시도한다
                 if done and not timeout:
-                    start_position = now_x - 400
+                    start_position = now_x - 600
                 else:
                     start_position = 0
 
