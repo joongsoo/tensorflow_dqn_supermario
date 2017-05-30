@@ -6,6 +6,8 @@ import random
 from collections import deque
 from data.env import Env
 from tensorflow.python.framework.errors_impl import NotFoundError
+import time
+import threading
 import png
 
 
@@ -23,7 +25,10 @@ class AIControl:
         self.save_path = "./save/save_model"
 
         self.max_episodes = 2000
+
         self.replay_buffer = deque()
+        self.episode_buffer = deque()
+
         self.START_BUFFER_SIZE = 400
         self.MAX_BUFFER_SIZE = 20000
         self.BUFFER_RATE = 2000
@@ -34,6 +39,33 @@ class AIControl:
         if episode > self.BUFFER_RATE:
             episode = self.BUFFER_RATE
         return self.W * episode + (self.START_BUFFER_SIZE - (self.START_BUFFER_SIZE - self.BUFFER_RATE))
+
+
+    def async_training(self, sess, ops):
+        while True:
+            if len(self.episode_buffer) > 0:
+                replay_buffer, episode, step_count, max_x, reward_sum, input_list = self.episode_buffer.popleft()
+                print ''
+                print("Episode: {}  steps: {}  max_x: {}  reward: {}".format(episode, step_count, max_x, reward_sum))
+                for idx in range(10):
+                    minibatch = random.sample(replay_buffer, int(len(replay_buffer) * 0.1))
+                    loss = self.replay_train(self.mainDQN, self.targetDQN, minibatch)
+                    print '.',
+                print ''
+                print("Loss: ", loss)
+                sess.run(ops)
+
+                with open('input_log/input_' + str(episode), 'w') as fp:
+                    fp.write(str(input_list))
+
+                # 50 에피소드마다 저장한다
+                if episode % 50 == 0:
+                    self.mainDQN.save(episode=episode)
+                    self.targetDQN.save(episode=episode)
+            else:
+                time.sleep(1)
+            pass
+
 
 
     def replay_train(self, mainDQN, targetDQN, train_batch):
@@ -92,22 +124,21 @@ class AIControl:
     def control_start(self):
         import dqn
         with tf.Session() as sess:
-            mainDQN = dqn.DQN(sess, self.input_size, self.output_size, name="main")
-            targetDQN = dqn.DQN(sess, self.input_size, self.output_size, name="target")
-
+            self.mainDQN = dqn.DQN(sess, self.input_size, self.output_size, name="main")
+            self.targetDQN = dqn.DQN(sess, self.input_size, self.output_size, name="target")
             tf.global_variables_initializer().run()
-
 
             episode = 0
             try:
-                mainDQN.restore(episode)
-                targetDQN.restore(episode)
+                self.mainDQN.restore(episode)
+                self.targetDQN.restore(episode)
             except NotFoundError:
                 print "save file not found"
 
-
             copy_ops = self.get_copy_var_ops()
             sess.run(copy_ops)
+            training_thread = threading.Thread(target=self.async_training, args=(sess, copy_ops))
+            training_thread.start()
 
             start_position = 0
 
@@ -124,7 +155,7 @@ class AIControl:
                 REPLAY_MEMORY = self.get_memory_size(episode)
                 before_action = [0, 0, 0, 0, 0, 0]
 
-                input_list = [0]
+                input_list = []
 
                 hold_frame = 0
                 before_max_x = 200
@@ -134,7 +165,7 @@ class AIControl:
                         if np.random.rand(1) < e:
                             action = self.env.get_random_actions()
                         else:
-                            action = np.argmax(mainDQN.predict(state))
+                            action = np.argmax(self.mainDQN.predict(state))
                             input_list.append(action)
                     else:
                         action = before_action
@@ -172,10 +203,12 @@ class AIControl:
 
                 # 샘플링 하기에 작은 사이즈는 트레이닝 시키지 않는다
                 if step_count > 40:
+                    self.episode_buffer.append((self.replay_buffer, episode, step_count, max_x, reward_sum, input_list))
+                    '''
                     print ''
                     print("Episode: {}  steps: {}  max_x: {}  reward: {}".format(episode, step_count, max_x, reward_sum))
                     for idx in range(20):
-                        minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer) * 0.5))
+                        minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer) * 0.05))
                         #minibatch = random.sample(self.replay_buffer, 30)
                         loss = self.replay_train(mainDQN, targetDQN, minibatch)
                         print '.',
@@ -185,16 +218,12 @@ class AIControl:
 
                     with open('input_log/input_' + str(episode), 'w') as fp:
                         fp.write(str(input_list))
+                    '''
                 else:
                     episode -= 1
 
                 self.replay_buffer = deque()
 
-
-                # 50 에피소드마다 저장한다
-                if episode % 50 == 0:
-                    mainDQN.save(episode=episode)
-                    targetDQN.save(episode=episode)
                 episode += 1
 
                 # 죽은 경우 죽은 지점의 200픽셀 이전에서 살아나서 다시 시도한다
