@@ -28,10 +28,10 @@ class DQN:
 
             # input place holders
             self._X = tf.placeholder(tf.float32, [None, self.input_size], name="input_x")
-            self.X_img = tf.reshape(self._X, [-1, 75, 75, 3])
+            self.X_img = tf.reshape(self._X, [-1, 75, 75, 1])
 
             # Conv
-            W1 = tf.Variable(tf.random_normal([5, 5, 3, 16], stddev=0.01))
+            W1 = tf.Variable(tf.random_normal([5, 5, 1, 16], stddev=0.01))
             net = tf.nn.conv2d(self.X_img, W1, strides=[1, 2, 2, 1], padding='SAME')
             net = tf.nn.relu(net)
             net = tf.nn.max_pool(net, ksize=[1, 2, 2, 1],
@@ -39,7 +39,7 @@ class DQN:
             net = tf.nn.dropout(net, keep_prob=keep_prob)
 
             # Conv
-            W2 = tf.Variable(tf.random_normal([3, 3, 16, 32], stddev=0.01))
+            W2 = tf.Variable(tf.random_normal([2, 2, 16, 32], stddev=0.01))
             net = tf.nn.conv2d(net, W2, strides=[1, 2, 2, 1], padding='SAME')
             net = tf.nn.relu(net)
             net = tf.nn.max_pool(net, ksize=[1, 2, 2, 1],
