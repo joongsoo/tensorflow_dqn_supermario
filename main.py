@@ -109,7 +109,7 @@ class AIControl:
             copy_ops = self.get_copy_var_ops()
             sess.run(copy_ops)
 
-            start_position = 200
+            start_position = 0
 
             #REPLAY_MEMORY = self.get_memory_size(episode)
             while episode < self.max_episodes:
@@ -117,6 +117,7 @@ class AIControl:
                 done = False
                 clear = False
                 step_count = 0
+                print start_position
                 state = self.env.reset(start_position=start_position)
                 max_x = 0
                 now_x = 0

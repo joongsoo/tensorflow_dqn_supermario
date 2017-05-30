@@ -61,7 +61,7 @@ class Env:
     def rgb2gray(self, image):
         return np.dot(image[..., :3], [0.299, 0.587, 0.114])
 
-    def reset(self, start_position=200):
+    def reset(self, start_position=0):
         self.state_dict = {
             c.MAIN_MENU: main_menu.Menu(),
             c.LOAD_SCREEN: load_screen.LoadScreen(),
@@ -71,8 +71,8 @@ class Env:
         }
         self.run_it.ml_done = False
         self.run_it.setup_states(self.state_dict, c.LEVEL1)
-        if start_position < 200:
-            start_position = 200
+        if start_position < 0:
+            start_position = 0
         self.run_it.max_posision_x = start_position
         self.run_it.state.viewport.x = start_position
 
