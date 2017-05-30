@@ -31,15 +31,15 @@ class DQN:
             self.X_img = tf.reshape(self._X, [-1, 75, 75, 1])
 
             # Conv
-            W1 = tf.Variable(tf.random_normal([5, 5, 1, 16], stddev=0.01))
-            net = tf.nn.conv2d(self.X_img, W1, strides=[1, 2, 2, 1], padding='SAME')
+            W1 = tf.Variable(tf.random_normal([8, 8, 1, 16], stddev=0.01))
+            net = tf.nn.conv2d(self.X_img, W1, strides=[1, 3, 3, 1], padding='SAME')
             net = tf.nn.relu(net)
             net = tf.nn.max_pool(net, ksize=[1, 2, 2, 1],
                                  strides=[1, 1, 1, 1], padding='SAME')
             net = tf.nn.dropout(net, keep_prob=keep_prob)
 
             # Conv
-            W2 = tf.Variable(tf.random_normal([3, 3, 16, 32], stddev=0.01))
+            W2 = tf.Variable(tf.random_normal([4, 4, 16, 32], stddev=0.01))
             net = tf.nn.conv2d(net, W2, strides=[1, 2, 2, 1], padding='SAME')
             net = tf.nn.relu(net)
             net = tf.nn.max_pool(net, ksize=[1, 2, 2, 1],
@@ -48,7 +48,7 @@ class DQN:
 
             # Conv
             W3 = tf.Variable(tf.random_normal([2, 2, 32, 64], stddev=0.01))
-            net = tf.nn.conv2d(net, W3, strides=[1, 1, 1, 1], padding='SAME')
+            net = tf.nn.conv2d(net, W3, strides=[1, 2, 2, 1], padding='SAME')
             net = tf.nn.relu(net)
             net = tf.nn.dropout(net, keep_prob=keep_prob)
 
@@ -59,7 +59,7 @@ class DQN:
             net = tf.nn.dropout(net, keep_prob=keep_prob)
 
             print net
-            net = tf.reshape(net, [-1, 10 * 10 * 128])
+            net = tf.reshape(net, [-1, 4 * 4 * 128])
 
             net = tf.layers.dense(net, 2000, activation=tf.nn.relu)
             net = tf.nn.dropout(net, keep_prob=keep_prob)
