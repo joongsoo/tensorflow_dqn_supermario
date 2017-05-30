@@ -107,7 +107,7 @@ class AIControl:
             self.targetDQN = dqn.DQN(sess, self.input_size, self.output_size, name="target")
             tf.global_variables_initializer().run()
 
-            episode = 1950
+            episode = 0
             try:
                 self.mainDQN.restore(episode)
                 self.targetDQN.restore(episode)
