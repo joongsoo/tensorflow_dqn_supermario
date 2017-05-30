@@ -8,6 +8,7 @@ from data.env import Env
 from tensorflow.python.framework.errors_impl import NotFoundError
 import time
 import threading
+from gevent.pool import Pool
 import png
 
 
@@ -42,15 +43,19 @@ class AIControl:
 
 
     def async_training(self, sess, ops):
+        pool = Pool(40)
         while True:
             if len(self.episode_buffer) > 0:
                 replay_buffer, episode, step_count, max_x, reward_sum, input_list = self.episode_buffer.popleft()
                 print ''
                 print("Buffer: {}  Episode: {}  steps: {}  max_x: {}  reward: {}".format(len(self.episode_buffer), episode, step_count, max_x, reward_sum))
+                batchs = []
                 for idx in range(40):
                     minibatch = random.sample(replay_buffer, int(len(replay_buffer) * 0.03))
-                    loss = self.replay_train(self.mainDQN, self.targetDQN, minibatch)
-                    print '.',
+                    batchs.append(self.replay_train(self.mainDQN, self.targetDQN, minibatch))
+                loss = pool.map(lambda x_stack, y_stack: self.mainDQN.update(x_stack, y_stack), batchs)
+                #loss = self.replay_train(self.mainDQN, self.targetDQN, minibatch)
+                #print '.',
                 print ''
                 print("Loss: ", loss)
                 sess.run(ops)
@@ -87,7 +92,7 @@ class AIControl:
             y_stack = np.vstack([y_stack, Q])
             x_stack = np.vstack([x_stack, state])
 
-        return mainDQN.update(x_stack, y_stack)
+        return (x_stack, y_stack)#mainDQN.update(x_stack, y_stack)
 
     def get_copy_var_ops(self, dest_scope_name="target", src_scope_name="main"):
         op_holder = []
