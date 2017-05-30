@@ -57,7 +57,7 @@ class AIControl:
                 for idx in range(40):
                     minibatch = random.sample(replay_buffer, int(len(replay_buffer) * 0.03))
                     batchs.append(self.replay_train(self.mainDQN, self.targetDQN, minibatch))
-                loss = pool.map(lambda x_stack, y_stack: self.mainDQN.update(x_stack, y_stack), batchs)
+                loss = pool.map(lambda (x_stack, y_stack): self.mainDQN.update(x_stack, y_stack), batchs)
                 #loss = self.replay_train(self.mainDQN, self.targetDQN, minibatch)
                 #print '.',
                 print ''
