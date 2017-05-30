@@ -77,7 +77,9 @@ class Env:
         self.run_it.state.viewport.x = start_position
 
         state, _, _, _, _, _, _ = self.run_it.get_step()
-        state = scipy.misc.imresize(self.rgb2gray(state) / 255., (self.resize_x, self.resize_y))
+        #state = scipy.misc.imresize(self.rgb2gray(state) / 255., (self.resize_x, self.resize_y))
+        state = scipy.misc.imresize(state, (self.resize_x, self.resize_y))
+        state = self.rgb2gray(state) / 255.
         #state = scipy.misc.imresize(state, (self.resize_x, self.resize_y))
 
         return state
@@ -111,7 +113,8 @@ class Env:
 
 
         #next_state = scipy.misc.imresize(next_state, (self.resize_x, self.resize_y))
-        next_state = scipy.misc.imresize(self.rgb2gray(next_state) / 255., (self.resize_x, self.resize_y))
+        next_state = scipy.misc.imresize(next_state, (self.resize_x, self.resize_y))
+        next_state = self.rgb2gray(next_state) / 255.
         #next_state = scipy.misc.imrotate(next_state, -90.)
 
         return (next_state, reward, gameover, clear, max_x, timeout, now_x)
