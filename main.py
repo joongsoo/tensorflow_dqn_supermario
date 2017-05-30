@@ -107,7 +107,7 @@ class AIControl:
             self.targetDQN = dqn.DQN(sess, self.input_size, self.output_size, name="target")
             tf.global_variables_initializer().run()
 
-            episode = 0
+            episode = 50
             try:
                 self.mainDQN.restore(episode)
                 self.targetDQN.restore(episode)
@@ -194,6 +194,8 @@ class AIControl:
                     start_position = now_x - 800
                 else:
                     start_position = 0
+
+            # 에피소드가 끝나면 종료하지말고 버퍼에있는 트레이닝을 마친다
             training_thread.join()
 
 
