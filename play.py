@@ -31,7 +31,7 @@ class AIControl:
 
                 while not done and not clear:
                     action = np.argmax(mainDQN.predict(state))
-                    next_state, reward, done, clear, max_x, _ = self.env.step(action)
+                    next_state, reward, done, clear, max_x, _, _ = self.env.step(action)
                     state = next_state
 
 def main():

@@ -119,6 +119,7 @@ class AIControl:
                 step_count = 0
                 state = self.env.reset(start_position=start_position)
                 max_x = 0
+                now_x = 0
                 reward_sum = 0
                 REPLAY_MEMORY = self.get_memory_size(episode)
                 before_action = [0, 0, 0, 0, 0, 0]
@@ -137,7 +138,7 @@ class AIControl:
                             input_list.append(action)
                     else:
                         action = before_action
-                    next_state, reward, done, clear, max_x, timeout = self.env.step(action)
+                    next_state, reward, done, clear, max_x, timeout, now_x = self.env.step(action)
 
                     if done and not timeout:
                         reward = -10000
@@ -195,7 +196,7 @@ class AIControl:
 
                 # 죽은 경우 죽은 지점의 200픽셀 이전에서 살아나서 다시 시도한다
                 if done and not timeout:
-                    start_position = max_x - 200
+                    start_position = now_x - 200
 
 
 

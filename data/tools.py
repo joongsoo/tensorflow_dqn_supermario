@@ -103,7 +103,7 @@ class Control(object):
             self.ml_done = True
 
         return (next_state, reward, self.ml_done, self.state.clear,
-                self.max_posision_x, self.state.timeout)
+                self.max_posision_x, self.state.timeout, position_x)
 
 
 
