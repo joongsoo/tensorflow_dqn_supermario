@@ -22,7 +22,7 @@ class AIControl:
                               name="main", is_training=False)
             tf.global_variables_initializer().run()
 
-            mainDQN.restore(200)
+            mainDQN.restore(750)
 
             for episode in range(self.max_episodes):
                 done = False
