@@ -99,8 +99,8 @@ class Control(object):
         self.before_x = position_x
         '''
 
-        if position_x < 110 and position_x != 0:
-            self.ml_done = True
+        #if position_x < 110 and position_x != 0:
+        #    self.ml_done = True
 
         return (next_state, reward, self.ml_done, self.state.clear,
                 self.max_posision_x, self.state.timeout, position_x)
