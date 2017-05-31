@@ -32,20 +32,23 @@ class AIControl:
         self.MAX_BUFFER_SIZE = 20000
 
 
-    def async_training(self, sess, ops):
+    def async_training(self, sess, ops, ops_temp):
         while True:
             if len(self.episode_buffer) > 0:
                 replay_buffer, episode, step_count, max_x, reward_sum = self.episode_buffer.popleft()
                 for idx in range(50):
                     minibatch = random.sample(replay_buffer, int(len(replay_buffer) * 0.03))
-                    loss = self.replay_train(self.mainDQN, self.targetDQN, minibatch)
+                    loss = self.replay_train(self.tempDQN, self.targetDQN, minibatch)
                 print("Loss: ", loss)
+
                 sess.run(ops)
+                sess.run(ops_temp)
 
                 # 100 에피소드마다 저장한다
                 if episode % 100 == 0:
                     self.mainDQN.save(episode=episode)
                     self.targetDQN.save(episode=episode)
+                    self.tempDQN.save(episode=episode)
             else:
                 time.sleep(1)
 
@@ -85,18 +88,24 @@ class AIControl:
         with tf.Session() as sess:
             self.mainDQN = dqn.DQN(sess, self.input_size, self.output_size, name="main")
             self.targetDQN = dqn.DQN(sess, self.input_size, self.output_size, name="target")
+            self.tempDQN = dqn.DQN(sess, self.input_size, self.output_size, name="temp")
             tf.global_variables_initializer().run()
 
             episode = 0
             try:
                 self.mainDQN.restore(episode)
                 self.targetDQN.restore(episode)
+                self.tempDQN.restore(episode)
             except NotFoundError:
                 print "save file not found"
 
             copy_ops = self.get_copy_var_ops()
+            copy_ops_temp = self.get_copy_var_ops(dest_scope_name="main", src_scope_name="temp")
+            copy_ops_temp2 = self.get_copy_var_ops(dest_scope_name="temp", src_scope_name="main")
             sess.run(copy_ops)
-            training_thread = threading.Thread(target=self.async_training, args=(sess, copy_ops))
+            sess.run(copy_ops_temp2)
+
+            training_thread = threading.Thread(target=self.async_training, args=(sess, copy_ops, copy_ops_temp))
             training_thread.start()
 
             start_position = 0
