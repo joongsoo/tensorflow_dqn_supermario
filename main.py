@@ -173,7 +173,7 @@ class AIControl:
                     if len(self.episode_buffer) > 1:
                         print ''
                         print 'buffer flush... plz wait...'
-                        while len(self.episode_buffer) != 0:
+                        while len(self.episode_buffer) < 2:
                             time.sleep(1)
 
                     self.replay_buffer = deque()
