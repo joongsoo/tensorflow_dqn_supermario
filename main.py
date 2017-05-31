@@ -174,6 +174,7 @@ class AIControl:
 
                     # memory flush
                     if len(self.episode_buffer) > 5:
+                        print 'buffer flushing... plz wait...'
                         while len(self.episode_buffer) != 0:
                             time.sleep(1)
 
