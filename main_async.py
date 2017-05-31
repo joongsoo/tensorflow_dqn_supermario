@@ -14,7 +14,6 @@ if 'threading' in sys.modules:
     del sys.modules['threading']
 from gevent import monkey; monkey.patch_all()
 from gevent.pool import Pool
-from gevent.threading import Thread
 import png
 
 
