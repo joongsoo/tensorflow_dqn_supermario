@@ -53,7 +53,7 @@ class AIControl:
                     self.mainDQN.save(episode=episode)
                     self.targetDQN.save(episode=episode)
             '''
-            if len(self.replay_buffer) > 0:
+            if len(self.replay_buffer) > 100:
                 for idx in range(50):
                     minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer) * 0.02))
                     loss = self.replay_train(self.mainDQN, self.targetDQN, minibatch)
