@@ -181,7 +181,7 @@ class AIControl:
                         print 'buffer flush... plz wait...'
                         while len(self.episode_buffer) == 0:
                             time.sleep(1)
-
+                    #
                     self.episode_buffer.append((self.replay_buffer, episode, step_count, max_x, reward_sum))
                     self.replay_buffer = deque()
 
