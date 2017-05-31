@@ -71,6 +71,7 @@ class Env:
         }
         self.run_it.ml_done = False
         self.run_it.setup_states(self.state_dict, c.LEVEL1)
+        self.run_it.max_posision_x = 200
         #if start_position < 0:
         #    start_position = 0
         #self.run_it.max_posision_x = start_position
