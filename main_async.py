@@ -45,8 +45,7 @@ class AIControl:
                 pool = Pool(len(self.episode_buffer))
                 li = []
                 while len(self.episode_buffer) != 0:
-                    replay_buffer, episode, step_count, max_x, reward_sum = self.episode_buffer.popleft()
-                    li.append((self, replay_buffer, episode))
+                    li.append(self.episode_buffer.popleft())
                 pool.map(self.train, li)
 
                 #replay_buffer, episode, step_count, max_x, reward_sum = self.episode_buffer.popleft()
@@ -67,7 +66,7 @@ class AIControl:
             else:
                 time.sleep(1)
 
-    def train(self, replay_buffer, episode):
+    def train(self, (replay_buffer, episode, step_count, max_x, reward_sum)):
         for idx in range(50):
             minibatch = random.sample(replay_buffer, int(len(replay_buffer) * 0.03))
             loss = self.replay_train(self.tempDQN, self.targetDQN, minibatch)
