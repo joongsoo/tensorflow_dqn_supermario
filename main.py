@@ -107,7 +107,7 @@ class AIControl:
             self.targetDQN = dqn.DQN(sess, self.input_size, self.output_size, name="target")
             tf.global_variables_initializer().run()
 
-            episode = 2100
+            episode = 0
             try:
                 self.mainDQN.restore(episode)
                 self.targetDQN.restore(episode)
@@ -151,7 +151,7 @@ class AIControl:
                     next_state, reward, done, clear, max_x, timeout, now_x = self.env.step(action)
 
                     if done and not timeout:
-                        reward = -500
+                        reward = -10000
                     if clear:
                         reward += 10000
                         done = True
@@ -190,10 +190,12 @@ class AIControl:
                 episode += 1
 
                 # 죽은 경우 죽은 지점의 600픽셀 이전에서 살아나서 다시 시도한다
+                '''
                 if done and not timeout:
                     start_position = now_x - 800
                 else:
                     start_position = 0
+                '''
 
             # 에피소드가 끝나면 종료하지말고 버퍼에있는 트레이닝을 마친다
             training_thread.join()
