@@ -36,13 +36,9 @@ class AIControl:
         while True:
             if len(self.episode_buffer) > 0:
                 replay_buffer, episode, step_count, max_x, reward_sum = self.episode_buffer.popleft()
-                print ''
-                print("Buffer: {}  Episode: {}  steps: {}  max_x: {}  reward: {}".format(len(self.episode_buffer), episode, step_count, max_x, reward_sum))
-                for idx in range(40):
+                for idx in range(50):
                     minibatch = random.sample(replay_buffer, int(len(replay_buffer) * 0.03))
                     loss = self.replay_train(self.mainDQN, self.targetDQN, minibatch)
-                    print '.',
-                print ''
                 print("Loss: ", loss)
                 sess.run(ops)
 
@@ -167,7 +163,9 @@ class AIControl:
                 # 샘플링 하기에 작은 사이즈는 트레이닝 시키지 않는다
                 if episode % 10 == 0 and len(self.replay_buffer) > 50:
                     self.episode_buffer.append((self.replay_buffer, episode, step_count, max_x, reward_sum))
-
+                    print("Buffer: {}  Episode: {}  steps: {}  max_x: {}  reward: {}".format(len(self.episode_buffer),
+                                                                                             episode, step_count, max_x,
+                                                                                             reward_sum))
                     # memory flush
                     if len(self.episode_buffer) > 5:
                         print ''
