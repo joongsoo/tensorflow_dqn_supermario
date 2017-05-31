@@ -22,7 +22,7 @@ class DQN:
         self.save_path = "./save/save_model_" + self.net_name + ".ckpt"
         tf.logging.info(name + " - initialized")
 
-    def _build_network(self, l_rate=0.001):
+    def _build_network(self, l_rate=0.0001):
         with tf.variable_scope(self.net_name):
             keep_prob = self.keep_prob
 
@@ -64,6 +64,10 @@ class DQN:
             net = tf.layers.dense(net, 2000, activation=tf.nn.relu)
             net = tf.nn.dropout(net, keep_prob=keep_prob)
             net = tf.layers.dense(net, 4000, activation=tf.nn.relu)
+            net = tf.nn.dropout(net, keep_prob=keep_prob)
+            net = tf.layers.dense(net, 8000, activation=tf.nn.relu)
+            net = tf.nn.dropout(net, keep_prob=keep_prob)
+            net = tf.layers.dense(net, 1000, activation=tf.nn.relu)
             net = tf.nn.dropout(net, keep_prob=keep_prob)
             net = tf.layers.dense(net, self.output_size)
             self._Qpred = net

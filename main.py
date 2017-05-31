@@ -61,15 +61,11 @@ class AIControl:
 
         for state, action, reward, next_state, done in train_batch:
             Q = mainDQN.predict(state)
-            predict = targetDQN.predict(next_state)
 
             if done:
                 Q[0, action] = reward
             else:
-                Q[0, action] = reward + self.dis * predict[0, np.argmax(mainDQN.predict(next_state))]
-                #reward + dis * \
-                #         targetDQN.predict(next_state)[
-                #             0, np.argmax(mainDQN.predict(next_state))]
+                Q[0, action] = reward + self.dis * targetDQN.predict(next_state)[0, np.argmax(mainDQN.predict(next_state))]
 
             state = np.reshape(state, [self.input_size])
             y_stack = np.vstack([y_stack, Q])
@@ -174,6 +170,8 @@ class AIControl:
 
                     # memory flush
                     if len(self.episode_buffer) > 5:
+                        print ''
+                        print 'buffer flush... plz wait...'
                         while len(self.episode_buffer) != 0:
                             time.sleep(1)
                     with open('input_log/input_' + str(episode), 'w') as fp:
