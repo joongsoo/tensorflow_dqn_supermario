@@ -164,13 +164,13 @@ class AIControl:
 
                 with open('input_log/input_' + str(episode), 'w') as fp:
                     fp.write(str(input_list))
-                    
+
                 # 샘플링 하기에 작은 사이즈는 트레이닝 시키지 않는다
                 if episode % 10 == 0 and len(self.replay_buffer) > 50:
                     self.episode_buffer.append((self.replay_buffer, episode, step_count, max_x, reward_sum))
 
                     # memory flush
-                    if len(self.episode_buffer) > 0:
+                    if len(self.episode_buffer) > 1:
                         print ''
                         print 'buffer flush... plz wait...'
                         while len(self.episode_buffer) != 0:
