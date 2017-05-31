@@ -39,8 +39,6 @@ class AIControl:
                 for idx in range(50):
                     minibatch = random.sample(replay_buffer, int(len(replay_buffer) * 0.03))
                     loss = self.replay_train(self.tempDQN, self.targetDQN, minibatch)
-                    print '.',
-                print ''
                 print("Loss: ", loss)
 
                 sess.run(ops)
