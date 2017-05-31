@@ -158,14 +158,14 @@ class AIControl:
                     #print next_state
                     #png.from_array(next_state, 'RGB').save('capture/' + str(step_count) + '.png')
 
-
+                print("Buffer: {}  Episode: {}  steps: {}  max_x: {}  reward: {}".format(len(self.episode_buffer),
+                                                                                         episode, step_count, max_x,
+                                                                                         reward_sum))
 
                 # 샘플링 하기에 작은 사이즈는 트레이닝 시키지 않는다
                 if episode % 10 == 0 and len(self.replay_buffer) > 50:
                     self.episode_buffer.append((self.replay_buffer, episode, step_count, max_x, reward_sum))
-                    print("Buffer: {}  Episode: {}  steps: {}  max_x: {}  reward: {}".format(len(self.episode_buffer),
-                                                                                             episode, step_count, max_x,
-                                                                                             reward_sum))
+
                     # memory flush
                     if len(self.episode_buffer) > 1:
                         print ''
