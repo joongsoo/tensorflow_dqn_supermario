@@ -7,6 +7,8 @@ from collections import deque
 from data.env import Env
 from tensorflow.python.framework.errors_impl import NotFoundError
 import time
+import threading
+
 import sys
 if 'threading' in sys.modules:
     del sys.modules['threading']
@@ -34,45 +36,42 @@ class AIControl:
         self.replay_buffer = deque()
         self.episode_buffer = deque()
 
-        self.START_BUFFER_SIZE = 400
         self.MAX_BUFFER_SIZE = 20000
-        self.BUFFER_RATE = 2000
-        self.W = (self.MAX_BUFFER_SIZE - self.START_BUFFER_SIZE) / float(self.max_episodes)
-
-    def get_memory_size(self, episode):
-        return 50000
-        if episode > self.BUFFER_RATE:
-            episode = self.BUFFER_RATE
-        return self.W * episode + (self.START_BUFFER_SIZE - (self.START_BUFFER_SIZE - self.BUFFER_RATE))
 
 
-    def async_training(self, sess, ops):
-        pool = Pool(40)
+    def async_training(self, sess, ops, ops_temp):
         while True:
             if len(self.episode_buffer) > 0:
-                replay_buffer, episode, step_count, max_x, reward_sum, input_list = self.episode_buffer.popleft()
-                print ''
-                print("Buffer: {}  Episode: {}  steps: {}  max_x: {}  reward: {}".format(len(self.episode_buffer), episode, step_count, max_x, reward_sum))
-                batchs = []
-                for idx in range(40):
-                    minibatch = random.sample(replay_buffer, int(len(replay_buffer) * 0.03))
-                    batchs.append(self.replay_train(self.mainDQN, self.targetDQN, minibatch))
-                loss = pool.map(lambda (x_stack, y_stack): self.mainDQN.update(x_stack, y_stack), batchs)
-                #loss = self.replay_train(self.mainDQN, self.targetDQN, minibatch)
-                #print '.',
-                print ''
-                print("Loss: ", loss)
-                sess.run(ops)
+                pool = Pool(len(self.episode_buffer))
+                li = []
+                episode = 1
+                while len(self.episode_buffer) != 0:
+                    replay_buffer, episode, step_count, max_x, reward_sum = self.episode_buffer.popleft()
+                    li.append((replay_buffer, episode, step_count, max_x, reward_sum))
+                pool.map(self.train, li)
 
-                with open('input_log/input_' + str(episode), 'w') as fp:
-                    fp.write(str(input_list))
+                #replay_buffer, episode, step_count, max_x, reward_sum = self.episode_buffer.popleft()
+                #for idx in range(50):
+                #    minibatch = random.sample(replay_buffer, int(len(replay_buffer) * 0.03))
+                #    loss = self.replay_train(self.tempDQN, self.targetDQN, minibatch)
+                #print("Episode: {}  Loss: {}".format(episode, loss))
+
+                sess.run(ops)
+                sess.run(ops_temp)
 
                 # 100 에피소드마다 저장한다
                 if episode % 100 == 0:
                     self.mainDQN.save(episode=episode)
                     self.targetDQN.save(episode=episode)
+                    self.tempDQN.save(episode=episode)
             else:
                 time.sleep(1)
+
+    def train(self, replay_buffer, episode, step_count, max_x, reward_sum):
+        for idx in range(50):
+            minibatch = random.sample(replay_buffer, int(len(replay_buffer) * 0.03))
+            loss = self.replay_train(self.tempDQN, self.targetDQN, minibatch)
+        print("Episode: {}  Loss: {}".format(episode, loss))
 
 
 
@@ -82,21 +81,17 @@ class AIControl:
 
         for state, action, reward, next_state, done in train_batch:
             Q = mainDQN.predict(state)
-            predict = targetDQN.predict(next_state)
 
             if done:
                 Q[0, action] = reward
             else:
-                Q[0, action] = reward + self.dis * predict[0, np.argmax(mainDQN.predict(next_state))]
-                #reward + dis * \
-                #         targetDQN.predict(next_state)[
-                #             0, np.argmax(mainDQN.predict(next_state))]
+                Q[0, action] = reward + self.dis * targetDQN.predict(next_state)[0, np.argmax(mainDQN.predict(next_state))]
 
             state = np.reshape(state, [self.input_size])
             y_stack = np.vstack([y_stack, Q])
             x_stack = np.vstack([x_stack, state])
 
-        return (x_stack, y_stack)#mainDQN.update(x_stack, y_stack)
+        return mainDQN.update(x_stack, y_stack)
 
     def get_copy_var_ops(self, dest_scope_name="target", src_scope_name="main"):
         op_holder = []
@@ -114,26 +109,31 @@ class AIControl:
         with tf.Session() as sess:
             self.mainDQN = dqn.DQN(sess, self.input_size, self.output_size, name="main")
             self.targetDQN = dqn.DQN(sess, self.input_size, self.output_size, name="target")
+            self.tempDQN = dqn.DQN(sess, self.input_size, self.output_size, name="temp")
             tf.global_variables_initializer().run()
 
             episode = 0
             try:
                 self.mainDQN.restore(episode)
                 self.targetDQN.restore(episode)
+                self.tempDQN.restore(episode)
             except NotFoundError:
                 print "save file not found"
 
             copy_ops = self.get_copy_var_ops()
+            copy_ops_temp = self.get_copy_var_ops(dest_scope_name="main", src_scope_name="temp")
+            copy_ops_temp2 = self.get_copy_var_ops(dest_scope_name="temp", src_scope_name="main")
             sess.run(copy_ops)
+            sess.run(copy_ops_temp2)
 
-            training_thread = Thread(target=self.async_training, args=(sess, copy_ops))
+            training_thread = threading.Thread(target=self.async_training, args=(sess, copy_ops, copy_ops_temp))
             training_thread.start()
 
             start_position = 0
 
             #REPLAY_MEMORY = self.get_memory_size(episode)
             while episode < self.max_episodes:
-                e = 1. / ((episode / 50) + 1)#min(0.5, 1. / ((episode / 50) + 1))
+                e = max(0.05, 1. / min(0.5, 1. / ((episode / 50) + 1)))
                 done = False
                 clear = False
                 step_count = 0
@@ -141,7 +141,6 @@ class AIControl:
                 max_x = 0
                 now_x = 0
                 reward_sum = 0
-                REPLAY_MEMORY = self.get_memory_size(episode)
                 before_action = [0, 0, 0, 0, 0, 0]
 
                 input_list = []
@@ -161,14 +160,14 @@ class AIControl:
                     next_state, reward, done, clear, max_x, timeout, now_x = self.env.step(action)
 
                     if done and not timeout:
-                        reward = -500
+                        reward = -10000
                     if clear:
                         reward += 10000
                         done = True
 
 
                     self.replay_buffer.append((state, action, reward, next_state, done))
-                    if len(self.replay_buffer) > REPLAY_MEMORY:
+                    if len(self.replay_buffer) > self.MAX_BUFFER_SIZE:
                         self.replay_buffer.popleft()
 
                     state = next_state
@@ -186,24 +185,34 @@ class AIControl:
                     else:
                         hold_frame = 0
                         before_max_x = max_x
+                    #print next_state
+                    #png.from_array(next_state, 'RGB').save('capture/' + str(step_count) + '.png')
 
+                print("Buffer: {}  Episode: {}  steps: {}  max_x: {}  reward: {}".format(len(self.episode_buffer),
+                                                                                         episode, step_count, max_x,
+                                                                                         reward_sum))
 
+                with open('input_log/input_' + str(episode), 'w') as fp:
+                    fp.write(str(input_list))
 
                 # 샘플링 하기에 작은 사이즈는 트레이닝 시키지 않는다
-                if step_count > 40:
-                    self.episode_buffer.append((self.replay_buffer, episode, step_count, max_x, reward_sum, input_list))
-                else:
-                    episode -= 1
-
-                self.replay_buffer = deque()
+                if episode % 2 == 0 and len(self.replay_buffer) > 50:
+                    self.episode_buffer.append((self.replay_buffer, episode, step_count, max_x, reward_sum))
+                    if len(self.episode_buffer) > 3:
+                        print 'buffer flush... plz wait...'
+                        while len(self.episode_buffer) != 0:
+                            time.sleep(1)
+                    self.replay_buffer = deque()
 
                 episode += 1
 
                 # 죽은 경우 죽은 지점의 600픽셀 이전에서 살아나서 다시 시도한다
+                '''
                 if done and not timeout:
                     start_position = now_x - 800
                 else:
                     start_position = 0
+                '''
 
             # 에피소드가 끝나면 종료하지말고 버퍼에있는 트레이닝을 마친다
             training_thread.join()
