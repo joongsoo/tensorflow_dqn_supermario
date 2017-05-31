@@ -39,14 +39,14 @@ class AIControl:
 
 
     def async_training(self, sess, ops, ops_temp):
+        episode = 0
         while True:
             if len(self.episode_buffer) > 0:
                 pool = Pool(len(self.episode_buffer))
                 li = []
-                episode = 1
                 while len(self.episode_buffer) != 0:
-                    replay_buffer, episode, step_count, max_x, reward_sum = self.episode_buffer.popleft()
-                    li.append((replay_buffer, episode, step_count, max_x, reward_sum))
+                    #replay_buffer, episode, step_count, max_x, reward_sum = self.episode_buffer.popleft()
+                    li.append(self.episode_buffer.popleft())
                 pool.map(self.train, li)
 
                 #replay_buffer, episode, step_count, max_x, reward_sum = self.episode_buffer.popleft()
@@ -63,6 +63,7 @@ class AIControl:
                     self.mainDQN.save(episode=episode)
                     self.targetDQN.save(episode=episode)
                     self.tempDQN.save(episode=episode)
+                episode += 1
             else:
                 time.sleep(1)
 
