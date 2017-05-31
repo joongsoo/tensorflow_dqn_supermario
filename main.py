@@ -170,8 +170,6 @@ class AIControl:
 
                 # 샘플링 하기에 작은 사이즈는 트레이닝 시키지 않는다
                 if step_count > 40:
-                    print("Episode: {}  steps: {}  max_x: {}  reward: {}".format(episode, step_count, max_x,
-                                                                                             reward_sum))
                     self.episode_buffer.append((self.replay_buffer, episode, step_count, max_x, reward_sum))
 
                     with open('input_log/input_' + str(episode), 'w') as fp:
