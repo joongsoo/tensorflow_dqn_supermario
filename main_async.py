@@ -45,8 +45,8 @@ class AIControl:
                 pool = Pool(len(self.episode_buffer))
                 li = []
                 while len(self.episode_buffer) != 0:
-                    #replay_buffer, episode, step_count, max_x, reward_sum = self.episode_buffer.popleft()
-                    li.append(self.episode_buffer.popleft())
+                    replay_buffer, episode, step_count, max_x, reward_sum = self.episode_buffer.popleft()
+                    li.append((self, replay_buffer, episode))
                 pool.map(self.train, li)
 
                 #replay_buffer, episode, step_count, max_x, reward_sum = self.episode_buffer.popleft()
