@@ -26,7 +26,6 @@ class AIControl:
 
         self.max_episodes = 20001
 
-        self.replay_buffer = deque()
         self.episode_buffer = deque()
 
         self.MAX_BUFFER_SIZE = 20000
@@ -110,6 +109,7 @@ class AIControl:
             start_position = 0
 
             #REPLAY_MEMORY = self.get_memory_size(episode)
+            replay_buffer = deque()
             while episode < self.max_episodes:
                 e = max(min(0.5, 1. / ((episode / 50) + 1)), 0.05)
                 done = False
@@ -144,14 +144,16 @@ class AIControl:
                         done = True
 
 
-                    self.replay_buffer.append((state, action, reward, next_state, done))
-                    if len(self.replay_buffer) > self.MAX_BUFFER_SIZE:
-                        self.replay_buffer.popleft()
+                    replay_buffer.append((state, action, reward, next_state, done))
+                    if len(replay_buffer) > self.MAX_BUFFER_SIZE:
+                        replay_buffer.popleft()
 
                     state = next_state
                     step_count += 1
 
                     reward_sum += reward
+                    if step_count % 50 == 0:
+                        print("reward_sum: {}  reward: {}".format(reward_sum, reward))
                     before_action = action
 
                     # 앞으로 나아가지 못하는 상황이 1000프레임 이상이면 종료하고 학습한다.
@@ -167,13 +169,12 @@ class AIControl:
                     #png.from_array(next_state, 'RGB').save('capture/' + str(step_count) + '.png')
 
 
-
                 # 샘플링 하기에 작은 사이즈는 트레이닝 시키지 않는다
                 if step_count > 40:
-                    self.episode_buffer.append((self.replay_buffer, episode, step_count, max_x, reward_sum))
+                    self.episode_buffer.append((replay_buffer, episode, step_count, max_x, reward_sum))
 
                     # memory flush
-                    if len(self.episode_buffer) > 5:
+                    if len(self.episode_buffer) > 2:
                         print 'buffer flushing... plz wait...'
                         while len(self.episode_buffer) != 0:
                             time.sleep(1)
@@ -183,7 +184,7 @@ class AIControl:
                 else:
                     episode -= 1
 
-                self.replay_buffer = deque()
+                replay_buffer = deque()
 
                 episode += 1
 
