@@ -132,6 +132,7 @@ class AIControl:
                             action = self.env.get_random_actions()
                         else:
                             action = np.argmax(self.mainDQN.predict(state))
+                            print action
                             input_list.append(action)
                     else:
                         action = before_action
