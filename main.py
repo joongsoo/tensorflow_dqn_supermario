@@ -167,7 +167,7 @@ class AIControl:
                                                                                              episode, step_count, max_x,
                                                                                              reward_sum))
                     # memory flush
-                    if len(self.episode_buffer) > 5:
+                    if len(self.episode_buffer) > 1:
                         print ''
                         print 'buffer flush... plz wait...'
                         while len(self.episode_buffer) != 0:
