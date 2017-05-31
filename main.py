@@ -95,7 +95,7 @@ class AIControl:
             self.targetDQN = dqn.DQN(sess, self.input_size, self.output_size, name="target")
             tf.global_variables_initializer().run()
 
-            episode = 0
+            episode = 200
             try:
                 self.mainDQN.restore(episode)
                 self.targetDQN.restore(episode)
@@ -111,7 +111,7 @@ class AIControl:
 
             #REPLAY_MEMORY = self.get_memory_size(episode)
             while episode < self.max_episodes:
-                e = min(0.5, 1. / ((episode / 50) + 1))
+                e = max(min(0.5, 1. / ((episode / 50) + 1)), 0.05)
                 done = False
                 clear = False
                 step_count = 0
