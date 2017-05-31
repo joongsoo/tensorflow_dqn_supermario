@@ -38,7 +38,7 @@ class AIControl:
                 replay_buffer, episode, step_count, max_x, reward_sum = self.episode_buffer.popleft()
                 print ''
                 print("Buffer: {}  Episode: {}  steps: {}  max_x: {}  reward: {}".format(len(self.episode_buffer), episode, step_count, max_x, reward_sum))
-                for idx in range(50):
+                for idx in range(40):
                     minibatch = random.sample(replay_buffer, int(len(replay_buffer) * 0.03))
                     loss = self.replay_train(self.mainDQN, self.targetDQN, minibatch)
                     print '.',
@@ -95,7 +95,7 @@ class AIControl:
             self.targetDQN = dqn.DQN(sess, self.input_size, self.output_size, name="target")
             tf.global_variables_initializer().run()
 
-            episode = 200
+            episode = 0
             try:
                 self.mainDQN.restore(episode)
                 self.targetDQN.restore(episode)
@@ -171,12 +171,6 @@ class AIControl:
                 # 샘플링 하기에 작은 사이즈는 트레이닝 시키지 않는다
                 if step_count > 40:
                     self.episode_buffer.append((self.replay_buffer, episode, step_count, max_x, reward_sum))
-
-                    # memory flush
-                    if len(self.episode_buffer) > 5:
-                        while len(self.episode_buffer) != 0:
-                            time.sleep(1)
-
                     with open('input_log/input_' + str(episode), 'w') as fp:
                         fp.write(str(input_list))
                 else:
