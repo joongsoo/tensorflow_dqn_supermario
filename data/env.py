@@ -71,10 +71,10 @@ class Env:
         }
         self.run_it.ml_done = False
         self.run_it.setup_states(self.state_dict, c.LEVEL1)
-        if start_position < 0:
-            start_position = 0
-        self.run_it.max_posision_x = start_position
-        self.run_it.state.viewport.x = start_position
+        #if start_position < 0:
+        #    start_position = 0
+        #self.run_it.max_posision_x = start_position
+        #self.run_it.state.viewport.x = start_position
 
         state, _, _, _, _, _, _ = self.run_it.get_step()
         #state = scipy.misc.imresize(self.rgb2gray(state) / 255., (self.resize_x, self.resize_y))
