@@ -132,7 +132,6 @@ class AIControl:
                             action = self.env.get_random_actions()
                         else:
                             action = np.argmax(self.mainDQN.predict(state))
-                            print action
                             input_list.append(action)
                     else:
                         action = before_action
@@ -164,8 +163,8 @@ class AIControl:
                     else:
                         hold_frame = 0
                         before_max_x = max_x
-
-                    png.from_array(next_state, 'L').save('capture/' + str(step_count) + '.png')
+                    print next_state
+                    #png.from_array(next_state, 'RGB').save('capture/' + str(step_count) + '.png')
 
 
 
