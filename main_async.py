@@ -66,7 +66,7 @@ class AIControl:
             else:
                 time.sleep(1)
 
-    def train(self, replay_buffer, episode, step_count, max_x, reward_sum):
+    def train(self, replay_buffer, episode):
         for idx in range(50):
             minibatch = random.sample(replay_buffer, int(len(replay_buffer) * 0.03))
             loss = self.replay_train(self.tempDQN, self.targetDQN, minibatch)
