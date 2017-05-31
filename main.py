@@ -44,7 +44,7 @@ class AIControl:
     def async_training(self, sess, ops):
         while True:
             if len(self.episode_buffer) > 0:
-                replay_buffer, episode, step_count, max_x, reward_sum, input_list = self.episode_buffer.popleft()
+                replay_buffer, episode, step_count, max_x, reward_sum = self.episode_buffer.popleft()
                 print ''
                 print("Buffer: {}  Episode: {}  steps: {}  max_x: {}  reward: {}".format(len(self.episode_buffer), episode, step_count, max_x, reward_sum))
                 for idx in range(40):
@@ -54,9 +54,6 @@ class AIControl:
                 print ''
                 print("Loss: ", loss)
                 sess.run(ops)
-
-                with open('input_log/input_' + str(episode), 'w') as fp:
-                    fp.write(str(input_list))
 
                 # 100 에피소드마다 저장한다
                 if episode % 100 == 0:
@@ -123,7 +120,7 @@ class AIControl:
 
             #REPLAY_MEMORY = self.get_memory_size(episode)
             while episode < self.max_episodes:
-                e = 1. / ((episode / 50) + 1)#min(0.5, 1. / ((episode / 50) + 1))
+                e = min(0.5, 1. / ((episode / 50) + 1))
                 done = False
                 clear = False
                 step_count = 0
@@ -181,7 +178,9 @@ class AIControl:
 
                 # 샘플링 하기에 작은 사이즈는 트레이닝 시키지 않는다
                 if step_count > 40:
-                    self.episode_buffer.append((self.replay_buffer, episode, step_count, max_x, reward_sum, input_list))
+                    self.episode_buffer.append((self.replay_buffer, episode, step_count, max_x, reward_sum))
+                    with open('input_log/input_' + str(episode), 'w') as fp:
+                        fp.write(str(input_list))
                 else:
                     episode -= 1
 
