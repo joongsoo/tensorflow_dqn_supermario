@@ -165,6 +165,8 @@ class AIControl:
                         hold_frame = 0
                         before_max_x = max_x
 
+                    png.from_array(next_state, 'L').save('capture/' + str(step_count) + '.png')
+
 
 
                 # 샘플링 하기에 작은 사이즈는 트레이닝 시키지 않는다
