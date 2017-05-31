@@ -151,6 +151,7 @@ class AIControl:
                     state = next_state
                     step_count += 1
 
+                    reward_sum += reward
                     if step_count % 50 == 0:
                         print("reward_sum: {}  reward: {}".format(reward_sum, reward))
                     before_action = action
@@ -170,13 +171,13 @@ class AIControl:
 
                 # 샘플링 하기에 작은 사이즈는 트레이닝 시키지 않는다
                 if step_count > 40:
+                    self.episode_buffer.append((replay_buffer, episode, step_count, max_x, reward_sum))
+
                     # memory flush
                     if len(self.episode_buffer) > 2:
                         print 'buffer flushing... plz wait...'
                         while len(self.episode_buffer) != 0:
                             time.sleep(1)
-
-                    self.episode_buffer.append((replay_buffer, episode, step_count, max_x, reward_sum))
 
                     with open('input_log/input_' + str(episode), 'w') as fp:
                         fp.write(str(input_list))
