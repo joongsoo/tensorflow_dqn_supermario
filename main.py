@@ -163,8 +163,8 @@ class AIControl:
                     else:
                         hold_frame = 0
                         before_max_x = max_x
-                    print next_state
-                    #png.from_array(next_state, 'RGB').save('capture/' + str(step_count) + '.png')
+                    #print next_state
+                    png.from_array(next_state, 'RGB').save('capture/' + str(step_count) + '.png')
 
 
 
