@@ -138,7 +138,7 @@ class AIControl:
                     next_state, reward, done, clear, max_x, timeout, now_x = self.env.step(action)
 
                     if done and not timeout:
-                        reward = -100000
+                        reward = -10000
                     if clear:
                         reward += 10000
                         done = True
@@ -164,7 +164,7 @@ class AIControl:
                         hold_frame = 0
                         before_max_x = max_x
                     #print next_state
-                    png.from_array(next_state, 'RGB').save('capture/' + str(step_count) + '.png')
+                    #png.from_array(next_state, 'RGB').save('capture/' + str(step_count) + '.png')
 
 
 
