@@ -33,9 +33,7 @@ class AIControl:
 
 
     def async_training(self, sess, ops):
-        training_count = 0
         while True:
-            '''
             if len(self.episode_buffer) > 0:
                 replay_buffer, episode, step_count, max_x, reward_sum = self.episode_buffer.popleft()
                 print ''
@@ -52,21 +50,6 @@ class AIControl:
                 if episode % 100 == 0:
                     self.mainDQN.save(episode=episode)
                     self.targetDQN.save(episode=episode)
-            '''
-            if len(self.replay_buffer) > 100:
-                for idx in range(50):
-                    minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer) * 0.02))
-                    loss = self.replay_train(self.mainDQN, self.targetDQN, minibatch)
-                    print '.',
-                print ''
-                print("Train: {}  Loss: {}".format(training_count, loss))
-                sess.run(ops)
-
-                # 100 에피소드마다 저장한다
-                if training_count % 100 == 0:
-                    self.mainDQN.save(episode=training_count)
-                    self.targetDQN.save(episode=training_count)
-                training_count += 1
             else:
                 time.sleep(1)
 
@@ -185,15 +168,13 @@ class AIControl:
 
                 # 샘플링 하기에 작은 사이즈는 트레이닝 시키지 않는다
                 if step_count > 40:
-                    #self.episode_buffer.append((self.replay_buffer, episode, step_count, max_x, reward_sum))
-                    print ''
-                    print("Episode: {}  steps: {}  max_x: {}  reward: {}".format(episode, step_count, max_x, reward_sum))
+                    self.episode_buffer.append((self.replay_buffer, episode, step_count, max_x, reward_sum))
                     with open('input_log/input_' + str(episode), 'w') as fp:
                         fp.write(str(input_list))
                 else:
                     episode -= 1
 
-                #self.replay_buffer = deque()
+                self.replay_buffer = deque()
 
                 episode += 1
 
