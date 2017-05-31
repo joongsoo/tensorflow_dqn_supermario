@@ -172,6 +172,10 @@ class AIControl:
                 if step_count > 40:
                     self.episode_buffer.append((self.replay_buffer, episode, step_count, max_x, reward_sum))
 
+                    # memory flush
+                    if len(self.episode_buffer) > 5:
+                        while len(self.episode_buffer) != 0:
+                            time.sleep(1)
                     with open('input_log/input_' + str(episode), 'w') as fp:
                         fp.write(str(input_list))
                 else:
