@@ -61,13 +61,9 @@ class DQN:
             print net
             net = tf.reshape(net, [-1, 4 * 4 * 128])
 
-            net = tf.layers.dense(net, 2000, activation=tf.nn.relu)
+            net = tf.layers.dense(net, 2048, activation=tf.nn.relu)
             net = tf.nn.dropout(net, keep_prob=keep_prob)
-            net = tf.layers.dense(net, 4000, activation=tf.nn.relu)
-            net = tf.nn.dropout(net, keep_prob=keep_prob)
-            net = tf.layers.dense(net, 8000, activation=tf.nn.relu)
-            net = tf.nn.dropout(net, keep_prob=keep_prob)
-            net = tf.layers.dense(net, 1000, activation=tf.nn.relu)
+            net = tf.layers.dense(net, 512, activation=tf.nn.relu)
             net = tf.nn.dropout(net, keep_prob=keep_prob)
             net = tf.layers.dense(net, self.output_size)
             self._Qpred = net
