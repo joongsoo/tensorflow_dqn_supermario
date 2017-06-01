@@ -94,7 +94,7 @@ class AIControl:
             self.tempDQN = dqn.DQN(sess, self.input_size, self.output_size, name="temp")
             tf.global_variables_initializer().run()
 
-            episode = 0
+            episode = 100
             try:
                 self.mainDQN.restore(episode)
                 self.targetDQN.restore(episode)
@@ -149,7 +149,7 @@ class AIControl:
                     if step_count % self.frame_action == self.frame_action-1 \
                             or done or timeout or clear:
                         if done and not timeout:
-                            reward = -1000
+                            reward = -800
                         if clear:
                             reward += 10000
                             done = True
