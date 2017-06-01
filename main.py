@@ -134,6 +134,7 @@ class AIControl:
 
                 while not done and not clear:
                     if state[0][0][0] == 0 and state[0][0][1] == 0 and state[0][0][2] == 0:
+                        self.env.step(0)
                         print "no screen"
                         continue
 
