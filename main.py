@@ -186,7 +186,7 @@ class AIControl:
                     fp.write(str(input_list))
 
                 # 샘플링 하기에 작은 사이즈는 트레이닝 시키지 않는다
-                if len(self.replay_buffer) > 50:
+                if episode % 2 == 0 and len(self.replay_buffer) > 50:
                     self.episode_buffer.append((self.replay_buffer, episode, step_count, max_x, reward_sum))
                     if len(self.episode_buffer) > 0:
                         print 'buffer flush... plz wait...'
