@@ -87,12 +87,15 @@ class Control(object):
 
         # time penalty
         #reward -= 0.1
+        if self.keys[275] == 1:
+            reward += 0.1
 
         '''
         if self.keys[276] == 1:
             reward -= 0.2
         elif self.keys[275] == 1:
             reward += 1
+
 
         if self.before_x < position_x:
             reward += position_x - self.before_x
