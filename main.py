@@ -133,10 +133,6 @@ class AIControl:
                 step_reward = 0
 
                 while not done and not clear:
-                    if state[0][0][0] == 0 and state[0][0][1] == 0 and state[0][0][2] == 0:
-                        self.env.step(0)
-                        print "no screen"
-                        continue
 
                     if step_count % self.frame_action == 0:
                         if np.random.rand(1) < e:
