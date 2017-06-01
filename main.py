@@ -31,6 +31,8 @@ class AIControl:
 
         self.MAX_BUFFER_SIZE = 20000
 
+        self.frame_action = 5
+
 
     def async_training(self, sess, ops, ops_temp):
         while True:
@@ -64,11 +66,8 @@ class AIControl:
             if done:
                 Q[0, action] = reward
             else:
-                future = mainDQN.predict(next_state)
-                before = targetDQN.predict(next_state)
                 Q[0, action] = reward + self.dis * targetDQN.predict(next_state)[0, np.argmax(mainDQN.predict(next_state))]
 
-                print("{} {} {} {}".format(before, future, Q, reward))
 
             state = np.reshape(state, [self.input_size])
             y_stack = np.vstack([y_stack, Q])
@@ -131,8 +130,10 @@ class AIControl:
                 hold_frame = 0
                 before_max_x = 200
 
+                step_reward = 0
+
                 while not done and not clear:
-                    if step_count % 2 == 0:
+                    if step_count % self.frame_action == 0:
                         if np.random.rand(1) < e:
                             action = self.env.get_random_actions()
                         else:
@@ -140,7 +141,10 @@ class AIControl:
                             input_list.append(action)
                     else:
                         action = before_action
+
                     next_state, reward, done, clear, max_x, timeout, now_x = self.env.step(action)
+                    step_reward += reward
+
 
                     if done and not timeout:
                         reward = -10000
@@ -148,10 +152,13 @@ class AIControl:
                         reward += 10000
                         done = True
 
+                    if step_count % self.frame_action == self.frame_action-1:
+                        self.replay_buffer.append((state, action, step_reward, next_state, done))
+                        if len(self.replay_buffer) > self.MAX_BUFFER_SIZE:
+                            self.replay_buffer.popleft()
+                        step_reward = 0
+                        pass
 
-                    self.replay_buffer.append((state, action, reward, next_state, done))
-                    if len(self.replay_buffer) > self.MAX_BUFFER_SIZE:
-                        self.replay_buffer.popleft()
 
                     state = next_state
                     step_count += 1
