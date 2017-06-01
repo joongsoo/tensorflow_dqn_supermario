@@ -31,7 +31,7 @@ class AIControl:
 
         self.MAX_BUFFER_SIZE = 20000
 
-        self.frame_action = 5
+        self.frame_action = 3
 
 
     def async_training(self, sess, ops, ops_temp):
@@ -133,6 +133,10 @@ class AIControl:
                 step_reward = 0
 
                 while not done and not clear:
+                    if state[0][0][0] == 0 and state[0][0][1] == 0 and state[0][0][2] == 0:
+                        print "no screen"
+                        continue
+
                     if step_count % self.frame_action == 0:
                         if np.random.rand(1) < e:
                             action = self.env.get_random_actions()
@@ -143,6 +147,7 @@ class AIControl:
                         action = before_action
 
                     next_state, reward, done, clear, max_x, timeout, now_x = self.env.step(action)
+                    #print state
                     step_reward += reward
 
 
