@@ -146,18 +146,20 @@ class AIControl:
                     step_reward += reward
 
 
-                    if done and not timeout:
-                        reward = -10000
-                    if clear:
-                        reward += 10000
-                        done = True
+                    if step_count % self.frame_action == self.frame_action-1 \
+                            or done or timeout or clear:
+                        if done and not timeout:
+                            reward = -10000
+                        if clear:
+                            reward += 10000
+                            done = True
 
-                    if step_count % self.frame_action == self.frame_action-1:
                         self.replay_buffer.append((state, action, step_reward, next_state, done))
                         if len(self.replay_buffer) > self.MAX_BUFFER_SIZE:
                             self.replay_buffer.popleft()
                         step_reward = 0
-                        pass
+
+
 
 
                     state = next_state
