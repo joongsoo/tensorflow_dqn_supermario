@@ -24,7 +24,7 @@ class AIControl:
         self.val = 0
         self.save_path = "./save/save_model"
 
-        self.max_episodes = 20001
+        self.max_episodes = 2000001
 
         self.replay_buffer = deque()
         self.episode_buffer = deque()
@@ -32,14 +32,15 @@ class AIControl:
         self.MAX_BUFFER_SIZE = 20000
 
         self.frame_action = 3
+        self.training = True
 
 
     def async_training(self, sess, ops, ops_temp):
         while True:
             if len(self.episode_buffer) > 0:
                 replay_buffer, episode, step_count, max_x, reward_sum = self.episode_buffer.popleft()
-                for idx in range(20):
-                    minibatch = random.sample(replay_buffer, int(len(replay_buffer) * 0.1))
+                for idx in range(30):
+                    minibatch = random.sample(replay_buffer, int(len(replay_buffer) * 0.05))
                     loss = self.replay_train(self.tempDQN, self.targetDQN, minibatch)
                 print("Episode: {}  Loss: {}".format(episode, loss))
 
@@ -51,6 +52,10 @@ class AIControl:
                     self.mainDQN.save(episode=episode)
                     self.targetDQN.save(episode=episode)
                     self.tempDQN.save(episode=episode)
+
+            elif not self.training:
+                break
+
             else:
                 time.sleep(1)
 
@@ -209,6 +214,7 @@ class AIControl:
                 '''
 
             # 에피소드가 끝나면 종료하지말고 버퍼에있는 트레이닝을 마친다
+            self.training = False
             training_thread.join()
 
 
