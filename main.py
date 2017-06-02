@@ -102,7 +102,7 @@ class AIControl:
             self.tempDQN = dqn.DQN(sess, self.input_size, self.output_size, name="temp")
             tf.global_variables_initializer().run()
 
-            episode = 0
+            episode = 100
             try:
                 self.mainDQN.restore(episode)
                 self.targetDQN.restore(episode)
@@ -123,7 +123,7 @@ class AIControl:
 
             #REPLAY_MEMORY = self.get_memory_size(episode)
             while episode < self.max_episodes:
-                e = max(0.05, min(0.7, 1. / ((episode / 20) + 1)))
+                e = max(0.05, min(0.7, 1. / ((episode / 30) + 1)))
                 done = False
                 clear = False
                 step_count = 0
@@ -153,6 +153,7 @@ class AIControl:
 
                     next_state, reward, done, clear, max_x, timeout, now_x = self.env.step(action)
                     #print state
+                    print reward
                     step_reward += reward
 
 
