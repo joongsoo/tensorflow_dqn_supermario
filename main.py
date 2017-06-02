@@ -43,7 +43,6 @@ class AIControl:
                     #minibatch = random.sample(replay_buffer, int(len(replay_buffer) * 0.8))
                     minibatch = replay_buffer
                     loss = self.replay_train(self.tempDQN, self.targetDQN, minibatch)
-                    print str(idx) + '.....'
                 print("Episode: {}  Loss: {}".format(episode, loss))
 
                 sess.run(ops)
@@ -124,7 +123,7 @@ class AIControl:
 
             #REPLAY_MEMORY = self.get_memory_size(episode)
             while episode < self.max_episodes:
-                e = max(0.05, min(0.7, 1. / ((episode / 50) + 1)))
+                e = max(0.05, min(0.7, 1. / ((episode / 20) + 1)))
                 done = False
                 clear = False
                 step_count = 0
