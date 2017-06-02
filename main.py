@@ -68,7 +68,7 @@ class AIControl:
         step = 0
         for state, action, reward, next_state, done in train_batch:
             Q = mainDQN.predict(state)
-            png.from_array(next_state, 'L').save('capture/' + str(step) + '.png')
+            #png.from_array(next_state, 'L').save('capture/' + str(step) + '.png')
 
             if done:
                 Q[0, action] = reward
