@@ -65,6 +65,7 @@ class DQNManager(Process):
 
     def train(self):
         while True:
+            print "receive ready"
             replay_buffer, episode, step_count, max_x, reward_sum = self.train_q.recv()
             print "received"
             for idx in range(4):
