@@ -64,9 +64,10 @@ class AIControl:
     def replay_train(self, mainDQN, targetDQN, train_batch):
         x_stack = np.empty(0).reshape(0, self.input_size)
         y_stack = np.empty(0).reshape(0, self.output_size)
-
+        step = 0
         for state, action, reward, next_state, done in train_batch:
             Q = mainDQN.predict(state)
+            png.from_array(next_state, 'RGB').save('capture/' + str(step) + '.png')
 
             if done:
                 Q[0, action] = reward
@@ -77,6 +78,7 @@ class AIControl:
             state = np.reshape(state, [self.input_size])
             y_stack = np.vstack([y_stack, Q])
             x_stack = np.vstack([x_stack, state])
+            step += 1
 
         return mainDQN.update(x_stack, y_stack)
 
