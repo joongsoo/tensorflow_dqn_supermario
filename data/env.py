@@ -78,8 +78,9 @@ class Env:
         #self.run_it.state.viewport.x = start_position
 
         state, _, _, _, _, _, _ = self.run_it.get_step()
-        state = scipy.misc.imresize(self.rgb2gray(state) / 255., (self.resize_x, self.resize_y))
-        #state = self.rgb2gray(state) / 255.
+        state = scipy.misc.imresize(state, (self.resize_x, self.resize_y))
+        state = self.rgb2gray(state) / 255.
+        state = scipy.misc.imresize(state, (self.resize_x, self.resize_y))
         #state = scipy.misc.imresize(state, (self.resize_x, self.resize_y))
 
         #state = scipy.misc.imresize(state, (self.resize_x, self.resize_y))
@@ -113,9 +114,10 @@ class Env:
         #with_fps = "{} - {:.2f} FPS".format(self.run_it.caption, fps)
         #pg.display.set_caption(with_fps)
 
+
+        next_state = scipy.misc.imresize(next_state, (self.resize_x, self.resize_y))
         next_state = self.rgb2gray(next_state) / 255.
         next_state = scipy.misc.imresize(next_state, (self.resize_x, self.resize_y))
-
         #next_state = scipy.misc.imresize(next_state, (self.resize_x, self.resize_y))
 
         #next_state = scipy.misc.imrotate(next_state, -90.)
