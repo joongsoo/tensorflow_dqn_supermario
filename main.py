@@ -153,7 +153,6 @@ class AIControl:
 
                     next_state, reward, done, clear, max_x, timeout, now_x = self.env.step(action)
                     #print state
-                    print reward
                     step_reward += reward
 
 
