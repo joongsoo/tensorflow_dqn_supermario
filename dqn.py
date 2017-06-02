@@ -28,10 +28,10 @@ class DQN:
 
             # input place holders
             self._X = tf.placeholder(tf.float32, [None, self.input_size], name="input_x")
-            self.X_img = tf.reshape(self._X, [-1, 75, 75, 3])
+            self.X_img = tf.reshape(self._X, [-1, 75, 75, 1])
 
             # Conv
-            W1 = tf.Variable(tf.random_normal([8, 8, 3, 16], stddev=0.01))
+            W1 = tf.Variable(tf.random_normal([8, 8, 1, 16], stddev=0.01))
             net = tf.nn.conv2d(self.X_img, W1, strides=[1, 3, 3, 1], padding='SAME')
             net = tf.nn.relu(net)
             net = tf.nn.max_pool(net, ksize=[1, 2, 2, 1],
