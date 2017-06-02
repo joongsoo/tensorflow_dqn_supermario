@@ -40,7 +40,8 @@ class AIControl:
             if len(self.episode_buffer) > 0:
                 replay_buffer, episode, step_count, max_x, reward_sum = self.episode_buffer.popleft()
                 for idx in range(30):
-                    minibatch = random.sample(replay_buffer, int(len(replay_buffer) * 0.05))
+                    #minibatch = random.sample(replay_buffer, int(len(replay_buffer) * 0.05))
+                    minibatch = replay_buffer
                     loss = self.replay_train(self.tempDQN, self.targetDQN, minibatch)
                 print("Episode: {}  Loss: {}".format(episode, loss))
 
