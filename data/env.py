@@ -38,8 +38,8 @@ class Env:
         self.controller = None
 
         self.action_n = len(self.action_idx.keys())
-        self.resize_x = 75
-        self.resize_y = 75
+        self.resize_x = 120
+        self.resize_y = 120
         self.color_chanel = 1
         self.state_n = self.resize_x * self.resize_y * self.color_chanel
 
@@ -113,9 +113,9 @@ class Env:
         #with_fps = "{} - {:.2f} FPS".format(self.run_it.caption, fps)
         #pg.display.set_caption(with_fps)
 
-
+        next_state = self.rgb2gray(next_state) / 255.
         next_state = scipy.misc.imresize(next_state, (self.resize_x, self.resize_y))
-        #next_state = self.rgb2gray(next_state) / 255.
+
         #next_state = scipy.misc.imresize(next_state, (self.resize_x, self.resize_y))
 
         #next_state = scipy.misc.imrotate(next_state, -90.)
