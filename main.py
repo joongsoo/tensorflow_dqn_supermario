@@ -39,7 +39,7 @@ class AIControl:
         while True:
             if len(self.episode_buffer) > 0:
                 replay_buffer, episode, step_count, max_x, reward_sum = self.episode_buffer.popleft()
-                for idx in range(30):
+                for idx in range(2):
                     #minibatch = random.sample(replay_buffer, int(len(replay_buffer) * 0.05))
                     minibatch = replay_buffer
                     loss = self.replay_train(self.tempDQN, self.targetDQN, minibatch)
@@ -68,7 +68,7 @@ class AIControl:
         step = 0
         for state, action, reward, next_state, done in train_batch:
             Q = mainDQN.predict(state)
-            png.from_array(next_state, 'RGB').save('capture/' + str(step) + '.png')
+            #png.from_array(next_state, 'RGB').save('capture/' + str(step) + '.png')
 
             if done:
                 Q[0, action] = reward
