@@ -145,7 +145,7 @@ class AIControl:
         episode = 0
 
         while episode < self.max_episodes:
-            e = max(0.05, min(0.8, 1. / ((episode / 30) + 1)))
+            e = max(0.05, 1. / ((episode / 30) + 1))#min(0.8, 1. / ((episode / 30) + 1)))
             done = False
             clear = False
             step_count = 0
