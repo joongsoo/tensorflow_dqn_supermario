@@ -22,7 +22,7 @@ class DQN:
         self.save_path = "./save/save_model_" + self.net_name + ".ckpt"
         tf.logging.info(name + " - initialized")
 
-    def _build_network(self, l_rate=1.0):
+    def _build_network(self, l_rate=0.1):
         with tf.variable_scope(self.net_name):
             keep_prob = self.keep_prob
 
@@ -32,15 +32,15 @@ class DQN:
             self.X_img = tf.reshape(self._X, [-1, 120, 120, 1])
 
             # Conv
-            W1 = tf.Variable(tf.random_normal([8, 8, 1, 16], stddev=0.01))
-            net = tf.nn.conv2d(self.X_img, W1, strides=[1, 3, 3, 1], padding='SAME')
+            W1 = tf.Variable(tf.random_normal([4, 4, 1, 16], stddev=0.01))
+            net = tf.nn.conv2d(self.X_img, W1, strides=[1, 2, 2, 1], padding='SAME')
             net = tf.nn.relu(net)
             net = tf.nn.max_pool(net, ksize=[1, 2, 2, 1],
                                  strides=[1, 2, 2, 1], padding='SAME')
             #net = tf.nn.dropout(net, keep_prob=self._keep_prob)
 
             # Conv
-            W2 = tf.Variable(tf.random_normal([4, 4, 16, 32], stddev=0.01))
+            W2 = tf.Variable(tf.random_normal([2, 2, 16, 32], stddev=0.01))
             net = tf.nn.conv2d(net, W2, strides=[1, 2, 2, 1], padding='SAME')
             net = tf.nn.relu(net)
             #net = tf.nn.dropout(net, keep_prob=self._keep_prob)
@@ -58,7 +58,7 @@ class DQN:
             #net = tf.nn.dropout(net, keep_prob=self._keep_prob)
 
             print net
-            net = tf.reshape(net, [-1, 5 * 5 * 128])
+            net = tf.reshape(net, [-1, 8 * 8 * 128])
 
             net = tf.layers.dense(net, 2048, activation=tf.nn.relu)
             #net = tf.nn.dropout(net, keep_prob=self._keep_prob)
