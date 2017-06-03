@@ -28,6 +28,7 @@ class DQN:
 
             # input place holders
             self._X = tf.placeholder(tf.float32, [None, self.input_size], name="input_x")
+            self._keep_prob = tf.placeholder(tf.float32, name="input_x")
             self.X_img = tf.reshape(self._X, [-1, 120, 120, 1])
 
             # Conv
@@ -36,33 +37,33 @@ class DQN:
             net = tf.nn.relu(net)
             net = tf.nn.max_pool(net, ksize=[1, 2, 2, 1],
                                  strides=[1, 2, 2, 1], padding='SAME')
-            net = tf.nn.dropout(net, keep_prob=keep_prob)
+            net = tf.nn.dropout(net, keep_prob=self._keep_prob)
 
             # Conv
             W2 = tf.Variable(tf.random_normal([4, 4, 16, 32], stddev=0.01))
             net = tf.nn.conv2d(net, W2, strides=[1, 2, 2, 1], padding='SAME')
             net = tf.nn.relu(net)
-            net = tf.nn.dropout(net, keep_prob=keep_prob)
+            net = tf.nn.dropout(net, keep_prob=self._keep_prob)
 
             # Conv
             W3 = tf.Variable(tf.random_normal([2, 2, 32, 64], stddev=0.01))
             net = tf.nn.conv2d(net, W3, strides=[1, 2, 2, 1], padding='SAME')
             net = tf.nn.relu(net)
-            net = tf.nn.dropout(net, keep_prob=keep_prob)
+            net = tf.nn.dropout(net, keep_prob=self._keep_prob)
 
             # Conv
             W3 = tf.Variable(tf.random_normal([2, 2, 64, 128], stddev=0.01))
             net = tf.nn.conv2d(net, W3, strides=[1, 1, 1, 1], padding='SAME')
             net = tf.nn.relu(net)
-            net = tf.nn.dropout(net, keep_prob=keep_prob)
+            net = tf.nn.dropout(net, keep_prob=self._keep_prob)
 
             print net
             net = tf.reshape(net, [-1, 5 * 5 * 128])
 
             net = tf.layers.dense(net, 2048, activation=tf.nn.relu)
-            net = tf.nn.dropout(net, keep_prob=keep_prob)
+            net = tf.nn.dropout(net, keep_prob=self._keep_prob)
             net = tf.layers.dense(net, 512, activation=tf.nn.relu)
-            net = tf.nn.dropout(net, keep_prob=keep_prob)
+            net = tf.nn.dropout(net, keep_prob=self._keep_prob)
             net = tf.layers.dense(net, self.output_size)
             self._Qpred = net
 
@@ -82,11 +83,12 @@ class DQN:
 
     def predict(self, state):
         x = np.reshape(state, [1, self.input_size])
-        predict = self.session.run(self._Qpred, feed_dict={self._X: x})
+        predict = self.session.run(self._Qpred, feed_dict={self._X: x, self._keep_prob: 1.0})
         return predict
 
     def update(self, x_stack, y_stack):
         return self.session.run([self._loss, self._train], feed_dict={
             self._X: x_stack,
-            self._Y: y_stack
+            self._Y: y_stack,
+            self._keep_prob: 0.7
         })
