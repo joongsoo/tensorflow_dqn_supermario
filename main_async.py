@@ -35,7 +35,7 @@ class DQNManager(Process):
             self.tempDQN = dqn.DQN(sess, self.input_size, self.output_size, name="temp")
             tf.global_variables_initializer().run()
 
-            episode = 0
+            episode = 5000
             try:
                 self.mainDQN.restore(episode)
                 self.targetDQN.restore(episode)
@@ -55,8 +55,6 @@ class DQNManager(Process):
             train_thread.start()
             train_thread.join()
             predict_thread.join()
-
-
 
     def predict(self):
         while self.training.value:
@@ -144,7 +142,7 @@ class AIControl:
 
     def control_start(self):
         start_position = 0
-        episode = 0
+        episode = 5000
 
         while episode < self.max_episodes:
             e = max(0.05, min(0.7, 1. / ((episode / 30) + 1)))
@@ -239,16 +237,18 @@ class AIControl:
                 start_position = 0
             '''
 
-        # 에피소드가 끝나면 종료하지말고 버퍼에있는 트레이닝을 마친다
         self.training.value = False
 
 
 
 def main():
     env = Env()
+
     play_pipe, predict_pipe = Pipe()
     train_pipe1, train_pipe2 = Pipe()
+
     is_training = Value("b", True)
+
     manager = DQNManager(env.state_n, env.action_n, train_pipe1, predict_pipe, is_training)
     controller = AIControl(env, train_pipe2, play_pipe, is_training)
     manager.start()
