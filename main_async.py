@@ -50,7 +50,7 @@ class DQNManager(Process):
             sess.run(self.copy_ops_temp2)
 
             predict_thread = threading.Thread(target=self.predict)
-            train_thread = threading.Thread(target=self.receive_train_data)
+            train_thread = threading.Thread(target=self.train)
             predict_thread.start()
             train_thread.start()
             train_thread.join()
@@ -61,34 +61,28 @@ class DQNManager(Process):
             state = self.pipe.recv()
             self.pipe.send(np.argmax(self.mainDQN.predict(state)))
 
-    def receive_train_data(self):
-        threads = []
-        while self.training.value:
+    def train(self):
+        while True:
             replay_buffer, episode, step_count, max_x, reward_sum = self.train_q.recv()
             print "received"
-            train_thread = threading.Thread(target=self.train, args=(replay_buffer, episode))
-            train_thread.start()
-            threads.append(train_thread)
-        for t in threads:
-            t.join()
+            self.sess.run(self.copy_ops_temp2)
+            for idx in range(4):
+                # minibatch = random.sample(replay_buffer, int(len(replay_buffer) * 0.8))
+                minibatch = replay_buffer
+                loss = self.replay_train(self.tempDQN, self.targetDQN, minibatch)
+            print("Episode: {}  Loss: {}  Accuracy: {}".format(episode, loss[0], loss[2]))
 
-    def train(self, replay_buffer, episode):
-        self.sess.run(self.copy_ops_temp2)
-        for idx in range(4):
-            # minibatch = random.sample(replay_buffer, int(len(replay_buffer) * 0.8))
-            minibatch = replay_buffer
-            loss = self.replay_train(self.tempDQN, self.targetDQN, minibatch)
-        print("Episode: {}  Loss: {}  Accuracy: {}".format(episode, loss[0], loss[2]))
+            self.sess.run(self.copy_ops)
+            self.sess.run(self.copy_ops_temp)
 
-        self.sess.run(self.copy_ops)
-        self.sess.run(self.copy_ops_temp)
+            # 100 에피소드마다 저장한다
+            if episode % 100 == 0:
+                self.mainDQN.save(episode=episode)
+                self.targetDQN.save(episode=episode)
+                self.tempDQN.save(episode=episode)
 
-        # 100 에피소드마다 저장한다
-        if episode % 100 == 0:
-            self.mainDQN.save(episode=episode)
-            self.targetDQN.save(episode=episode)
-            self.tempDQN.save(episode=episode)
-
+            if not self.training.value:
+                break
 
     def replay_train(self, mainDQN, targetDQN, train_batch):
         x_stack = np.empty(0).reshape(0, self.input_size)
@@ -226,7 +220,7 @@ class AIControl:
                 fp.write(str(input_list))
 
             # 샘플링 하기에 작은 사이즈는 트레이닝 시키지 않는다
-            if episode % 10 == 0 and len(self.replay_buffer) > 50:
+            if episode % 30 == 0 and len(self.replay_buffer) > 50:
                 self.episode_buffer.send((self.replay_buffer, episode, step_count, max_x, reward_sum))
                 #if not self.episode_buffer.empty():
                 #    print 'buffer flush... plz wait...'
