@@ -77,7 +77,7 @@ class DQN:
             l_rate, momentum=0.95, epsilon=0.01).minimize(self._loss)
 
 
-        correct_prediction = tf.equal(tf.argmax(self._Qpred), tf.argmax(self._Y))
+        correct_prediction = tf.equal(tf.argmax(self._Qpred, 1), tf.argmax(self._Y, 1))
         self.accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
     def save(self, episode=0):
@@ -91,6 +91,13 @@ class DQN:
         x = np.reshape(state, [1, self.input_size])
         predict = self.session.run(self._Qpred, feed_dict={self._X: x, self._keep_prob: 1.0})
         return predict
+
+    def val_test(self, x_stack, y_stack):
+        return self.session.run([self._Qpred, self._Y], feed_dict={
+            self._X: x_stack,
+            self._Y: y_stack,
+            self._keep_prob: 0.7
+        })
 
     def update(self, x_stack, y_stack):
         return self.session.run([self._loss, self._train, self.accuracy], feed_dict={
