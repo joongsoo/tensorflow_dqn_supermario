@@ -81,6 +81,8 @@ class AIControl:
             x_stack = np.vstack([x_stack, state])
             step += 1
 
+
+
         return mainDQN.update(x_stack, y_stack)
 
     def get_copy_var_ops(self, dest_scope_name="target", src_scope_name="main"):
@@ -123,7 +125,7 @@ class AIControl:
 
             #REPLAY_MEMORY = self.get_memory_size(episode)
             while episode < self.max_episodes:
-                e = max(0.05, min(0.7, 1. / ((episode / 30) + 1)))
+                e = max(0.05, 1. / ((episode / 30) + 1))
                 done = False
                 clear = False
                 step_count = 0
@@ -198,7 +200,7 @@ class AIControl:
                     fp.write(str(input_list))
 
                 # 샘플링 하기에 작은 사이즈는 트레이닝 시키지 않는다
-                if episode % 2 == 0 and len(self.replay_buffer) > 50:
+                if episode % 30 == 0 and len(self.replay_buffer) > 50:
                     self.episode_buffer.append((self.replay_buffer, episode, step_count, max_x, reward_sum))
                     if len(self.episode_buffer) > 0:
                         print 'buffer flush... plz wait...'
