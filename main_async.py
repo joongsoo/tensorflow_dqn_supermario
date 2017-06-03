@@ -66,13 +66,13 @@ class DQNManager(Process):
         while self.training.value:
             replay_buffer, episode, step_count, max_x, reward_sum = self.train_q.recv()
             print "received"
-            train_thread = threading.Thread(target=self.train, args=((replay_buffer, episode, step_count, max_x, reward_sum)))
+            train_thread = threading.Thread(target=self.train, args=(replay_buffer, episode))
             train_thread.start()
             threads.append(train_thread)
         for t in threads:
             t.join()
 
-    def train(self, (replay_buffer, episode, step_count, max_x, reward_sum)):
+    def train(self, replay_buffer, episode):
         self.sess.run(self.copy_ops_temp2)
         for idx in range(4):
             # minibatch = random.sample(replay_buffer, int(len(replay_buffer) * 0.8))
