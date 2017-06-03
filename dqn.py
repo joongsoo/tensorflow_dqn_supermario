@@ -37,33 +37,33 @@ class DQN:
             net = tf.nn.relu(net)
             net = tf.nn.max_pool(net, ksize=[1, 2, 2, 1],
                                  strides=[1, 2, 2, 1], padding='SAME')
-            net = tf.nn.dropout(net, keep_prob=self._keep_prob)
+            #net = tf.nn.dropout(net, keep_prob=self._keep_prob)
 
             # Conv
             W2 = tf.Variable(tf.random_normal([4, 4, 16, 32], stddev=0.01))
             net = tf.nn.conv2d(net, W2, strides=[1, 2, 2, 1], padding='SAME')
             net = tf.nn.relu(net)
-            net = tf.nn.dropout(net, keep_prob=self._keep_prob)
+            #net = tf.nn.dropout(net, keep_prob=self._keep_prob)
 
             # Conv
             W3 = tf.Variable(tf.random_normal([2, 2, 32, 64], stddev=0.01))
             net = tf.nn.conv2d(net, W3, strides=[1, 2, 2, 1], padding='SAME')
             net = tf.nn.relu(net)
-            net = tf.nn.dropout(net, keep_prob=self._keep_prob)
+            #net = tf.nn.dropout(net, keep_prob=self._keep_prob)
 
             # Conv
             W3 = tf.Variable(tf.random_normal([2, 2, 64, 128], stddev=0.01))
             net = tf.nn.conv2d(net, W3, strides=[1, 1, 1, 1], padding='SAME')
             net = tf.nn.relu(net)
-            net = tf.nn.dropout(net, keep_prob=self._keep_prob)
+            #net = tf.nn.dropout(net, keep_prob=self._keep_prob)
 
             print net
             net = tf.reshape(net, [-1, 5 * 5 * 128])
 
             net = tf.layers.dense(net, 2048, activation=tf.nn.relu)
-            net = tf.nn.dropout(net, keep_prob=self._keep_prob)
+            #net = tf.nn.dropout(net, keep_prob=self._keep_prob)
             net = tf.layers.dense(net, 512, activation=tf.nn.relu)
-            net = tf.nn.dropout(net, keep_prob=self._keep_prob)
+            #net = tf.nn.dropout(net, keep_prob=self._keep_prob)
             net = tf.layers.dense(net, self.output_size)
             self._Qpred = net
 
@@ -77,7 +77,7 @@ class DQN:
             l_rate, momentum=0.95, epsilon=0.01).minimize(self._loss)
 
 
-        correct_prediction = tf.equal(tf.argmax(self._Qpred, 1), tf.argmax(self._Y, 1))
+        correct_prediction = tf.equal(tf.argmax(self._Qpred), tf.argmax(self._Y))
         self.accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
     def save(self, episode=0):
