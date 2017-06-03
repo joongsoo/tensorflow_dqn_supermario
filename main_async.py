@@ -69,7 +69,7 @@ class DQNManager(Process):
                 # minibatch = random.sample(replay_buffer, int(len(replay_buffer) * 0.8))
                 minibatch = replay_buffer
                 loss = self.replay_train(self.tempDQN, self.targetDQN, minibatch)
-            print("Episode: {}  Loss: {}".format(episode, loss))
+            print("Episode: {}  Loss: {}  Accuracy: {}".format(episode, loss[0], loss[2]))
 
             self.sess.run(self.copy_ops)
             self.sess.run(self.copy_ops_temp)

@@ -22,7 +22,7 @@ class DQN:
         self.save_path = "./save/save_model_" + self.net_name + ".ckpt"
         tf.logging.info(name + " - initialized")
 
-    def _build_network(self, l_rate=0.00001):
+    def _build_network(self, l_rate=0.001):
         with tf.variable_scope(self.net_name):
             keep_prob = self.keep_prob
 
@@ -70,9 +70,15 @@ class DQN:
         self._Y = tf.placeholder(shape=[None, self.output_size], dtype=tf.float32)
 
         self._loss = tf.reduce_mean(tf.square(self._Y - self._Qpred))
+
         #self._train = tf.train.AdamOptimizer(learning_rate=l_rate).minimize(self._loss)
+
         self._train = tf.train.RMSPropOptimizer(
             l_rate, momentum=0.95, epsilon=0.01).minimize(self._loss)
+
+
+        correct_prediction = tf.equal(tf.argmax(self._Qpred, 1), tf.argmax(self._Y, 1))
+        self.accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
     def save(self, episode=0):
         self.saver.save(self.session, self.save_path+ "-" + str(episode))
@@ -87,7 +93,7 @@ class DQN:
         return predict
 
     def update(self, x_stack, y_stack):
-        return self.session.run([self._loss, self._train], feed_dict={
+        return self.session.run([self._loss, self._train, self.accuracy], feed_dict={
             self._X: x_stack,
             self._Y: y_stack,
             self._keep_prob: 0.7
