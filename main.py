@@ -24,7 +24,7 @@ class AIControl:
         self.val = 0
         self.save_path = "./save/save_model"
 
-        self.max_episodes = 2000001
+        self.max_episodes = 20000001
 
         self.replay_buffer = deque()
         self.episode_buffer = deque()
@@ -36,7 +36,23 @@ class AIControl:
 
 
     def async_training(self, sess, ops, ops_temp):
-        while True:
+        step = 0
+        while self.training:
+            for idx in range(100):
+                minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer) * 0.03))
+                #minibatch = replay_buffer
+                loss = self.replay_train(self.tempDQN, self.targetDQN, minibatch)
+            print("Episode: {}  Loss: {}".format(step, loss))
+
+            sess.run(ops)
+            sess.run(ops_temp)
+
+            # 100 에피소드마다 저장한다
+            if step % 100 == 0:
+                self.mainDQN.save(episode=step)
+                self.targetDQN.save(episode=step)
+                self.tempDQN.save(episode=step)
+            '''
             if len(self.episode_buffer) > 0:
                 replay_buffer, episode, step_count, max_x, reward_sum = self.episode_buffer.popleft()
                 for idx in range(4):
@@ -59,6 +75,8 @@ class AIControl:
 
             else:
                 time.sleep(1)
+            '''
+            step += 1
 
 
 
@@ -171,9 +189,6 @@ class AIControl:
                             self.replay_buffer.popleft()
                         step_reward = 0
 
-
-
-
                     state = next_state
                     step_count += 1
 
@@ -192,13 +207,14 @@ class AIControl:
                     #print next_state
                     #png.from_array(next_state, 'RGB').save('capture/' + str(step_count) + '.png')
 
-                print("Buffer: {}  Episode: {}  steps: {}  max_x: {}  reward: {}".format(len(self.episode_buffer),
-                                                                                         episode, step_count, max_x,
-                                                                                         reward_sum))
+                #print("Buffer: {}  Episode: {}  steps: {}  max_x: {}  reward: {}".format(len(self.episode_buffer),
+                #                                                                         episode, step_count, max_x,
+                #                                                                         reward_sum))
 
                 with open('input_log/input_' + str(episode), 'w') as fp:
                     fp.write(str(input_list))
 
+                '''
                 # 샘플링 하기에 작은 사이즈는 트레이닝 시키지 않는다
                 if episode % 3 == 0 and len(self.replay_buffer) > 50:
                     self.episode_buffer.append((self.replay_buffer, episode, step_count, max_x, reward_sum))
@@ -207,6 +223,7 @@ class AIControl:
                         while len(self.episode_buffer) != 0:
                             time.sleep(1)
                     self.replay_buffer = deque()
+                '''
 
                 episode += 1
 
