@@ -29,7 +29,7 @@ class AIControl:
         self.replay_buffer = deque()
         self.episode_buffer = deque()
 
-        self.MAX_BUFFER_SIZE = 50000
+        self.MAX_BUFFER_SIZE = 25000
 
         self.frame_action = 3
         self.training = True
@@ -49,7 +49,7 @@ class AIControl:
                 sess.run(ops_temp)
 
                 # 100 에피소드마다 저장한다
-                if step % 100 == 0:
+                if step % 50 == 0:
                     self.mainDQN.save(episode=step)
                     self.targetDQN.save(episode=step)
                     self.tempDQN.save(episode=step)
@@ -146,7 +146,7 @@ class AIControl:
 
             #REPLAY_MEMORY = self.get_memory_size(episode)
             while episode < self.max_episodes:
-                e = max(0.1, 1. / ((episode / 1000) + 1))
+                e = max(0.1, min(0.9, 1. / ((episode / 1000) + 1)))
                 #
                 done = False
                 clear = False
