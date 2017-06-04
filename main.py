@@ -38,45 +38,48 @@ class AIControl:
     def async_training(self, sess, ops, ops_temp):
         step = 0
         while self.training:
-            for idx in range(100):
-                minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer) * 0.03))
-                #minibatch = replay_buffer
-                loss = self.replay_train(self.tempDQN, self.targetDQN, minibatch)
-            print("Episode: {}  Loss: {}".format(step, loss))
-
-            sess.run(ops)
-            sess.run(ops_temp)
-
-            # 100 에피소드마다 저장한다
-            if step % 100 == 0:
-                self.mainDQN.save(episode=step)
-                self.targetDQN.save(episode=step)
-                self.tempDQN.save(episode=step)
-            '''
-            if len(self.episode_buffer) > 0:
-                replay_buffer, episode, step_count, max_x, reward_sum = self.episode_buffer.popleft()
-                for idx in range(4):
-                    #minibatch = random.sample(replay_buffer, int(len(replay_buffer) * 0.8))
-                    minibatch = replay_buffer
+            if len(self.replay_buffer) > 50:
+                for idx in range(100):
+                    minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer) * 0.03))
+                    #minibatch = replay_buffer
                     loss = self.replay_train(self.tempDQN, self.targetDQN, minibatch)
-                print("Episode: {}  Loss: {}".format(episode, loss))
+                print("Episode: {}  Loss: {}".format(step, loss))
 
                 sess.run(ops)
                 sess.run(ops_temp)
 
                 # 100 에피소드마다 저장한다
-                if episode % 100 == 0:
-                    self.mainDQN.save(episode=episode)
-                    self.targetDQN.save(episode=episode)
-                    self.tempDQN.save(episode=episode)
+                if step % 100 == 0:
+                    self.mainDQN.save(episode=step)
+                    self.targetDQN.save(episode=step)
+                    self.tempDQN.save(episode=step)
+                '''
+                if len(self.episode_buffer) > 0:
+                    replay_buffer, episode, step_count, max_x, reward_sum = self.episode_buffer.popleft()
+                    for idx in range(4):
+                        #minibatch = random.sample(replay_buffer, int(len(replay_buffer) * 0.8))
+                        minibatch = replay_buffer
+                        loss = self.replay_train(self.tempDQN, self.targetDQN, minibatch)
+                    print("Episode: {}  Loss: {}".format(episode, loss))
 
-            elif not self.training:
-                break
+                    sess.run(ops)
+                    sess.run(ops_temp)
 
+                    # 100 에피소드마다 저장한다
+                    if episode % 100 == 0:
+                        self.mainDQN.save(episode=episode)
+                        self.targetDQN.save(episode=episode)
+                        self.tempDQN.save(episode=episode)
+
+                elif not self.training:
+                    break
+
+                else:
+                    time.sleep(1)
+                '''
+                step += 1
             else:
                 time.sleep(1)
-            '''
-            step += 1
 
 
 
