@@ -20,7 +20,7 @@ class AIControl:
         self.output_size = 12
 
         #self.dis = 0.9
-        self.dis = 0.9
+        self.dis = 0.4
         self.val = 0
         self.save_path = "./save/save_model"
 
@@ -104,7 +104,7 @@ class AIControl:
             self.tempDQN = dqn.DQN(sess, self.input_size, self.output_size, name="temp")
             tf.global_variables_initializer().run()
 
-            episode = 5100
+            episode = 5500
             try:
                 self.mainDQN.restore(episode)
                 self.targetDQN.restore(episode)
