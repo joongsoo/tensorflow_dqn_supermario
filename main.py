@@ -20,7 +20,7 @@ class AIControl:
         self.output_size = 12
 
         #self.dis = 0.9
-        self.dis = 0.4
+        self.dis = 0.55
         self.val = 0
         self.save_path = "./save/save_model"
 
