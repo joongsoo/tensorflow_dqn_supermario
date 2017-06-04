@@ -237,7 +237,8 @@ class AIControl:
                     self.replay_buffer = deque()
                 '''
 
-                if len(self.replay_buffer) > self.MAX_BUFFER_SIZE:
+                #if len(self.replay_buffer) > self.MAX_BUFFER_SIZE:
+                if episode % 20 == 0:
                     self.episode_buffer.append((self.replay_buffer, episode, step_count, max_x, reward_sum))
                     if len(self.episode_buffer) > 0:
                         print 'buffer flush... plz wait...'
