@@ -29,7 +29,7 @@ class AIControl:
         self.replay_buffer = deque()
         self.episode_buffer = deque()
 
-        self.MAX_BUFFER_SIZE = 20000
+        self.MAX_BUFFER_SIZE = 50000
 
         self.frame_action = 3
         self.training = True
