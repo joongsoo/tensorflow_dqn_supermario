@@ -44,7 +44,7 @@ class AIControl:
                 for idx in range(epoch):
                     minibatch = random.sample(replay_buffer, int(len(replay_buffer) * 0.03))
                     loss = self.replay_train(self.tempDQN, self.targetDQN, minibatch)
-                print("Step: {}  Loss: {}".format(episode, loss))
+                print("Step: {}  Loss: {}".format(step, loss))
                 '''
                 for idx in range(100):
                     minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer) * 0.03))
