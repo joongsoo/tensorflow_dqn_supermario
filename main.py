@@ -37,13 +37,21 @@ class AIControl:
 
     def async_training(self, sess, ops, ops_temp):
         step = 0
+        epoch = 100
         while self.training:
-            if len(self.replay_buffer) > 50:
+            if len(self.episode_buffer) > 0:
+                replay_buffer, episode, step_count, max_x, reward_sum = self.episode_buffer.popleft()
+                for idx in range(epoch):
+                    minibatch = random.sample(replay_buffer, int(len(replay_buffer) * 0.03))
+                    loss = self.replay_train(self.tempDQN, self.targetDQN, minibatch)
+                print("Step: {}  Loss: {}".format(episode, loss))
+                '''
                 for idx in range(100):
                     minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer) * 0.03))
                     #minibatch = replay_buffer
                     loss = self.replay_train(self.tempDQN, self.targetDQN, minibatch)
                 print("Episode: {}  Loss: {}".format(step, loss))
+                '''
 
                 sess.run(ops)
                 sess.run(ops_temp)
@@ -228,6 +236,14 @@ class AIControl:
                             time.sleep(1)
                     self.replay_buffer = deque()
                 '''
+
+                if len(self.replay_buffer) > self.MAX_BUFFER_SIZE:
+                    self.episode_buffer.append((self.replay_buffer, episode, step_count, max_x, reward_sum))
+                    if len(self.episode_buffer) > 0:
+                        print 'buffer flush... plz wait...'
+                        while len(self.episode_buffer) != 0:
+                            time.sleep(1)
+                    self.replay_buffer = deque()
 
                 episode += 1
 
