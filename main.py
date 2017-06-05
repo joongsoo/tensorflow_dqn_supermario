@@ -29,20 +29,21 @@ class AIControl:
         self.replay_buffer = deque()
         self.episode_buffer = deque()
 
-        self.MAX_BUFFER_SIZE = 25000
+        self.MAX_BUFFER_SIZE = 20000
 
         self.frame_action = 3
         self.training = True
 
 
     def async_training(self, sess, ops, ops_temp):
-        step = 0
+        step = 350
         epoch = 100
         while self.training:
             if len(self.episode_buffer) > 0:
                 replay_buffer, episode, step_count, max_x, reward_sum = self.episode_buffer.popleft()
                 for idx in range(epoch):
                     minibatch = random.sample(replay_buffer, int(len(replay_buffer) * 0.03))
+                    #minibatch = replay_buffer
                     loss = self.replay_train(self.tempDQN, self.targetDQN, minibatch)
                 print("Step: {}  Loss: {}".format(step, loss))
                 '''
@@ -94,10 +95,9 @@ class AIControl:
     def replay_train(self, mainDQN, targetDQN, train_batch):
         x_stack = np.empty(0).reshape(0, self.input_size)
         y_stack = np.empty(0).reshape(0, self.output_size)
-        step = 0
+
         for state, action, reward, next_state, done in train_batch:
             Q = mainDQN.predict(state)
-            #png.from_array(next_state, 'L').save('capture/' + str(step) + '.png')
 
             if done:
                 Q[0, action] = reward
@@ -106,11 +106,9 @@ class AIControl:
 
 
             state = np.reshape(state, [self.input_size])
+
             y_stack = np.vstack([y_stack, Q])
             x_stack = np.vstack([x_stack, state])
-            step += 1
-
-
 
         return mainDQN.update(x_stack, y_stack)
 
@@ -133,7 +131,7 @@ class AIControl:
             self.tempDQN = dqn.DQN(sess, self.input_size, self.output_size, name="temp")
             tf.global_variables_initializer().run()
 
-            episode = 0
+            episode = 350
             try:
                 self.mainDQN.restore(episode)
                 self.targetDQN.restore(episode)
@@ -152,6 +150,7 @@ class AIControl:
 
             start_position = 0
 
+            episode = 7000
             #REPLAY_MEMORY = self.get_memory_size(episode)
             while episode < self.max_episodes:
                 e = max(0.1, min(0.9, 1. / ((episode / 1000) + 1)))
@@ -237,8 +236,8 @@ class AIControl:
                     self.replay_buffer = deque()
                 '''
 
-                #if len(self.replay_buffer) > self.MAX_BUFFER_SIZE:
-                if episode % 20 == 0:
+                if len(self.replay_buffer) > self.MAX_BUFFER_SIZE:
+                #if episode % 20 == 0:
                     self.episode_buffer.append((self.replay_buffer, episode, step_count, max_x, reward_sum))
                     if len(self.episode_buffer) > 0:
                         print 'buffer flush... plz wait...'
