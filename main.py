@@ -109,6 +109,10 @@ class AIControl:
 
             y_stack = np.vstack([y_stack, Q])
             x_stack = np.vstack([x_stack, state])
+        with open('input_log/state_1', 'w') as fp:
+            fp.write('[')
+            fp.write('\n'.join(['['+str(i)+'], ' for i in x_stack.tolist()]))
+            fp.write(']')
 
         return mainDQN.update(x_stack, y_stack)
 
@@ -236,8 +240,8 @@ class AIControl:
                     self.replay_buffer = deque()
                 '''
 
-                if len(self.replay_buffer) > self.MAX_BUFFER_SIZE:
-                #if episode % 20 == 0:
+                #if len(self.replay_buffer) > self.MAX_BUFFER_SIZE:
+                if episode % 30 == 0:
                     self.episode_buffer.append((self.replay_buffer, episode, step_count, max_x, reward_sum))
                     if len(self.episode_buffer) > 0:
                         print 'buffer flush... plz wait...'
