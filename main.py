@@ -36,7 +36,7 @@ class AIControl:
 
 
     def async_training(self, sess, ops, ops_temp):
-        step = 450
+        step = 951
         epoch = 100
         while self.training:
             if len(self.episode_buffer) > 0:
@@ -135,7 +135,7 @@ class AIControl:
             self.tempDQN = dqn.DQN(sess, self.input_size, self.output_size, name="temp")
             tf.global_variables_initializer().run()
 
-            episode = 450
+            episode = 950
             try:
                 self.mainDQN.restore(episode)
                 self.targetDQN.restore(episode)
@@ -220,7 +220,7 @@ class AIControl:
                         hold_frame = 0
                         before_max_x = max_x
                     #print next_state
-                    #png.from_array(next_state, 'RGB').save('capture/' + str(step_count) + '.png')
+                    #png.from_array(next_state, 'L').save('capture/' + str(step_count) + '.png')
 
                 #print("Buffer: {}  Episode: {}  steps: {}  max_x: {}  reward: {}".format(len(self.episode_buffer),
                 #                                                                         episode, step_count, max_x,
