@@ -36,7 +36,7 @@ class AIControl:
 
 
     def async_training(self, sess, ops, ops_temp):
-        step = 951
+        step = 0
         epoch = 100
         while self.training:
             if len(self.episode_buffer) > 0:
@@ -109,10 +109,6 @@ class AIControl:
 
             y_stack = np.vstack([y_stack, Q])
             x_stack = np.vstack([x_stack, state])
-        with open('input_log/state_1', 'w') as fp:
-            fp.write('[')
-            fp.write('\n'.join(['['+str(i)+'], ' for i in x_stack.tolist()]))
-            fp.write(']')
 
         return mainDQN.update(x_stack, y_stack)
 
@@ -135,7 +131,7 @@ class AIControl:
             self.tempDQN = dqn.DQN(sess, self.input_size, self.output_size, name="temp")
             tf.global_variables_initializer().run()
 
-            episode = 950
+            episode = 0
             try:
                 self.mainDQN.restore(episode)
                 self.targetDQN.restore(episode)
@@ -154,7 +150,7 @@ class AIControl:
 
             start_position = 0
 
-            episode = 7000
+            #episode = 7000
             #REPLAY_MEMORY = self.get_memory_size(episode)
             while episode < self.max_episodes:
                 e = max(0.1, min(0.9, 1. / ((episode / 1000) + 1)))
