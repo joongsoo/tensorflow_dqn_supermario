@@ -42,6 +42,7 @@ class AIControl:
         while self.training:
             if len(self.episode_buffer) > 0:
                 replay_buffer, episode, step_count, max_x, reward_sum = self.episode_buffer.popleft()
+                replay_buffer = list(replay_buffer)
                 for idx in range(epoch):
                     start_idx = 0
                     while start_idx < len(replay_buffer):
