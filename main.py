@@ -45,10 +45,10 @@ class AIControl:
                 replay_buffer = list(replay_buffer)
                 for idx in range(epoch):
                     start_idx = 0
+                    batch = random.sample(replay_buffer, int(len(replay_buffer) * 0.3))
                     while start_idx < len(replay_buffer):
-                        #minibatch = random.sample(replay_buffer, int(len(replay_buffer) * 0.1))
                         #minibatch = replay_buffer
-                        minibatch = replay_buffer[start_idx:start_idx+batch_size]
+                        minibatch = batch[start_idx:start_idx+batch_size]
                         loss = self.replay_train(self.tempDQN, self.targetDQN, minibatch)
                         start_idx += batch_size
                     #print("Step: {}  Loss: {}".format(idx, loss))
@@ -244,7 +244,7 @@ class AIControl:
                 '''
 
                 #if len(self.replay_buffer) > self.MAX_BUFFER_SIZE:
-                if episode % 1 == 0:
+                if episode % 5 == 0:
                     self.episode_buffer.append((self.replay_buffer, episode, step_count, max_x, reward_sum))
                     if len(self.episode_buffer) > 0:
                         print 'buffer flush... plz wait...'
