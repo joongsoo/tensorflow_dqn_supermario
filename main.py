@@ -46,6 +46,7 @@ class AIControl:
                 for idx in range(epoch):
                     start_idx = 0
                     batch = random.sample(replay_buffer, int(len(replay_buffer) * 0.3))
+                    print len(batch)
                     while start_idx < len(replay_buffer):
                         #minibatch = replay_buffer
                         minibatch = batch[start_idx:start_idx+batch_size]
