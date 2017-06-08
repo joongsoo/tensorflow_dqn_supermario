@@ -109,6 +109,7 @@ class AIControl:
             if done:
                 Q[0, action] = reward
             else:
+                print targetDQN.predict(next_state)[0, np.argmax(mainDQN.predict(next_state))]
                 Q[0, action] = reward + self.dis * targetDQN.predict(next_state)[0, np.argmax(mainDQN.predict(next_state))]
 
 
