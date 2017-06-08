@@ -37,7 +37,7 @@ class AIControl:
 
     def async_training(self, sess, ops, ops_temp):
         step = 801
-        epoch = 5
+        epoch = 10
         batch_size = 100
         while self.training:
             if len(self.episode_buffer) > 0:
@@ -45,13 +45,17 @@ class AIControl:
                 replay_buffer = list(replay_buffer)
                 for idx in range(epoch):
                     start_idx = 0
-                    batch = random.sample(replay_buffer, int(len(replay_buffer) * 0.5))
+                    #batch = random.sample(replay_buffer, int(len(replay_buffer) * 0.2))
+                    batch = random.sample(replay_buffer, batch_size)
                     #batch = replay_buffer
+                    loss = self.replay_train(self.tempDQN, self.targetDQN, batch)
+                    '''
                     while start_idx < len(batch):
                         #minibatch = replay_buffer
                         minibatch = batch[start_idx:start_idx+batch_size]
                         loss = self.replay_train(self.tempDQN, self.targetDQN, minibatch)
                         start_idx += batch_size
+                    '''
                     #print("Step: {}  Loss: {}".format(idx, loss))
                 print("Step: {}  Loss: {}".format(step, loss))
                 '''
@@ -141,7 +145,7 @@ class AIControl:
             self.tempDQN = dqn.DQN(sess, self.input_size, self.output_size, name="temp")
             tf.global_variables_initializer().run()
 
-            episode = 800
+            episode = 0
             try:
                 self.mainDQN.restore(episode)
                 self.targetDQN.restore(episode)
@@ -160,7 +164,7 @@ class AIControl:
 
             start_position = 0
 
-            episode = 4036
+            episode = 0
             #REPLAY_MEMORY = self.get_memory_size(episode)
             while episode < self.max_episodes:
                 e = max(0.1, min(0.5, 1. / ((episode / 50) + 1)))
@@ -219,7 +223,7 @@ class AIControl:
                     # 앞으로 나아가지 못하는 상황이 1000프레임 이상이면 종료하고 학습한다.
                     if now_x <= before_max_x:
                         hold_frame += 1
-                        if hold_frame > 1000:
+                        if hold_frame > 300:
                             timeout = True
                             break
                     else:
@@ -249,7 +253,7 @@ class AIControl:
                 #if len(self.replay_buffer) > self.MAX_BUFFER_SIZE:
                 if episode % 5 == 0:
                     self.episode_buffer.append((self.replay_buffer, episode, step_count, max_x, reward_sum))
-                    if len(self.episode_buffer) > 0:
+                    if len(self.episode_buffer) > 10:
                         print 'buffer flush... plz wait...'
                         while len(self.episode_buffer) != 0:
                             time.sleep(1)
