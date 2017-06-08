@@ -17,7 +17,7 @@ class AIControl:
         self.env = env
 
         self.input_size = self.env.state_n
-        self.output_size = 12
+        self.output_size = 14
 
         #self.dis = 0.9
         self.dis = 0.9
@@ -36,7 +36,7 @@ class AIControl:
 
 
     def async_training(self, sess, ops, ops_temp):
-        step = 301
+        step = 0
         epoch = 50
         batch_size = 100
         while self.training:
@@ -45,8 +45,8 @@ class AIControl:
                 replay_buffer = list(replay_buffer)
                 for idx in range(epoch):
                     start_idx = 0
-                    #batch = random.sample(replay_buffer, int(len(replay_buffer) * 0.5))
-                    batch = replay_buffer
+                    batch = random.sample(replay_buffer, int(len(replay_buffer) * 0.5))
+                    #batch = replay_buffer
                     while start_idx < len(batch):
                         #minibatch = replay_buffer
                         minibatch = batch[start_idx:start_idx+batch_size]
@@ -141,7 +141,7 @@ class AIControl:
             self.tempDQN = dqn.DQN(sess, self.input_size, self.output_size, name="temp")
             tf.global_variables_initializer().run()
 
-            episode = 300
+            episode = 0
             try:
                 self.mainDQN.restore(episode)
                 self.targetDQN.restore(episode)
@@ -160,7 +160,7 @@ class AIControl:
 
             start_position = 0
 
-            episode = 300
+            episode = 0
             #REPLAY_MEMORY = self.get_memory_size(episode)
             while episode < self.max_episodes:
                 e = max(0.1, min(0.9, 1. / ((episode / 50) + 1)))

@@ -5,43 +5,50 @@ import pygame as pg
 import numpy as np
 import scipy.misc
 import random
-import tensorflow as tf
 
 class Env:
+    action_idx = {
+        0: 273,
+        1: 274,
+        2: 276,
+        3: 275,  # right
+        4: 97,
+        5: 115
+    }
+
+    mapping = {
+        0: [0, 0, 0, 0, 0, 0],  # NOOP
+        1: [1, 0, 0, 0, 0, 0],  # Up
+        2: [0, 1, 0, 0, 0, 0],  # Down
+        3: [0, 0, 1, 0, 0, 0],  # Left
+        4: [0, 0, 1, 0, 1, 0],  # Left + A
+        5: [0, 0, 1, 0, 0, 1],  # Left + B
+        6: [0, 0, 1, 0, 1, 1],  # Left + A + B
+        7: [0, 0, 0, 1, 0, 0],  # Right
+        8: [0, 0, 0, 1, 1, 0],  # Right + A
+        9: [0, 0, 0, 1, 0, 1],  # Right + B
+        10: [0, 0, 0, 1, 1, 1],  # Right + A + B
+        11: [0, 0, 0, 0, 1, 0],  # A
+        12: [0, 0, 0, 0, 0, 1],  # B
+        13: [0, 0, 0, 0, 1, 1],  # A + B
+    }
+
+    controller = None
+
+    action_n = len(mapping.keys())
+
+    resize_x = 120
+    resize_y = 120
+    color_chanel = 1
+    state_n = resize_x * resize_y * color_chanel
+
     def __init__(self):
-        self.action_idx = {
-            0: 273,
-            1: 274,
-            2: 276,
-            3: 275, # right
-            4: 97,
-            5: 115
-        }
 
-        self.mapping = {
-            0: [0, 0, 0, 0, 0, 0],  # NOOP
-            1: [1, 0, 0, 0, 0, 0],  # Up
-            2: [0, 1, 0, 0, 0, 0],  # Down
-            3: [0, 0, 1, 0, 0, 0],  # Left
-            4: [0, 0, 1, 0, 1, 0],  # Left + A
-            5: [0, 0, 1, 0, 0, 1],  # Left + B
-            6: [0, 0, 1, 0, 1, 1],  # Left + A + B
-            7: [0, 0, 0, 1, 0, 0],  # Right
-            8: [0, 0, 0, 1, 1, 0],  # Right + A
-            9: [0, 0, 0, 1, 0, 1],  # Right + B
-            10: [0, 0, 0, 1, 1, 1],  # Right + A + B
-            11: [0, 0, 0, 0, 1, 0],  # A
-            12: [0, 0, 0, 0, 0, 1],  # B
-            13: [0, 0, 0, 0, 1, 1],  # A + B
-        }
 
-        self.controller = None
-
-        self.action_n = len(self.action_idx.keys())
-        self.resize_x = 120
-        self.resize_y = 120
-        self.color_chanel = 1
-        self.state_n = self.resize_x * self.resize_y * self.color_chanel
+        #self.resize_x = 120
+        #self.resize_y = 120
+        #self.color_chanel = 1
+        #self.state_n = self.resize_x * self.resize_y * self.color_chanel
 
         self.run_it = tools.Control(setup.ORIGINAL_CAPTION, self)
         self.state_dict = {
@@ -56,7 +63,7 @@ class Env:
 
 
     def get_random_actions(self):
-        return random.randint(0, 11)
+        return random.randint(0, 13)
 
     def rgb2gray(self, image):
         return np.dot(image[..., :3], [0.299, 0.587, 0.114])
