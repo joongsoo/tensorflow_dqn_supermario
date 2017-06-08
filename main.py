@@ -112,7 +112,7 @@ class AIControl:
             else:
                 aa = targetDQN.predict(next_state)[0, np.argmax(mainDQN.predict(next_state))]
                 Q[0, action] = reward + self.dis * aa
-                print(targetDQN.predict(next_state), mainDQN.predict(next_state))
+                #print(targetDQN.predict(next_state), mainDQN.predict(next_state))
                 #print("Action: {}  RealReward: {}  Reward: {}".format(action, reward, aa))
 
             state = np.reshape(state, [self.input_size])
