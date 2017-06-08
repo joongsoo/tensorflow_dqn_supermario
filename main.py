@@ -185,6 +185,7 @@ class AIControl:
 
                 step_reward = 0
 
+                action_state = state
                 while not done and not clear:
 
                     if step_count % self.frame_action == 0:
@@ -193,6 +194,7 @@ class AIControl:
                         else:
                             action = np.argmax(self.mainDQN.predict(state))
                             input_list.append(action)
+                        action_state = state
                     else:
                         action = before_action
 
@@ -209,7 +211,7 @@ class AIControl:
                             reward += 10000
                             done = True
 
-                        self.replay_buffer.append((state, action, step_reward, next_state, done))
+                        self.replay_buffer.append((action_state, action, step_reward, next_state, done))
                         if len(self.replay_buffer) > self.MAX_BUFFER_SIZE:
                             self.replay_buffer.popleft()
                         step_reward = 0
