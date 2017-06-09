@@ -164,7 +164,7 @@ class AIControl:
 
             start_position = 0
 
-            episode = 501
+            episode = 1000
             #REPLAY_MEMORY = self.get_memory_size(episode)
             while episode < self.max_episodes:
                 e = max(0.15, min(0.5, 1. / ((episode / 500) + 1)))
@@ -225,7 +225,7 @@ class AIControl:
                     # 앞으로 나아가지 못하는 상황이 1000프레임 이상이면 종료하고 학습한다.
                     if now_x <= before_max_x:
                         hold_frame += 1
-                        if hold_frame > 1000:
+                        if hold_frame > 500:
                             timeout = True
                             break
                     else:
