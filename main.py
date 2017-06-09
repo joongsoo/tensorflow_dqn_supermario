@@ -36,7 +36,7 @@ class AIControl:
 
 
     def async_training(self, sess, ops, ops_temp):
-        step = 101
+        step = 1301
         epoch = 50
         batch_size = 100
         while self.training:
@@ -225,7 +225,7 @@ class AIControl:
                     # 앞으로 나아가지 못하는 상황이 1000프레임 이상이면 종료하고 학습한다.
                     if now_x <= before_max_x:
                         hold_frame += 1
-                        if hold_frame > 300:
+                        if hold_frame > 1000:
                             timeout = True
                             break
                     else:
