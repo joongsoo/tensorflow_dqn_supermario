@@ -36,7 +36,7 @@ class AIControl:
 
 
     def async_training(self, sess, ops, ops_temp):
-        step = 2101
+        step = 2251
         epoch = 50
         batch_size = 100
         while self.training:
@@ -145,7 +145,7 @@ class AIControl:
             self.tempDQN = dqn.DQN(sess, self.input_size, self.output_size, name="temp")
             tf.global_variables_initializer().run()
 
-            episode = 2100
+            episode = 2250
             try:
                 self.mainDQN.restore(episode)
                 self.targetDQN.restore(episode)
