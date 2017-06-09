@@ -37,7 +37,7 @@ class AIControl:
 
     def async_training(self, sess, ops, ops_temp):
         step = 2101
-        epoch = 50
+        epoch = 20
         batch_size = 100
         while self.training:
             if len(self.episode_buffer) > 0:
@@ -46,16 +46,16 @@ class AIControl:
                 for idx in range(epoch):
                     start_idx = 0
                     #batch = random.sample(replay_buffer, int(len(replay_buffer) * 0.2))
-                    batch = random.sample(replay_buffer, batch_size)
-                    #batch = replay_buffer
-                    loss = self.replay_train(self.tempDQN, self.targetDQN, batch)
-                    '''
+                    #batch = random.sample(replay_buffer, batch_size)
+                    batch = replay_buffer
+                    #loss = self.replay_train(self.tempDQN, self.targetDQN, batch)
+
                     while start_idx < len(batch):
                         #minibatch = replay_buffer
                         minibatch = batch[start_idx:start_idx+batch_size]
                         loss = self.replay_train(self.tempDQN, self.targetDQN, minibatch)
                         start_idx += batch_size
-                    '''
+
                     #print("Step: {}  Loss: {}".format(idx, loss))
                 print("Step: {}  Loss: {}".format(step, loss))
                 '''
