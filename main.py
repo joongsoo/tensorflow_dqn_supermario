@@ -210,7 +210,7 @@ class AIControl:
                         if clear:
                             reward += 10000
                             done = True
-
+                        reward /= 100
                         self.replay_buffer.append((action_state, action, step_reward, next_state, done))
                         if len(self.replay_buffer) > self.MAX_BUFFER_SIZE:
                             self.replay_buffer.popleft()
