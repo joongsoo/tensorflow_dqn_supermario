@@ -36,7 +36,7 @@ class AIControl:
 
 
     def async_training(self, sess, ops, ops_temp):
-        step = 1
+        step = 601
         epoch = 200
         batch_size = 100
         while self.training:
@@ -145,7 +145,7 @@ class AIControl:
             self.tempDQN = dqn.DQN(sess, self.input_size, self.output_size, name="temp")
             tf.global_variables_initializer().run()
 
-            episode = 0
+            episode = 600
             try:
                 self.mainDQN.restore(episode)
                 self.targetDQN.restore(episode)
@@ -164,7 +164,7 @@ class AIControl:
 
             start_position = 0
 
-            episode = 0
+            episode = 3141
             #REPLAY_MEMORY = self.get_memory_size(episode)
             while episode < self.max_episodes:
                 e = max(0.2, min(0.5, 1. / ((episode / 500) + 1)))
