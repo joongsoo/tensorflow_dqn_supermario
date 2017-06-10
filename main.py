@@ -57,7 +57,7 @@ class AIControl:
                         start_idx += batch_size
                     '''
                     #print("Step: {}  Loss: {}".format(idx, loss))
-                print("Step: {}  Loss: {}".format(step, loss))
+                    print("Step: {}-{}  Loss: {}".format(step, idx, loss))
                 '''
                 for idx in range(100):
                     minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer) * 0.03))
