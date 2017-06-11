@@ -244,7 +244,7 @@ class AIControl:
                 '''
 
                 #if len(self.replay_buffer) > self.MAX_BUFFER_SIZE:
-                if episode % 5 == 0 and len(self.replay_buffer) > 200:
+                if episode % 5 == 0:
                     self.episode_buffer.append(episode_buffer)
                     if len(self.episode_buffer) > 0:
                         print 'buffer flush... plz wait...'
