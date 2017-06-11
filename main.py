@@ -47,9 +47,11 @@ class AIControl:
                     start_idx = 0
                     #batch = random.sample(replay_buffer, int(len(replay_buffer) * 0.2))
                     batch = random.sample(replay_buffer, batch_size)
-                    state, action, reward, next_state, done = batch[-1]
-                    if not done:
+                    _, _, _, _, batch_done = batch[-1]
+                    _, _, _, _, replay_done = replay_buffer[-1]
+                    if not batch_done and replay_done:
                         batch.append(replay_buffer[-1])
+                        print "dead"
                     #batch = replay_buffer
                     loss = self.replay_train(self.tempDQN, self.targetDQN, batch)
                     '''
