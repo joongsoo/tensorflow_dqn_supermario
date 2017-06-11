@@ -37,7 +37,7 @@ class AIControl:
 
     def async_training(self, sess, ops, ops_temp):
         step = 0
-        epoch = 50
+        epoch = 20
         batch_size = 100
         while self.training:
             if len(self.episode_buffer) > 0:
