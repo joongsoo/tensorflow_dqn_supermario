@@ -47,6 +47,7 @@ class AIControl:
                 for idx in range(epoch):
                     start_idx = 0
                     train_buffer = []
+                    print len(episode_buffer)
                     for episode in episode_buffer:
                         batch = random.sample(episode, batch_size/len(episode_buffer))
                         state, action, reward, next_state, done = batch[-1]
