@@ -51,7 +51,6 @@ class AIControl:
                     _, _, _, _, replay_done = replay_buffer[-1]
                     if not batch_done and replay_done:
                         batch.append(replay_buffer[-1])
-                        print "dead"
                     #batch = replay_buffer
                     loss = self.replay_train(self.tempDQN, self.targetDQN, batch)
                     '''
