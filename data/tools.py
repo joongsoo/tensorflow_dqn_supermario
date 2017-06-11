@@ -29,7 +29,7 @@ class Control(object):
         self.clock = pg.time.Clock()
         self.caption = caption
         #self.fps = 60
-        self.fps = 40
+        self.fps = 10000
         self.show_fps = False
         self.current_time = 0.0
         self.keys = pg.key.get_pressed()
@@ -102,8 +102,8 @@ class Control(object):
         self.before_x = position_x
         '''
 
-        if position_x < 50 and position_x != 0:
-            self.ml_done = True
+        #if position_x < 50 and position_x != 0:
+        #    self.ml_done = True
 
         return (next_state, reward, self.ml_done, self.state.clear,
                 self.max_posision_x, self.state.timeout, position_x)

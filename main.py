@@ -41,14 +41,26 @@ class AIControl:
         batch_size = 100
         while self.training:
             if len(self.episode_buffer) > 0:
-                replay_buffer, episode, step_count, max_x, reward_sum = self.episode_buffer.popleft()
-                replay_buffer = list(replay_buffer)
+                episode_buffer = self.episode_buffer.popleft()
+                #replay_buffer, episode, step_count, max_x, reward_sum = self.episode_buffer.popleft()
+                #replay_buffer = list(replay_buffer)
                 for idx in range(epoch):
                     start_idx = 0
+                    train_buffer = []
+                    for episode in episode_buffer:
+                        batch = random.sample(episode, batch_size/len(episode_buffer))
+                        state, action, reward, next_state, done = batch[-1]
+                        if not done:
+                            batch.append(episode[-1])
+                        train_buffer += batch
+                    print train_buffer
                     #batch = random.sample(replay_buffer, int(len(replay_buffer) * 0.2))
-                    batch = random.sample(replay_buffer, batch_size)
+                    #batch = random.sample(replay_buffer, batch_size)
+                    #state, action, reward, next_state, done = batch[-1]
+                    #if not done:
+                    #    batch.append(replay_buffer[-1])
                     #batch = replay_buffer
-                    loss = self.replay_train(self.tempDQN, self.targetDQN, batch)
+                    loss = self.replay_train(self.tempDQN, self.targetDQN, train_buffer)
                     '''
                     while start_idx < len(batch):
                         #minibatch = replay_buffer
@@ -74,30 +86,6 @@ class AIControl:
                     self.mainDQN.save(episode=step)
                     self.targetDQN.save(episode=step)
                     self.tempDQN.save(episode=step)
-                '''
-                if len(self.episode_buffer) > 0:
-                    replay_buffer, episode, step_count, max_x, reward_sum = self.episode_buffer.popleft()
-                    for idx in range(4):
-                        #minibatch = random.sample(replay_buffer, int(len(replay_buffer) * 0.8))
-                        minibatch = replay_buffer
-                        loss = self.replay_train(self.tempDQN, self.targetDQN, minibatch)
-                    print("Episode: {}  Loss: {}".format(episode, loss))
-
-                    sess.run(ops)
-                    sess.run(ops_temp)
-
-                    # 100 에피소드마다 저장한다
-                    if episode % 100 == 0:
-                        self.mainDQN.save(episode=episode)
-                        self.targetDQN.save(episode=episode)
-                        self.tempDQN.save(episode=episode)
-
-                elif not self.training:
-                    break
-
-                else:
-                    time.sleep(1)
-                '''
                 step += 1
             else:
                 time.sleep(1)
@@ -186,6 +174,7 @@ class AIControl:
                 step_reward = 0
 
                 action_state = state
+                episode_buffer = []
                 while not done and not clear:
 
                     if step_count % self.frame_action == 0:
@@ -255,12 +244,14 @@ class AIControl:
 
                 #if len(self.replay_buffer) > self.MAX_BUFFER_SIZE:
                 if episode % 5 == 0 and len(self.replay_buffer) > 200:
-                    self.episode_buffer.append((self.replay_buffer, episode, step_count, max_x, reward_sum))
+                    self.episode_buffer.append(episode_buffer)
                     if len(self.episode_buffer) > 0:
                         print 'buffer flush... plz wait...'
                         while len(self.episode_buffer) != 0:
                             time.sleep(1)
-                    self.replay_buffer = deque()
+                    episode_buffer = deque()
+                episode_buffer.append((self.replay_buffer, episode, step_count, max_x, reward_sum))
+                self.replay_buffer = deque()
 
                 episode += 1
 
