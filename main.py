@@ -41,27 +41,17 @@ class AIControl:
         batch_size = 100
         while self.training:
             if len(self.episode_buffer) > 0:
-                episode_buffer = self.episode_buffer.popleft()
-                #replay_buffer, episode, step_count, max_x, reward_sum = self.episode_buffer.popleft()
-                #replay_buffer = list(replay_buffer)
+                replay_buffer, episode, step_count, max_x, reward_sum = self.episode_buffer.popleft()
+                replay_buffer = list(replay_buffer)
                 for idx in range(epoch):
                     start_idx = 0
-                    train_buffer = []
-                    print len(episode_buffer)
-                    for episode in episode_buffer:
-                        batch = random.sample(episode, batch_size/len(episode_buffer))
-                        state, action, reward, next_state, done = batch[-1]
-                        if not done:
-                            batch.append(episode[-1])
-                        train_buffer += batch
-                    print train_buffer
                     #batch = random.sample(replay_buffer, int(len(replay_buffer) * 0.2))
-                    #batch = random.sample(replay_buffer, batch_size)
-                    #state, action, reward, next_state, done = batch[-1]
-                    #if not done:
-                    #    batch.append(replay_buffer[-1])
+                    batch = random.sample(replay_buffer, batch_size)
+                    state, action, reward, next_state, done = batch[-1]
+                    if not done:
+                        batch.append(replay_buffer[-1])
                     #batch = replay_buffer
-                    loss = self.replay_train(self.tempDQN, self.targetDQN, train_buffer)
+                    loss = self.replay_train(self.tempDQN, self.targetDQN, batch)
                     '''
                     while start_idx < len(batch):
                         #minibatch = replay_buffer
@@ -134,7 +124,7 @@ class AIControl:
             self.tempDQN = dqn.DQN(sess, self.input_size, self.output_size, name="temp")
             tf.global_variables_initializer().run()
 
-            episode = 1
+            episode = 0
             try:
                 self.mainDQN.restore(episode)
                 self.targetDQN.restore(episode)
@@ -153,7 +143,7 @@ class AIControl:
 
             start_position = 0
 
-            episode = 1
+            episode = 0
             #REPLAY_MEMORY = self.get_memory_size(episode)
             while episode < self.max_episodes:
                 e = max(0.2, min(0.5, 1. / ((episode / 500) + 1)))
@@ -175,7 +165,6 @@ class AIControl:
                 step_reward = 0
 
                 action_state = state
-                episode_buffer = []
                 while not done and not clear:
 
                     if step_count % self.frame_action == 0:
@@ -244,15 +233,13 @@ class AIControl:
                 '''
 
                 #if len(self.replay_buffer) > self.MAX_BUFFER_SIZE:
-                if episode % 5 == 0:
-                    self.episode_buffer.append(episode_buffer)
+                if len(self.replay_buffer) > 100:
+                    self.episode_buffer.append((self.replay_buffer, episode, step_count, max_x, reward_sum))
                     if len(self.episode_buffer) > 0:
                         print 'buffer flush... plz wait...'
                         while len(self.episode_buffer) != 0:
                             time.sleep(1)
-                    episode_buffer = deque()
-                episode_buffer.append((self.replay_buffer, episode, step_count, max_x, reward_sum))
-                self.replay_buffer = deque()
+                    self.replay_buffer = deque()
 
                 episode += 1
 
