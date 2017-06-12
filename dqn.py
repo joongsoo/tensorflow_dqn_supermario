@@ -22,7 +22,7 @@ class DQN:
         self.save_path = "./save/save_model_" + self.net_name + ".ckpt"
         tf.logging.info(name + " - initialized")
 
-    def _build_network(self, l_rate=10):
+    def _build_network(self, l_rate=0.01):
         with tf.variable_scope(self.net_name):
             keep_prob = self.keep_prob
 
