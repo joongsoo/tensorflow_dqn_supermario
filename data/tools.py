@@ -87,8 +87,8 @@ class Control(object):
 
         # time penalty
         #reward -= 0.1
-        #if self.keys[275] == 1:
-        #    reward += 0.2
+        if self.keys[275] == 1:
+            reward += 0.4
 
         '''
         if self.keys[276] == 1:
