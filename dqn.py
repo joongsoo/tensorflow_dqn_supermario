@@ -87,10 +87,10 @@ class DQN:
 
         self._loss = tf.reduce_mean(tf.square(self._Y - self._Qpred))
 
-        self._train = tf.train.AdamOptimizer(learning_rate=l_rate).minimize(self._loss)
+        #self._train = tf.train.AdamOptimizer(learning_rate=l_rate).minimize(self._loss)
 
-        #self._train = tf.train.RMSPropOptimizer(
-        #    l_rate, momentum=0.95, epsilon=0.01).minimize(self._loss)
+        self._train = tf.train.RMSPropOptimizer(
+            l_rate, momentum=0.95, epsilon=0.01).minimize(self._loss)
 
 
         correct_prediction = tf.equal(tf.argmax(self._Qpred, 1), tf.argmax(self._Y, 1))
