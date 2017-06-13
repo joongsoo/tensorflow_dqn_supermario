@@ -195,7 +195,7 @@ class AIControl:
                     if step_count % self.frame_action == self.frame_action-1 \
                             or done or timeout or clear:
                         if done:
-                            step_reward = -4000
+                            step_reward = -10000
                         if clear:
                             step_reward += 10000
                             done = True
