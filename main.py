@@ -182,11 +182,20 @@ class AIControl:
                     #print state
                     step_reward += reward
 
+                    # 앞으로 나아가지 못하는 상황이 1000프레임 이상이면 종료하고 학습한다.
+                    if now_x <= before_max_x:
+                        hold_frame += 1
+                        if hold_frame > 600:
+                            done = True
+                    else:
+                        hold_frame = 0
+                        before_max_x = max_x
+
 
                     if step_count % self.frame_action == self.frame_action-1 \
                             or done or timeout or clear:
-                        if done and not timeout:
-                            step_reward = -2000
+                        if done:
+                            step_reward = -4000
                         if clear:
                             step_reward += 10000
                             done = True
@@ -202,15 +211,7 @@ class AIControl:
                     reward_sum += reward
                     before_action = action
 
-                    # 앞으로 나아가지 못하는 상황이 1000프레임 이상이면 종료하고 학습한다.
-                    if now_x <= before_max_x:
-                        hold_frame += 1
-                        if hold_frame > 600:
-                            timeout = True
-                            break
-                    else:
-                        hold_frame = 0
-                        before_max_x = max_x
+
                     #print next_state
                     #png.from_array(next_state, 'L').save('capture/' + str(step_count) + '.png')
 
