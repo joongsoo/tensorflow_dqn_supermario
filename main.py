@@ -37,7 +37,7 @@ class AIControl:
 
     def async_training(self, sess, ops, ops_temp):
         step = 0
-        epoch = 20
+        epoch = 50
         batch_size = 100
         while self.training:
             if len(self.episode_buffer) > 0:
@@ -46,20 +46,18 @@ class AIControl:
                 for idx in range(epoch):
                     start_idx = 0
                     #batch = random.sample(replay_buffer, int(len(replay_buffer) * 0.2))
-                    batch = random.sample(replay_buffer, batch_size)
-                    _, _, _, _, batch_done = batch[-1]
-                    _, _, _, _, replay_done = replay_buffer[-1]
-                    if not batch_done and replay_done:
-                        batch.append(replay_buffer[-1])
-                    #batch = replay_buffer
-                    loss = self.replay_train(self.tempDQN, self.targetDQN, batch)
-                    '''
+                    #batch = random.sample(replay_buffer, batch_size)
+                    #_, _, _, _, batch_done = batch[-1]
+                    #_, _, _, _, replay_done = replay_buffer[-1]
+                    #if not batch_done and replay_done:
+                    #    batch.append(replay_buffer[-1])
+                    batch = replay_buffer
+                    #loss = self.replay_train(self.tempDQN, self.targetDQN, batch)
                     while start_idx < len(batch):
                         #minibatch = replay_buffer
                         minibatch = batch[start_idx:start_idx+batch_size]
                         loss = self.replay_train(self.tempDQN, self.targetDQN, minibatch)
                         start_idx += batch_size
-                    '''
                     #print("Step: {}  Loss: {}".format(idx, loss))
                     print("Step: {}-{}  Loss: {}".format(step, idx, loss))
                 '''
@@ -147,7 +145,7 @@ class AIControl:
             episode = 0
             #REPLAY_MEMORY = self.get_memory_size(episode)
             while episode < self.max_episodes:
-                e = max(0.1, min(0.5, 1. / ((episode / 50) + 1)))
+                e = max(0.1, min(0.5, 1. / ((episode / 500) + 1)))
                 #
                 done = False
                 clear = False
@@ -234,7 +232,7 @@ class AIControl:
                 '''
 
                 #if len(self.replay_buffer) > self.MAX_BUFFER_SIZE:
-                if len(self.replay_buffer) > 100:
+                if episode % 5 == 0 and len(self.replay_buffer) > 100:
                     self.episode_buffer.append((self.replay_buffer, episode, step_count, max_x, reward_sum))
                     if len(self.episode_buffer) > 0:
                         print 'buffer flush... plz wait...'
