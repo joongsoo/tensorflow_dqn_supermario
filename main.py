@@ -57,6 +57,8 @@ class AIControl:
                     while start_idx-batch_size < len(batch):
                         #minibatch = replay_buffer
                         minibatch = batch[start_idx:start_idx+batch_size]
+                        if len(minibatch) == 0:
+                            break
                         loss = self.replay_train(self.tempDQN, self.targetDQN, minibatch)
                         start_idx += batch_size
                     #print("Step: {}  Loss: {}".format(idx, loss))
