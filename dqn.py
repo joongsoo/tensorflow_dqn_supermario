@@ -58,7 +58,6 @@ class DQN:
 
             L3 = tf.reshape(L3, [-1, 128 * 2 * 2])
 
-            # L4 FC 4x4x128 inputs -> 625 outputs
             W4 = tf.get_variable("W4", shape=[128 * 2 * 2, 512],
                                  initializer=tf.contrib.layers.xavier_initializer())
             b4 = tf.Variable(tf.random_normal([512]))
@@ -81,10 +80,10 @@ class DQN:
 
         self._loss = tf.reduce_mean(tf.square(self._Y - self._Qpred))
 
-        self._train = tf.train.AdamOptimizer(learning_rate=l_rate).minimize(self._loss)
+        #self._train = tf.train.AdamOptimizer(learning_rate=l_rate).minimize(self._loss)
 
-        #self._train = tf.train.RMSPropOptimizer(
-        #    l_rate, momentum=0.95, epsilon=0.01).minimize(self._loss)
+        self._train = tf.train.RMSPropOptimizer(
+            l_rate, momentum=0.95, epsilon=0.01).minimize(self._loss)
 
 
         correct_prediction = tf.equal(tf.argmax(self._Qpred, 1), tf.argmax(self._Y, 1))
