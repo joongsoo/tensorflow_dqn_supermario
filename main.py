@@ -203,8 +203,9 @@ class AIControl:
                             step_reward = -10000
                         if timeout and max_x > 700:
                             step_reward += 1000
+                            done = True
                         if clear:
-                            step_reward += 1000000
+                            step_reward += 100000
                             done = True
 
                         step_reward /= 100.0
