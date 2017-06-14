@@ -33,7 +33,7 @@ class DQN:
 
             # Conv
             W1 = tf.Variable(tf.random_normal([8, 8, 1, 32], stddev=0.01))
-            L1 = tf.nn.conv2d(self.X_img, W1, strides=[1, 2, 2, 1], padding='SAME')
+            L1 = tf.nn.conv2d(self.X_img, W1, strides=[1, 4, 4, 1], padding='SAME')
             L1 = tf.nn.relu(L1)
             L1 = tf.nn.max_pool(L1, ksize=[1, 2, 2, 1],
                                 strides=[1, 2, 2, 1], padding='SAME')
@@ -56,9 +56,9 @@ class DQN:
 
             print L3
 
-            L3 = tf.reshape(L3, [-1, 256 * 3 * 3])
+            L3 = tf.reshape(L3, [-1, 256 * 2 * 2])
 
-            W4 = tf.get_variable("W4", shape=[256 * 3 * 3, 512],
+            W4 = tf.get_variable("W4", shape=[256 * 2 * 2, 512],
                                  initializer=tf.contrib.layers.xavier_initializer())
             b4 = tf.Variable(tf.random_normal([512]))
             L4 = tf.nn.relu(tf.matmul(L3, W4) + b4)
