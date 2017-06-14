@@ -54,11 +54,16 @@ class DQN:
                 1, 2, 2, 1], padding='SAME')
             L3 = tf.nn.dropout(L3, keep_prob=keep_prob)
 
+            W4 = tf.Variable(tf.random_normal([3, 3, 128, 256], stddev=0.01))
+            L3 = tf.nn.conv2d(L3, W4, strides=[1, 1, 1, 1], padding='SAME')
+            L3 = tf.nn.relu(L3)
+            L3 = tf.nn.dropout(L3, keep_prob=keep_prob)
+
             print L3
 
-            L3 = tf.reshape(L3, [-1, 128 * 2 * 2])
+            L3 = tf.reshape(L3, [-1, 256 * 2 * 2])
 
-            W4 = tf.get_variable("W4", shape=[128 * 2 * 2, 512],
+            W4 = tf.get_variable("W4", shape=[256 * 2 * 2, 512],
                                  initializer=tf.contrib.layers.xavier_initializer())
             b4 = tf.Variable(tf.random_normal([512]))
             L4 = tf.nn.relu(tf.matmul(L3, W4) + b4)
