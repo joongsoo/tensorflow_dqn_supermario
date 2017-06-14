@@ -9,10 +9,6 @@ from tensorflow.python.framework.errors_impl import NotFoundError
 import time
 import threading
 import png
-import gevent.monkey
-gevent.monkey.patch_all()
-import gevent.pool
-
 
 
 
@@ -40,7 +36,7 @@ class AIControl:
 
 
     def async_training(self, sess, ops, ops_temp):
-        step = 51
+        step = 0
         epoch = 30
         batch_size = 2000
         while self.training:
@@ -60,22 +56,17 @@ class AIControl:
 
                     loss = 0
                     learn_cnt = 0
-                    batchs = []
                     while start_idx-batch_size < len(batch):
                         #minibatch = replay_buffer
                         minibatch = batch[start_idx:start_idx+batch_size]
                         if len(minibatch) == 0:
                             break
-                        batchs.append(minibatch)
-                        #loss += self.replay_train(self.tempDQN, self.targetDQN, minibatch)[0]
-                        #start_idx += batch_size
-                        #learn_cnt += 1
-
-                    pool = gevent.pool.Pool(len(batchs))
-                    loss = pool.map(lambda batch: self.replay_train(self.tempDQN, self.targetDQN, batch)[0], batchs)
+                        loss += self.replay_train(self.tempDQN, self.targetDQN, minibatch)[0]
+                        start_idx += batch_size
+                        learn_cnt += 1
                     #print("Step: {}  Loss: {}".format(idx, loss))
 
-                    print("Step: {}-{}  Avg-Loss: {}".format(step, idx, loss/len(batchs)))
+                    print("Step: {}-{}  Avg-Loss: {}".format(step, idx, loss/learn_cnt))
                 '''
                 for idx in range(100):
                     minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer) * 0.03))
@@ -139,7 +130,7 @@ class AIControl:
             self.tempDQN = dqn.DQN(sess, self.input_size, self.output_size, name="temp")
             tf.global_variables_initializer().run()
 
-            episode = 50
+            episode = 0
             try:
                 self.mainDQN.restore(episode)
                 self.targetDQN.restore(episode)
@@ -158,7 +149,7 @@ class AIControl:
 
             start_position = 500
 
-            episode = 101
+            episode = 1
             #REPLAY_MEMORY = self.get_memory_size(episode)
             while episode < self.max_episodes:
                 e = max(0.1, min(0.5, 1. / ((episode / 200) + 1)))
