@@ -56,7 +56,7 @@ class DQN:
 
             print L3
 
-            L3 = tf.reshape(L3, [-1, 128 * 2 * 2])
+            L3 = tf.reshape(L3, [-1, 256 * 2 * 2])
 
             W4 = tf.get_variable("W4", shape=[256 * 2 * 2, 512],
                                  initializer=tf.contrib.layers.xavier_initializer())
