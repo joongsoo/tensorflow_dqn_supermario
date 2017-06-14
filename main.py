@@ -61,7 +61,7 @@ class AIControl:
                         minibatch = batch[start_idx:start_idx+batch_size]
                         if len(minibatch) == 0:
                             break
-                        loss += self.replay_train(self.tempDQN, self.targetDQN, minibatch)
+                        loss += self.replay_train(self.tempDQN, self.targetDQN, minibatch)[0]
                         start_idx += batch_size
                         learn_cnt += 1
                     #print("Step: {}  Loss: {}".format(idx, loss))
