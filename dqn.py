@@ -39,7 +39,7 @@ class DQN:
                                 strides=[1, 2, 2, 1], padding='SAME')
             L1 = tf.nn.dropout(L1, keep_prob=keep_prob)
 
-            W2 = tf.Variable(tf.random_normal([4, 4, 32, 256], stddev=0.01))
+            W2 = tf.Variable(tf.random_normal([4, 4, 128, 256], stddev=0.01))
             L2 = tf.nn.conv2d(L1, W2, strides=[1, 2, 2, 1], padding='SAME')
             L2 = tf.nn.relu(L2)
             L2 = tf.nn.max_pool(L2, ksize=[1, 2, 2, 1],
@@ -47,7 +47,7 @@ class DQN:
             L2 = tf.nn.dropout(L2, keep_prob=keep_prob)
 
             # L3 ImgIn shape=(?, 7, 7, 64)
-            W3 = tf.Variable(tf.random_normal([3, 3, 64, 512], stddev=0.01))
+            W3 = tf.Variable(tf.random_normal([3, 3, 256, 512], stddev=0.01))
             L3 = tf.nn.conv2d(L2, W3, strides=[1, 1, 1, 1], padding='SAME')
             L3 = tf.nn.relu(L3)
             L3 = tf.nn.max_pool(L3, ksize=[1, 2, 2, 1], strides=[
