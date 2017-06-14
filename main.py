@@ -29,7 +29,7 @@ class AIControl:
         self.replay_buffer = deque()
         self.episode_buffer = deque()
 
-        self.MAX_BUFFER_SIZE = 20000
+        self.MAX_BUFFER_SIZE = 15000
 
         self.frame_action = 3
         self.training = True
@@ -191,7 +191,7 @@ class AIControl:
                     if now_x <= before_max_x:
                         hold_frame += 1
                         if hold_frame > 1000:
-                            done = True
+                            timeout = True
                     else:
                         hold_frame = 0
                         before_max_x = max_x
@@ -199,10 +199,12 @@ class AIControl:
 
                     if step_count % self.frame_action == self.frame_action-1 \
                             or done or timeout or clear:
-                        if done or timeout and not clear:
+                        if done and not clear:
                             step_reward = -10000
+                        if timeout and max_x > 700:
+                            step_reward += 1000
                         if clear:
-                            step_reward += 100000
+                            step_reward += 1000000
                             done = True
 
                         step_reward /= 100.0
