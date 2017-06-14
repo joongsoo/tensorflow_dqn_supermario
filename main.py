@@ -9,6 +9,10 @@ from tensorflow.python.framework.errors_impl import NotFoundError
 import time
 import threading
 import png
+import gevent.monkey
+gevent.monkey.patch_all()
+import gevent.pool
+
 
 
 
@@ -56,17 +60,22 @@ class AIControl:
 
                     loss = 0
                     learn_cnt = 0
+                    batchs = []
                     while start_idx-batch_size < len(batch):
                         #minibatch = replay_buffer
                         minibatch = batch[start_idx:start_idx+batch_size]
                         if len(minibatch) == 0:
                             break
-                        loss += self.replay_train(self.tempDQN, self.targetDQN, minibatch)[0]
-                        start_idx += batch_size
-                        learn_cnt += 1
+                        batchs.append(minibatch)
+                        #loss += self.replay_train(self.tempDQN, self.targetDQN, minibatch)[0]
+                        #start_idx += batch_size
+                        #learn_cnt += 1
+
+                    pool = gevent.pool.Pool(len(batchs))
+                    loss = pool.map(lambda batch: self.replay_train(self.tempDQN, self.targetDQN, batch)[0], batchs)
                     #print("Step: {}  Loss: {}".format(idx, loss))
 
-                    print("Step: {}-{}  Avg-Loss: {}".format(step, idx, loss/learn_cnt))
+                    print("Step: {}-{}  Avg-Loss: {}".format(step, idx, loss/len(batchs)))
                 '''
                 for idx in range(100):
                     minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer) * 0.03))
