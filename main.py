@@ -38,7 +38,7 @@ class AIControl:
     def async_training(self, sess, ops, ops_temp):
         step = 0
         epoch = 30
-        batch_size = 200
+        batch_size = 400
         while self.training:
             if len(self.episode_buffer) > 0:
                 replay_buffer, episode, step_count, max_x, reward_sum = self.episode_buffer.popleft()
@@ -241,7 +241,7 @@ class AIControl:
                 '''
 
                 #if len(self.replay_buffer) > self.MAX_BUFFER_SIZE:
-                if episode % 10 == 0 and len(self.replay_buffer) > 3000:
+                if episode % 5 == 0 and len(self.replay_buffer) > 3000:
                     self.episode_buffer.append((self.replay_buffer, episode, step_count, max_x, reward_sum))
                     if len(self.episode_buffer) > 0:
                         print 'buffer flush... plz wait...'
