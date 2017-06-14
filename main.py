@@ -54,7 +54,7 @@ class AIControl:
                     batch = replay_buffer
                     #loss = self.replay_train(self.tempDQN, self.targetDQN, batch)
 
-                    while start_idx < len(batch):
+                    while start_idx-batch_size < len(batch):
                         #minibatch = replay_buffer
                         minibatch = batch[start_idx:start_idx+batch_size]
                         loss = self.replay_train(self.tempDQN, self.targetDQN, minibatch)
