@@ -131,6 +131,7 @@ class AIControl:
             tf.global_variables_initializer().run()
 
             episode = 0
+            best_x = 0
             try:
                 self.mainDQN.restore(episode)
                 self.targetDQN.restore(episode)
@@ -190,7 +191,7 @@ class AIControl:
                     # 앞으로 나아가지 못하는 상황이 1000프레임 이상이면 종료하고 학습한다.
                     if now_x <= before_max_x:
                         hold_frame += 1
-                        if hold_frame > 1000:
+                        if hold_frame > 300:
                             timeout = True
                     else:
                         hold_frame = 0
@@ -201,7 +202,7 @@ class AIControl:
                             or done or timeout or clear:
                         if done and not clear:
                             step_reward = -10000
-                        if timeout and max_x > 700:
+                        if timeout and max_x > best_x:
                             step_reward += 1000
                             done = True
                         if clear:
