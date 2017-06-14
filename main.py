@@ -54,16 +54,19 @@ class AIControl:
                     batch = replay_buffer
                     #loss = self.replay_train(self.tempDQN, self.targetDQN, batch)
 
+                    loss = 0
+                    learn_cnt = 0
                     while start_idx-batch_size < len(batch):
                         #minibatch = replay_buffer
                         minibatch = batch[start_idx:start_idx+batch_size]
                         if len(minibatch) == 0:
                             break
-                        loss = self.replay_train(self.tempDQN, self.targetDQN, minibatch)
+                        loss += self.replay_train(self.tempDQN, self.targetDQN, minibatch)
                         start_idx += batch_size
+                        learn_cnt += 1
                     #print("Step: {}  Loss: {}".format(idx, loss))
 
-                    print("Step: {}-{}  Loss: {}".format(step, idx, loss))
+                    print("Step: {}-{}  Avg-Loss: {}".format(step, idx, loss/learn_cnt))
                 '''
                 for idx in range(100):
                     minibatch = random.sample(self.replay_buffer, int(len(self.replay_buffer) * 0.03))
