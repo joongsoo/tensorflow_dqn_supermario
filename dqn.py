@@ -58,7 +58,7 @@ class DQN:
 
             L3 = tf.reshape(L3, [-1, 512 * 2 * 2])
 
-            W4 = tf.get_variable("W4", shape=[128 * 2 * 2, 512],
+            W4 = tf.get_variable("W4", shape=[512 * 2 * 2, 512],
                                  initializer=tf.contrib.layers.xavier_initializer())
             b4 = tf.Variable(tf.random_normal([512]))
             L4 = tf.nn.relu(tf.matmul(L3, W4) + b4)
