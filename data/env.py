@@ -17,7 +17,7 @@ class Env:
     }
 
     mapping = {
-        0: [0, 0, 0, 0, 0, 0],  # NOOP
+        0: [0, 0, 0, 0, 0, 0],  # NO
         1: [1, 0, 0, 0, 0, 0],  # Up
         2: [0, 1, 0, 0, 0, 0],  # Down
         3: [0, 0, 1, 0, 0, 0],  # Left
@@ -37,8 +37,8 @@ class Env:
 
     action_n = len(mapping.keys())
 
-    resize_x = 120
-    resize_y = 120
+    resize_x = 90
+    resize_y = 90
     color_chanel = 1
     state_n = resize_x * resize_y * color_chanel
 

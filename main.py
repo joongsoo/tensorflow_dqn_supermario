@@ -220,7 +220,7 @@ class AIControl:
 
 
                     #print next_state
-                    #png.from_array(next_state, 'L').save('capture/' + str(step_count) + '.png')
+                    png.from_array(next_state, 'L').save('capture/' + str(step_count) + '.png')
 
                 #print("Buffer: {}  Episode: {}  steps: {}  max_x: {}  reward: {}".format(len(self.episode_buffer),
                 #                                                                         episode, step_count, max_x,
