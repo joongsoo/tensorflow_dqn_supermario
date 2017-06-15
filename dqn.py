@@ -22,7 +22,7 @@ class DQN:
         self.save_path = "./save/save_model_" + self.net_name + ".ckpt"
         tf.logging.info(name + " - initialized")
 
-    def _build_network(self, l_rate=0.1):
+    def _build_network(self, l_rate=0.01):
         with tf.variable_scope(self.net_name):
             keep_prob = self.keep_prob
 
@@ -32,14 +32,14 @@ class DQN:
             self.X_img = tf.reshape(self._X, [-1, 90, 90, 1])
 
             # Conv
-            W1 = tf.Variable(tf.random_normal([8, 8, 1, 32], stddev=0.01))
+            W1 = tf.Variable(tf.random_normal([8, 8, 1, 64], stddev=0.01))
             L1 = tf.nn.conv2d(self.X_img, W1, strides=[1, 4, 4, 1], padding='SAME')
             L1 = tf.nn.relu(L1)
             L1 = tf.nn.max_pool(L1, ksize=[1, 2, 2, 1],
                                 strides=[1, 2, 2, 1], padding='SAME')
             L1 = tf.nn.dropout(L1, keep_prob=keep_prob)
 
-            W2 = tf.Variable(tf.random_normal([4, 4, 32, 128], stddev=0.01))
+            W2 = tf.Variable(tf.random_normal([4, 4, 64, 128], stddev=0.01))
             L2 = tf.nn.conv2d(L1, W2, strides=[1, 2, 2, 1], padding='SAME')
             L2 = tf.nn.relu(L2)
             L2 = tf.nn.max_pool(L2, ksize=[1, 2, 2, 1],
