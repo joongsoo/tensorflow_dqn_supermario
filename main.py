@@ -36,7 +36,7 @@ class AIControl:
 
 
     def async_training(self, sess, ops, ops_temp):
-        step = 0
+        step = 1
         epoch = 100
         batch_size = 200
         while self.training:
@@ -170,7 +170,7 @@ class AIControl:
                     if step_count % self.frame_action == self.frame_action-1 \
                             or done or timeout or clear:
                         if done and not clear:
-                            step_reward = -250
+                            step_reward = -500
                         if clear:
                             step_reward += 10000
                             done = True
