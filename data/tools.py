@@ -78,7 +78,7 @@ class Control(object):
         score = self.state.get_score() / 10
         position_x = self.state.last_x_position
         if position_x > self.max_posision_x:
-            reward += (position_x - self.max_posision_x)*1
+            reward += (position_x - self.max_posision_x)*3
             self.max_posision_x = position_x
         else:
             reward = 0
