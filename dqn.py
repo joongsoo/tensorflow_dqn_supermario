@@ -56,16 +56,16 @@ class DQN:
 
             print L3
 
-            L3 = tf.reshape(L3, [-1, 256 * 2 * 2])
+            L3 = tf.reshape(L3, [-1, 128 * 2 * 2])
 
-            W4 = tf.get_variable("W4", shape=[256 * 2 * 2, 512],
+            W4 = tf.get_variable("W4", shape=[128 * 2 * 2, 1024],
                                  initializer=tf.contrib.layers.xavier_initializer())
-            b4 = tf.Variable(tf.random_normal([512]))
+            b4 = tf.Variable(tf.random_normal([1024]))
             L4 = tf.nn.relu(tf.matmul(L3, W4) + b4)
             L4 = tf.nn.dropout(L4, keep_prob=keep_prob)
 
             # L5 Final FC 625 inputs -> 10 outputs
-            W5 = tf.get_variable("W5", shape=[512, self.output_size],
+            W5 = tf.get_variable("W5", shape=[1024, self.output_size],
                                  initializer=tf.contrib.layers.xavier_initializer())
             b5 = tf.Variable(tf.random_normal([self.output_size]))
 
