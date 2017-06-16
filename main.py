@@ -29,7 +29,7 @@ class AIControl:
         self.replay_buffer = deque()
         self.episode_buffer = deque()
 
-        self.MAX_BUFFER_SIZE = 30000
+        self.MAX_BUFFER_SIZE = 35000
 
         self.frame_action = 3
         self.training = True
@@ -37,8 +37,8 @@ class AIControl:
 
     def async_training(self, sess, ops, ops_temp):
         step = 0
-        epoch = 100
-        batch_size = 300
+        epoch = 70
+        batch_size = 500
         while self.training:
             if len(self.episode_buffer) > 0:
                 replay_buffer, episode, step_count, max_x, reward_sum = self.episode_buffer.popleft()
@@ -161,7 +161,7 @@ class AIControl:
                     if now_x <= before_max_x:
                         hold_frame += 1
                         if hold_frame > 1000:
-                            timeout = True
+                            break
                     else:
                         hold_frame = 0
                         before_max_x = max_x
