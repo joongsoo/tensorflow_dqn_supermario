@@ -37,12 +37,12 @@ class AIControl:
 
     def async_training(self, sess, ops, ops_temp):
         step = 0
-        epoch = 60
-        batch_size = 500
+        epoch = 100
+        batch_size = 300
         while self.training:
-            if len(self.episode_buffer) > 0:
-                replay_buffer, episode, step_count, max_x, reward_sum = self.episode_buffer.popleft()
-                replay_buffer = list(replay_buffer)
+            if len(self.replay_buffer) == self.MAX_BUFFER_SIZE:
+                #replay_buffer, episode, step_count, max_x, reward_sum = self.episode_buffer.popleft()
+                replay_buffer = list(self.replay_buffer)
                 for idx in range(epoch):
                     batch = random.sample(replay_buffer, batch_size)
                     loss = self.replay_train(self.tempDQN, self.targetDQN, batch)
@@ -191,7 +191,7 @@ class AIControl:
                 with open('input_log/input_' + str(episode), 'w') as fp:
                     fp.write(str(input_list))
 
-
+                '''
                 if len(self.replay_buffer) == self.MAX_BUFFER_SIZE:
                     self.episode_buffer.append((self.replay_buffer, episode, step_count, max_x, reward_sum))
                     if len(self.episode_buffer) > 0:
@@ -199,7 +199,7 @@ class AIControl:
                         while len(self.episode_buffer) != 0:
                             time.sleep(1)
                     self.replay_buffer = deque()
-
+                '''
                 episode += 1
 
                 # 죽은 경우 죽은 지점의 600픽셀 이전에서 살아나서 다시 시도한다
