@@ -157,10 +157,10 @@ class AIControl:
                     #print state
                     step_reward += reward
 
-                    # 앞으로 나아가지 못하는 상황이 1000프레임 이상이면 종료하고 학습한다.
+                    # 앞으로 나아가지 못하는 상황이 2000프레임 이상이면 종료하고 학습한다.
                     if now_x <= before_max_x:
                         hold_frame += 1
-                        if hold_frame > 1000:
+                        if hold_frame > 2000:
                             break
                     else:
                         hold_frame = 0
