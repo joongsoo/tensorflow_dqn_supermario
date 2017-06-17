@@ -101,6 +101,7 @@ class AIControl:
             tf.global_variables_initializer().run()
 
             episode = 150
+            step = 151
             best_x = 0
             try:
                 self.mainDQN.restore(episode)
@@ -200,7 +201,7 @@ class AIControl:
                             time.sleep(1)
                     self.replay_buffer = deque()
                 '''
-                step = 151
+
                 epoch = 100
                 batch_size = 200
                 if episode % 20 == 0:
