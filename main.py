@@ -203,7 +203,7 @@ class AIControl:
                 step = 151
                 epoch = 100
                 batch_size = 200
-                if episode % 30 == 0 and self.replay_buffer == self.MAX_BUFFER_SIZE:
+                if episode % 30 == 0:
                     # replay_buffer, episode, step_count, max_x, reward_sum = self.episode_buffer.popleft()
                     replay_buffer = list(self.replay_buffer)
                     for idx in range(epoch):
