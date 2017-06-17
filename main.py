@@ -29,7 +29,7 @@ class AIControl:
         self.replay_buffer = deque()
         self.episode_buffer = deque()
 
-        self.MAX_BUFFER_SIZE = 20000
+        self.MAX_BUFFER_SIZE = 40000
 
         self.frame_action = 3
         self.training = True
@@ -203,7 +203,7 @@ class AIControl:
                 step = 151
                 epoch = 100
                 batch_size = 200
-                if episode % 30 == 0:
+                if episode % 20 == 0:
                     # replay_buffer, episode, step_count, max_x, reward_sum = self.episode_buffer.popleft()
                     replay_buffer = list(self.replay_buffer)
                     for idx in range(epoch):
