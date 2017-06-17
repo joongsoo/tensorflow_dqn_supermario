@@ -36,7 +36,7 @@ class AIControl:
 
 
     def async_training(self, sess, ops, ops_temp):
-        step = 1
+        step = 151
         epoch = 100
         batch_size = 200
         while self.training:
@@ -97,15 +97,15 @@ class AIControl:
         with tf.Session() as sess:
             self.mainDQN = dqn.DQN(sess, self.input_size, self.output_size, name="main")
             self.targetDQN = dqn.DQN(sess, self.input_size, self.output_size, name="target")
-            self.tempDQN = dqn.DQN(sess, self.input_size, self.output_size, name="temp")
+            #self.tempDQN = dqn.DQN(sess, self.input_size, self.output_size, name="temp")
             tf.global_variables_initializer().run()
 
-            episode = 0
+            episode = 150
             best_x = 0
             try:
                 self.mainDQN.restore(episode)
                 self.targetDQN.restore(episode)
-                self.tempDQN.restore(episode)
+                #self.tempDQN.restore(episode)
             except NotFoundError:
                 print "save file not found"
 
@@ -115,14 +115,14 @@ class AIControl:
             sess.run(copy_ops)
             sess.run(copy_ops_temp2)
 
-            training_thread = threading.Thread(target=self.async_training, args=(sess, copy_ops, copy_ops_temp))
-            training_thread.start()
+            #training_thread = threading.Thread(target=self.async_training, args=(sess, copy_ops, copy_ops_temp))
+            #training_thread.start()
 
             start_position = 500
 
-            episode = 0
+            episode = 300000
             while episode < self.max_episodes:
-                e = max(0.2, min(0.5, 1. / ((episode / 200) + 1)))
+                e = max(0.4, min(0.5, 1. / ((episode / 200) + 1)))
 
                 done = False
                 clear = False
@@ -200,6 +200,26 @@ class AIControl:
                             time.sleep(1)
                     self.replay_buffer = deque()
                 '''
+                step = 151
+                epoch = 100
+                batch_size = 200
+                if episode % 30 == 0 and self.replay_buffer == self.MAX_BUFFER_SIZE:
+                    # replay_buffer, episode, step_count, max_x, reward_sum = self.episode_buffer.popleft()
+                    replay_buffer = list(self.replay_buffer)
+                    for idx in range(epoch):
+                        batch = random.sample(replay_buffer, batch_size)
+                        loss = self.replay_train(self.mainDQN, self.targetDQN, batch)
+                        print("Step: {}-{}  Loss: {}".format(step, idx, loss))
+                    sess.run(copy_ops)
+
+                    # 50 에피소드마다 저장한다
+                    if step % 50 == 0:
+                        self.mainDQN.save(episode=step)
+                        self.targetDQN.save(episode=step)
+                        #self.tempDQN.save(episode=step)
+                    step += 1
+                else:
+                    time.sleep(1)
                 episode += 1
 
                 # 죽은 경우 죽은 지점의 600픽셀 이전에서 살아나서 다시 시도한다
@@ -212,7 +232,7 @@ class AIControl:
 
             # 에피소드가 끝나면 종료하지말고 버퍼에있는 트레이닝을 마친다
             self.training = False
-            training_thread.join()
+            #training_thread.join()
 
 
 
