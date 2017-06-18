@@ -100,8 +100,8 @@ class AIControl:
             #self.tempDQN = dqn.DQN(sess, self.input_size, self.output_size, name="temp")
             tf.global_variables_initializer().run()
 
-            episode = 250
-            step = 251
+            episode = 300
+            step = 301
             best_x = 0
             try:
                 self.mainDQN.restore(episode)
@@ -121,9 +121,9 @@ class AIControl:
 
             start_position = 500
 
-            episode = 20001
+            episode = 501
             while episode < self.max_episodes:
-                e = 0.75#max(0.4, min(0.5, 1. / ((episode / 200) + 1)))
+                e = max(0.05, min(0.75, 1. / ((episode / 500) + 1)))
 
                 done = False
                 clear = False
