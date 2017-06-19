@@ -235,7 +235,7 @@ class AIControl:
 
             # 에피소드가 끝나면 종료하지말고 버퍼에있는 트레이닝을 마친다
             self.training = False
-            #training_thread.join()
+            training_thread.join()
 
 
 
