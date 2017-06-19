@@ -36,11 +36,11 @@ class AIControl:
 
 
     def async_training(self, sess, ops, ops_temp):
-        step = 151
+        step = 501
         epoch = 100
         batch_size = 200
         while self.training:
-            if len(self.replay_buffer) == self.MAX_BUFFER_SIZE:
+            if len(self.replay_buffer) == batch_size * 10:#self.MAX_BUFFER_SIZE:
                 #replay_buffer, episode, step_count, max_x, reward_sum = self.episode_buffer.popleft()
                 replay_buffer = list(self.replay_buffer)
                 for idx in range(epoch):
@@ -97,7 +97,7 @@ class AIControl:
         with tf.Session() as sess:
             self.mainDQN = dqn.DQN(sess, self.input_size, self.output_size, name="main")
             self.targetDQN = dqn.DQN(sess, self.input_size, self.output_size, name="target")
-            #self.tempDQN = dqn.DQN(sess, self.input_size, self.output_size, name="temp")
+            self.tempDQN = dqn.DQN(sess, self.input_size, self.output_size, name="temp")
             tf.global_variables_initializer().run()
 
             episode = 500
@@ -116,8 +116,8 @@ class AIControl:
             sess.run(copy_ops)
             sess.run(copy_ops_temp2)
 
-            #training_thread = threading.Thread(target=self.async_training, args=(sess, copy_ops, copy_ops_temp))
-            #training_thread.start()
+            training_thread = threading.Thread(target=self.async_training, args=(sess, copy_ops, copy_ops_temp))
+            training_thread.start()
 
             start_position = 500
 
@@ -201,7 +201,7 @@ class AIControl:
                         while len(self.episode_buffer) != 0:
                             time.sleep(1)
                     self.replay_buffer = deque()
-                '''
+
 
                 epoch = 100
                 batch_size = 200
@@ -223,6 +223,7 @@ class AIControl:
                 else:
                     time.sleep(1)
                 episode += 1
+                '''
 
                 # 죽은 경우 죽은 지점의 600픽셀 이전에서 살아나서 다시 시도한다
                 '''
