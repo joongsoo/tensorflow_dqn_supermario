@@ -40,7 +40,7 @@ class AIControl:
         epoch = 100
         batch_size = 200
         while self.training:
-            if len(self.replay_buffer) > batch_size * 10:#self.MAX_BUFFER_SIZE:
+            if len(self.replay_buffer) > self.MAX_BUFFER_SIZE/10:
                 #replay_buffer, episode, step_count, max_x, reward_sum = self.episode_buffer.popleft()
                 replay_buffer = list(self.replay_buffer)
                 for idx in range(epoch):
