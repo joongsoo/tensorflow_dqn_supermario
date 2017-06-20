@@ -121,7 +121,7 @@ class AIControl:
 
             start_position = 500
 
-            episode = 2001
+            episode = 10001
             while episode < self.max_episodes:
                 e = max(0.05, min(0.75, 1 / ((episode / 20000) + 0.1)))
                 #max(0.05, min(0.3, 1. / ((episode / 5000) + 1)))
@@ -190,9 +190,10 @@ class AIControl:
 
                     #png.from_array(next_state, 'L').save('capture/' + str(step_count) + '.png')
 
-                with open('input_log/input_' + str(episode), 'w') as fp:
+                with open('input_log/input', 'w') as fp:
                     fp.write(str(input_list))
 
+                episode += 1
                 '''
                 if len(self.replay_buffer) == self.MAX_BUFFER_SIZE:
                     self.episode_buffer.append((self.replay_buffer, episode, step_count, max_x, reward_sum))
