@@ -121,7 +121,7 @@ class AIControl:
 
             start_position = 500
 
-            episode = 10001
+            episode = 18001
             while episode < self.max_episodes:
                 e = max(0.05, min(0.75, 1 / ((episode / 20000) + 0.1)))
                 #max(0.05, min(0.3, 1. / ((episode / 5000) + 1)))
