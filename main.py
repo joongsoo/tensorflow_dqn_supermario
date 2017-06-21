@@ -38,7 +38,7 @@ class AIControl:
     def async_training(self, sess, ops, ops_temp):
         step = 1
         epoch = 100
-        batch_size = 400
+        batch_size = 100
         while self.training:
             if len(self.replay_buffer) > self.MAX_BUFFER_SIZE/10:
                 #replay_buffer, episode, step_count, max_x, reward_sum = self.episode_buffer.popleft()
