@@ -36,9 +36,9 @@ class AIControl:
 
 
     def async_training(self, sess, ops, ops_temp):
-        step = 651
+        step = 1
         epoch = 100
-        batch_size = 200
+        batch_size = 400
         while self.training:
             if len(self.replay_buffer) > self.MAX_BUFFER_SIZE/10:
                 #replay_buffer, episode, step_count, max_x, reward_sum = self.episode_buffer.popleft()
@@ -100,7 +100,7 @@ class AIControl:
             self.tempDQN = dqn.DQN(sess, self.input_size, self.output_size, name="temp")
             tf.global_variables_initializer().run()
 
-            episode = 650
+            episode = 0
             step = 651
             best_x = 0
             try:
@@ -121,7 +121,7 @@ class AIControl:
 
             start_position = 500
 
-            episode = 23001
+            episode = 1
             while episode < self.max_episodes:
                 e = max(0.05, min(0.75, 1 / ((episode / 20000) + 0.1)))
                 #max(0.05, min(0.3, 1. / ((episode / 5000) + 1)))
@@ -172,7 +172,7 @@ class AIControl:
                     if step_count % self.frame_action == self.frame_action-1 \
                             or done or timeout or clear:
                         if done and not clear:
-                            step_reward = -400
+                            step_reward = -1000
                         if clear:
                             step_reward += 10000
                             done = True
