@@ -36,25 +36,24 @@ class AIControl:
 
 
     def async_training(self, sess, ops, ops_temp):
-        step = 1
+        step = 951
         epoch = 100
-        batch_size = 100
+        batch_size = 200
         while self.training:
             if len(self.replay_buffer) > self.MAX_BUFFER_SIZE/10:
                 #replay_buffer, episode, step_count, max_x, reward_sum = self.episode_buffer.popleft()
                 replay_buffer = list(self.replay_buffer)
                 for idx in range(epoch):
                     batch = random.sample(replay_buffer, batch_size)
-                    loss = self.replay_train(self.tempDQN, self.targetDQN, batch)
+                    loss = self.replay_train(self.mainDQN, self.targetDQN, batch)
                     print("Step: {}-{}  Loss: {}".format(step, idx, loss))
                 sess.run(ops)
-                sess.run(ops_temp)
+                #sess.run(ops_temp)
 
                 # 50 에피소드마다 저장한다
                 if step % 50 == 0:
                     self.mainDQN.save(episode=step)
                     self.targetDQN.save(episode=step)
-                    self.tempDQN.save(episode=step)
                 step += 1
             else:
                 time.sleep(1)
@@ -97,11 +96,11 @@ class AIControl:
         with tf.Session() as sess:
             self.mainDQN = dqn.DQN(sess, self.input_size, self.output_size, name="main")
             self.targetDQN = dqn.DQN(sess, self.input_size, self.output_size, name="target")
-            self.tempDQN = dqn.DQN(sess, self.input_size, self.output_size, name="temp")
+            #self.tempDQN = dqn.DQN(sess, self.input_size, self.output_size, name="temp")
             tf.global_variables_initializer().run()
 
             episode = 0
-            step = 651
+            step = 950
             best_x = 0
             try:
                 self.mainDQN.restore(episode)
@@ -112,16 +111,16 @@ class AIControl:
 
             copy_ops = self.get_copy_var_ops()
             copy_ops_temp = self.get_copy_var_ops(dest_scope_name="main", src_scope_name="temp")
-            copy_ops_temp2 = self.get_copy_var_ops(dest_scope_name="temp", src_scope_name="main")
+            #copy_ops_temp2 = self.get_copy_var_ops(dest_scope_name="temp", src_scope_name="main")
             sess.run(copy_ops)
-            sess.run(copy_ops_temp2)
+            #sess.run(copy_ops_temp2)
 
-            training_thread = threading.Thread(target=self.async_training, args=(sess, copy_ops, copy_ops_temp))
+            training_thread = threading.Thread(target=self.async_training, args=(sess, copy_ops))
             training_thread.start()
 
             start_position = 500
 
-            episode = 1
+            episode = 5300
             while episode < self.max_episodes:
                 e = max(0.05, min(0.75, 1 / ((episode / 20000) + 0.1)))
                 #max(0.05, min(0.3, 1. / ((episode / 5000) + 1)))
@@ -149,7 +148,7 @@ class AIControl:
                         if np.random.rand(1) < e:
                             action = self.env.get_random_actions()
                         else:
-                            action = np.argmax(self.mainDQN.predict(state))
+                            action = np.argmax(self.targetDQN.predict(state))
                             input_list.append(action)
                         action_state = state
                     else:
