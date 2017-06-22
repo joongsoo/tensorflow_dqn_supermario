@@ -35,7 +35,7 @@ class AIControl:
         self.training = True
 
 
-    def async_training(self, sess, ops, ops_temp):
+    def async_training(self, sess, ops):
         step = 951
         epoch = 100
         batch_size = 200
