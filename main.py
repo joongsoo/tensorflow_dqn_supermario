@@ -33,10 +33,10 @@ class AIControl:
 
         self.frame_action = 3
         self.training = True
+        self.step = 1
 
 
     def async_training(self, sess, ops):
-        step = 1
         epoch = 100
         batch_size = 200
         while self.training:
@@ -46,15 +46,15 @@ class AIControl:
                 for idx in range(epoch):
                     batch = random.sample(replay_buffer, batch_size)
                     loss = self.replay_train(self.mainDQN, self.targetDQN, batch)
-                    print("Step: {}-{}  Loss: {}".format(step, idx, loss))
+                    print("Step: {}-{}  Loss: {}".format(self.step, idx, loss))
                 sess.run(ops)
                 #sess.run(ops_temp)
 
                 # 50 에피소드마다 저장한다
-                if step % 50 == 0:
-                    self.mainDQN.save(episode=step)
-                    self.targetDQN.save(episode=step)
-                step += 1
+                if self.step % 50 == 0:
+                    self.mainDQN.save(episode=self.step)
+                    self.targetDQN.save(episode=self.step)
+                self.step += 1
             else:
                 time.sleep(1)
 
@@ -100,7 +100,6 @@ class AIControl:
             tf.global_variables_initializer().run()
 
             episode = 0
-            step = 0
             best_x = 0
             try:
                 self.mainDQN.restore(episode)
@@ -122,7 +121,7 @@ class AIControl:
 
             episode = 1
             while episode < self.max_episodes:
-                e = max(0.05, min(0.75, 1 / ((episode / 3000) + 0.1)))
+                e = max(0.05, min(0.75, 1 / ((self.step / 200) + 0.1)))
                 #max(0.05, min(0.3, 1. / ((episode / 5000) + 1)))
 
                 done = False
