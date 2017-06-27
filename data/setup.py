@@ -16,7 +16,7 @@ from . import constants as c
 ORIGINAL_CAPTION = c.ORIGINAL_CAPTION
 
 current_dir = os.path.dirname(os.path.realpath(__file__))
-
+'''
 os.environ['SDL_VIDEO_CENTERED'] = '1'
 pg.init()
 pg.event.set_allowed([pg.KEYDOWN, pg.KEYUP, pg.QUIT])
@@ -71,7 +71,7 @@ else:
     MUSIC = tools.load_all_music(os.path.join(current_dir, "..",  "resources", "music"))
     GFX = tools.load_all_gfx(os.path.join(current_dir, "..",  "resources", "graphics"))
     SFX = tools.load_all_sfx(os.path.join(current_dir, "..",  "resources", "sound"))
-'''
+
 
 
 
