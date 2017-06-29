@@ -75,7 +75,7 @@ class Control(object):
             next_state = array3d(setup.SCREEN)
 
         reward = 0
-        score = self.state.get_score() / 10
+        score = self.state.get_score()
         position_x = self.state.last_x_position
         if position_x > self.max_posision_x:
             reward += (position_x - self.max_posision_x)*3
@@ -95,13 +95,13 @@ class Control(object):
         elif self.keys[275] == 1:
             reward += 1
         '''
-        '''
+
         if self.keys[276] == 1:
             reward -= 0.2
         elif self.keys[275] == 1:
             reward += 1
 
-
+        '''
         if self.before_x < position_x:
             reward += position_x - self.before_x
         self.before_x = position_x
