@@ -99,7 +99,7 @@ class Control(object):
         if self.keys[275] == 1:
             reward += 1
         else:
-            reward -= 0.3
+            reward -= 5
 
         '''
         if self.before_x < position_x:
