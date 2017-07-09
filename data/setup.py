@@ -29,7 +29,7 @@ GFX = tools.load_all_gfx(os.path.join("resources", "graphics"))
 SFX = tools.load_all_sfx(os.path.join("resources", "sound"))
 # dev env
 '''
-if p_name == "aaa":
+if True:#p_name == "aaa":
     import os
     import pygame as pg
     from . import tools
